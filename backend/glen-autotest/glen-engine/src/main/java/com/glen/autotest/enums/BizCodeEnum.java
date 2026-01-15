@@ -40,6 +40,18 @@ public enum BizCodeEnum {
     CASE_EXECUTE_FAIL(130002, "测试用例执行失败"),
 
     /**
+     * UI操作相关
+     */
+    UI_DRIVER_NOT_INITIALIZED(140001, "WebDriver未初始化"),
+    UI_ELEMENT_NOT_EXIST(140002, "元素不存在"),
+    UI_OPERATION_UNSUPPORTED(140003, "不支持的UI操作"),
+    UI_OPERATION_UNSUPPORTED_ELEMENT(140004, "不支持的元素定位类型"),
+    UI_OPERATION_UNSUPPORTED_BROWSER(140005, "不支持的浏览器操作"),
+    UI_OPERATION_UNSUPPORTED_MOUSE(140006, "不支持的鼠标操作"),
+    UI_OPERATION_UNSUPPORTED_WAIT(140007, "不支持的等待操作"),
+    UI_OPERATION_UNSUPPORTED_ASSERTION(140008, "不支持的断言操作"),
+
+    /**
      * 系统错误
      */
     SYSTEM_ERROR(999999, "系统错误");
