@@ -26,8 +26,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableAsync
 public class EngineApplication {
     public static void main(String[] args) {
-
-        ConfigurableApplicationContext applicationContext = SpringApplication.run(EngineApplication.class, args);
-        SpringContextHolder.setApplicationContext(applicationContext);
+        SpringApplication.run(EngineApplication.class, args);
     }
 }
