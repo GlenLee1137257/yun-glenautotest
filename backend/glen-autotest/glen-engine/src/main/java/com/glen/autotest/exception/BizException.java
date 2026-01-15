@@ -28,4 +28,8 @@ public class BizException extends RuntimeException {
         this.code = bizCodeEnum.getCode();
         this.msg = bizCodeEnum.getMsg();
     }
+    
+    public String getDetail() {
+        return this.msg;
+    }
 }

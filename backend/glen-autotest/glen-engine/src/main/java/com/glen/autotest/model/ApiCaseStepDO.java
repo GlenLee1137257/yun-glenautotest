@@ -16,6 +16,7 @@ public class ApiCaseStepDO {
     @TableId(type = IdType.AUTO)
     private Long id;
     private Long caseId;
+    private Long environmentId;
     private String name;
     private String base;
     private String path;
@@ -27,6 +28,7 @@ public class ApiCaseStepDO {
     private String assertion;
     private String relation;
     private Integer sort;
+    private Integer num;
     private Date gmtCreate;
     private Date gmtModified;
 }

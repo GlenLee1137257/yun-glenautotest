@@ -11,7 +11,7 @@ public interface FileService {
   byte[] downloadFile(String filePath);
 
   void deleteFile(String filePath);
-  
+
   /**
    * 上传 MultipartFile 文件
    */

@@ -19,6 +19,7 @@ public class ApiCaseResultDTO {
     private Integer quantity;
     private Integer passQuantity;
     private Integer failQuantity;
+    private Boolean executeState;
     private List<Object> list;
     private List<ApiCaseResultItemDTO> itemList;
 }

@@ -14,5 +14,5 @@ public interface ApiCaseService {
     List<ApiCaseDTO> list(Long projectId, Long moduleId);
     int save(ApiCaseSaveReq req);
     int update(ApiCaseUpdateReq req);
-    int delete(Long id, Long projectId);
+    int delete(Long projectId, Long id);
 }

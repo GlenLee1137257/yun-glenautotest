@@ -19,6 +19,7 @@ public class UiCaseResultDTO {
     private Integer quantity;
     private Integer passQuantity;
     private Integer failQuantity;
+    private Boolean executeState;
     private List<Object> list;
     private List<UiCaseStepResultDTO> stepList;
 }

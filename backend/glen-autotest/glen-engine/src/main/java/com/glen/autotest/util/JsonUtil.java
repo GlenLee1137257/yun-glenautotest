@@ -28,4 +28,11 @@ public class JsonUtil {
     public static <T> T parseObject(String json, TypeReference<T> typeReference) {
         return JSON.parseObject(json, typeReference);
     }
+    
+    /**
+     * 对象转JSON字符串（别名）
+     */
+    public static String obj2Json(Object obj) {
+        return toJsonString(obj);
+    }
 }

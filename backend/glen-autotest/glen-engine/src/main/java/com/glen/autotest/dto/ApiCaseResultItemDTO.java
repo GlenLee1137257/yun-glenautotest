@@ -7,8 +7,16 @@ import lombok.Data;
  */
 @Data
 public class ApiCaseResultItemDTO {
+    private Long reportId;
     private Long stepId;
     private String stepName;
     private Boolean success;
     private String message;
+    private Long expendTime;
+    private Boolean executeState;
+    private Boolean assertionState;
+    private String exceptionMsg;
+    private String responseBody;
+    private String responseHeaders;
+    private ApiCaseStepDTO apiCaseStep;
 }

@@ -15,6 +15,7 @@ import java.util.Date;
 public class ApiCaseDO {
     @TableId(type = IdType.AUTO)
     private Long id;
+    private Long projectId;
     private Long moduleId;
     private String name;
     private String description;

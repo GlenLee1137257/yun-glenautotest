@@ -18,6 +18,9 @@ public class EnvironmentDO {
     private Long projectId;
     private String name;
     private String baseUrl;
+    private String protocol;
+    private String domain;
+    private Integer port;
     private Date gmtCreate;
     private Date gmtModified;
 }
