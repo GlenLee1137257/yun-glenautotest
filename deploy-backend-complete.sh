@@ -66,16 +66,24 @@ find_jar() {
     local module=$1
     local jar_name=$2
     
-    # 方法1: 在 target 目录查找
-    local target_jar=$(find "$module/target" -name "${jar_name}*.jar" -not -name "*-sources.jar" -not -name "*-javadoc.jar" 2>/dev/null | head -1)
-    if [ -n "$target_jar" ]; then
-        echo "$target_jar"
-        return 0
+    # 方法1: 在 target 目录查找（精确匹配或带版本号）
+    if [ -d "$module/target" ]; then
+        # 先尝试精确匹配（无版本号）
+        if [ -f "$module/target/${jar_name}.jar" ]; then
+            echo "$module/target/${jar_name}.jar"
+            return 0
+        fi
+        # 再尝试带版本号的
+        local target_jar=$(find "$module/target" -maxdepth 1 -name "${jar_name}*.jar" -not -name "*-sources.jar" -not -name "*-javadoc.jar" 2>/dev/null | head -1)
+        if [ -n "$target_jar" ] && [ -f "$target_jar" ]; then
+            echo "$target_jar"
+            return 0
+        fi
     fi
     
     # 方法2: 在 Maven 本地仓库查找
     local maven_jar=$(find ~/.m2/repository -name "${jar_name}*.jar" -path "*/${module}/*" -not -name "*-sources.jar" -not -name "*-javadoc.jar" 2>/dev/null | head -1)
-    if [ -n "$maven_jar" ]; then
+    if [ -n "$maven_jar" ] && [ -f "$maven_jar" ]; then
         echo "$maven_jar"
         return 0
     fi
