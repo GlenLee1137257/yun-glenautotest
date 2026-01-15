@@ -1,5 +1,6 @@
 package com.glen.autotest.exception;
 
+import com.glen.autotest.enums.BizCodeEnum;
 import lombok.Getter;
 
 /**
@@ -20,5 +21,11 @@ public class BizException extends RuntimeException {
         super(msg);
         this.code = -1;
         this.msg = msg;
+    }
+    
+    public BizException(BizCodeEnum bizCodeEnum) {
+        super(bizCodeEnum.getMsg());
+        this.code = bizCodeEnum.getCode();
+        this.msg = bizCodeEnum.getMsg();
     }
 }

@@ -1,19 +1,12 @@
-package com.glen.autotest.model;
+package com.glen.autotest.dto;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
-import java.util.Date;
-
 /**
- * UI用例步骤数据对象
+ * UI用例步骤DTO
  */
 @Data
-@TableName("ui_case_step")
-public class UiCaseStepDO {
-    @TableId(type = IdType.AUTO)
+public class UiCaseStepDTO {
     private Long id;
     private Long caseId;
     private String name;
@@ -28,20 +21,17 @@ public class UiCaseStepDO {
     private String locationExpress;
     private Long elementWait;
     
-    // 目标元素定位（用于拖拽等操作）
+    // 目标元素定位
     private String targetLocationType;
     private String targetLocationExpress;
     private Long targetElementWait;
     
-    // 期望值（用于断言）
+    // 期望值
     private String expectValue;
     
     // 截图标志
     private Integer isScreenshot;
     
-    // 失败后是否继续执行
+    // 失败后是否继续
     private Integer isContinue;
-    
-    private Date gmtCreate;
-    private Date gmtModified;
 }

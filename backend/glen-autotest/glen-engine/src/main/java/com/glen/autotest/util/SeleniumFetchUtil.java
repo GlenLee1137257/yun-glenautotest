@@ -56,6 +56,19 @@ public class SeleniumFetchUtil {
     }
     
     /**
+     * 获取 WebDriver（根据浏览器类型）
+     * @param browserType 浏览器类型
+     * @return WebDriver
+     */
+    public static WebDriver getWebDriver(String browserType) {
+        WebDriver driver = SeleniumWebdriverContext.get();
+        if (driver == null) {
+            throw new BizException(BizCodeEnum.UI_DRIVER_NOT_INITIALIZED);
+        }
+        return driver;
+    }
+    
+    /**
      * 兼容旧方法
      */
     public static WebElement fetchElement(WebDriver driver, String operationType, String element) {
