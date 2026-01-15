@@ -7,5 +7,5 @@ import com.glen.autotest.model.UiCaseStepDO;
  * Selenium调度服务接口
  */
 public interface SeleniumDispatcherService {
-    UiOperationResultDTO execute(UiCaseStepDO step);
+    UiOperationResultDTO operationDispatcher(UiCaseStepDO step);
 }
