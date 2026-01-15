@@ -19,12 +19,6 @@
 
 
     <dependencies>
-        <dependency>
-            <groupId>com.glen.autotest</groupId>
-            <artifactId>glen-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
         <!-- Sa-token -->
         <dependency>
             <groupId>cn.dev33</groupId>
