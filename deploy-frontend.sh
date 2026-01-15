@@ -79,6 +79,12 @@ else
     echo "更新依赖..."
     pnpm install
 fi
+
+# 确保 npm-run-all 已安装（构建脚本需要）
+if ! pnpm list npm-run-all &> /dev/null; then
+    echo "安装 npm-run-all..."
+    pnpm add -D npm-run-all
+fi
 echo -e "${GREEN}✓ 依赖安装完成${NC}"
 
 # 5. 构建项目
