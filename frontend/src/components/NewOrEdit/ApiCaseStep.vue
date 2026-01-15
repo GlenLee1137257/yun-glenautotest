@@ -1,0 +1,214 @@
+<script lang="ts" setup>
+import { Form, Input, Select, TabPane, Tooltip } from 'ant-design-vue'
+import {
+  type IApiCaseStep,
+  type IApiCaseStepAssertion,
+  type IApiCaseStepRelation,
+  type IApiConstantSelectOptions,
+  defaultWithIApiCaseStepAssertion,
+  defaultWithIApiCaseStepRelation,
+} from '~/types/apis/api-case'
+import type { ColumnsType } from 'ant-design-vue/es/table'
+import type RequestConfigVue from './RequestConfig.vue'
+import type { ComponentExposed } from 'vue-component-type-helpers'
+
+defineProps<{
+  apiConstantSelectOptions: IApiConstantSelectOptions
+}>()
+const selectedStep = defineModel<IApiCaseStep>('selectedStep', {
+  required: true,
+})
+
+const requestConfigRef = ref<ComponentExposed<typeof RequestConfigVue>>()
+
+const columnsWithAssertion: ColumnsType<any> = [
+  { title: '断言来源', dataIndex: 'from', key: 'from' },
+  { title: '断言类型', dataIndex: 'type', key: 'type' },
+  { title: '断言动作', dataIndex: 'action', key: 'action' },
+  { title: '关联表达式', dataIndex: 'express', key: 'express' },
+  { title: '预期值', dataIndex: 'value', key: 'value' },
+  { title: '操作', dataIndex: 'operator', key: 'operator', width: 200 },
+]
+const dataSourceWithAssertion = ref<IApiCaseStepAssertion[]>([])
+
+const columnsWithRelation: ColumnsType<any> = [
+  { title: '关联来源', dataIndex: 'from', key: 'from' },
+  { title: '关联类型', dataIndex: 'type', key: 'type' },
+  { title: '关联表达式', dataIndex: 'express', key: 'express' },
+  { title: '关联变量名', dataIndex: 'name', key: 'name' },
+  { title: '操作', dataIndex: 'operator', key: 'operator', width: 200 },
+]
+const dataSourceWithRelation = ref<IApiCaseStepRelation[]>([])
+
+async function deserialize() {
+  await nextTick()
+
+  dataSourceWithRelation.value = objectDeserializer(
+    selectedStep.value.relation,
+    true,
+  )
+  dataSourceWithAssertion.value = objectDeserializer(
+    selectedStep.value.assertion,
+    true,
+  )
+  requestConfigRef.value!.deserialize({
+    query: selectedStep.value.query,
+    header: selectedStep.value.header,
+    rest: selectedStep.value.rest,
+    body: selectedStep.value.body,
+    bodyType: selectedStep.value.bodyType,
+  })
+}
+
+function serialize() {
+  selectedStep.value.relation = objectSerializer(dataSourceWithRelation.value)
+  selectedStep.value.assertion = objectSerializer(dataSourceWithAssertion.value)
+  const { body, header, query, rest } = requestConfigRef.value!.serialize()
+  selectedStep.value.body = body
+  selectedStep.value.rest = rest
+  selectedStep.value.query = query
+  selectedStep.value.header = header
+}
+
+watch(
+  selectedStep,
+  async () => {
+    await deserialize()
+  },
+  { deep: true, immediate: true },
+)
+
+defineExpose({ serialize })
+</script>
+
+<template>
+  <div my-6>
+    <Form :model="selectedStep">
+      <Form.Item label="用例阶段名称：">
+        <Input v-model:value="selectedStep.name" placeholder="请输入名称" />
+      </Form.Item>
+      <Form.Item label="用例阶段描述：">
+        <Input.TextArea
+          v-model:value="selectedStep.description"
+          placeholder="请输入名称"
+        />
+      </Form.Item>
+      <FormItemMethod v-model:method="selectedStep.method" />
+      <Form.Item label="接口地址：">
+        <Input v-model:value="selectedStep.path" placeholder="请输入接口地址" />
+      </Form.Item>
+
+      <FormItemLevel v-model:level="selectedStep.level" />
+
+      <FormItemEnvironment
+        v-model:environment-id="selectedStep.environmentId"
+      />
+    </Form>
+
+    <RequestConfig
+      ref="requestConfigRef"
+      v-model:body-type="selectedStep.bodyType"
+    >
+      <template #foot>
+        <TabPane key="relation" tab="关联变量">
+          <EditableTable
+            v-model:data-source-proxy="dataSourceWithRelation"
+            :custom-fields="['from', 'type']"
+            :columns="columnsWithRelation"
+            @add-data="
+              dataSourceWithRelation.push({
+                ...defaultWithIApiCaseStepRelation,
+              })
+            "
+          >
+            <template #bodyCell="{ column, isEdit, currentEditableInstance }">
+              <template v-if="isEdit && column.key === 'from'">
+                <Select v-model:value="currentEditableInstance[column.key!]">
+                  <Select.Option
+                    v-for="item in apiConstantSelectOptions.api_relation_from"
+                    :key="item.id"
+                    :value="item.value"
+                  >
+                    <Tooltip :title="item.remark">
+                      {{ item.name }}
+                    </Tooltip>
+                  </Select.Option>
+                </Select>
+              </template>
+
+              <template v-if="isEdit && column.key === 'type'">
+                <Select v-model:value="currentEditableInstance[column.key!]">
+                  <Select.Option
+                    v-for="item in apiConstantSelectOptions.api_relation_type"
+                    :key="item.id"
+                    :value="item.value"
+                  >
+                    <Tooltip :title="item.remark">
+                      {{ item.name }}
+                    </Tooltip>
+                  </Select.Option>
+                </Select>
+              </template>
+            </template>
+          </EditableTable>
+        </TabPane>
+        <TabPane key="assertion" tab="断言">
+          <EditableTable
+            v-model:data-source-proxy="dataSourceWithAssertion"
+            :custom-fields="['from', 'type', 'action']"
+            :columns="columnsWithAssertion"
+            @add-data="
+              dataSourceWithAssertion.push({
+                ...defaultWithIApiCaseStepAssertion,
+              })
+            "
+          >
+            <template #bodyCell="{ column, isEdit, currentEditableInstance }">
+              <template v-if="isEdit && column.key === 'from'">
+                <Select v-model:value="currentEditableInstance[column.key!]">
+                  <Select.Option
+                    v-for="item in apiConstantSelectOptions.api_assertion_from"
+                    :key="item.id"
+                    :value="item.value"
+                  >
+                    <Tooltip :title="item.remark">
+                      {{ item.name }}
+                    </Tooltip>
+                  </Select.Option>
+                </Select>
+              </template>
+
+              <template v-if="isEdit && column.key === 'type'">
+                <Select v-model:value="currentEditableInstance[column.key!]">
+                  <Select.Option
+                    v-for="item in apiConstantSelectOptions.api_assertion_type"
+                    :key="item.id"
+                    :value="item.value"
+                  >
+                    <Tooltip :title="item.remark">
+                      {{ item.name }}
+                    </Tooltip>
+                  </Select.Option>
+                </Select>
+              </template>
+
+              <template v-if="isEdit && column.key === 'action'">
+                <Select v-model:value="currentEditableInstance[column.key!]">
+                  <Select.Option
+                    v-for="item in apiConstantSelectOptions.api_assertion_action"
+                    :key="item.id"
+                    :value="item.value"
+                  >
+                    <Tooltip :title="item.remark">
+                      {{ item.name }}
+                    </Tooltip>
+                  </Select.Option>
+                </Select>
+              </template>
+            </template>
+          </EditableTable>
+        </TabPane>
+      </template>
+    </RequestConfig>
+  </div>
+</template>

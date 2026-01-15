@@ -24,11 +24,11 @@ ENV PATH=$JAVA_HOME/bin:$PATH
 
 # 复制apache-jmeter-5.5和dcloud-engine-1.0-SNAPSHOT-exec.jar到容器
 COPY source/apache-jmeter-5.5 apache-jmeter-5.5
-COPY target/glen-engine.jar /root
+COPY target/dcloud-engine.jar /root
 
 # 定义容器对外暴露的端口
 EXPOSE 8082
 
 # 定义容器启动时执行的命令
-ENTRYPOINT ["java", "-jar", "/root/glen-engine.jar"]
+ENTRYPOINT ["java", "-jar", "/root/dcloud-engine.jar"]
 

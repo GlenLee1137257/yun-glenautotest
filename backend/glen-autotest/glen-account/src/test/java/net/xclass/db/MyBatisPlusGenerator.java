@@ -1,4 +1,4 @@
-package com.glen.autotest.db;
+package net.xclass.db;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -12,11 +12,11 @@ import org.apache.ibatis.type.JdbcType;
 import java.util.Collections;
 
 /**
- * Glen AutoTest Platform
+ * 小滴课堂,愿景：让技术不再难学
  *
  * @Description
- * @Author Glen Lee
- * @Remark Glen AutoTest Platform
+ * @Author 二当家小D
+ * @Remark 有问题直接联系我，源码-笔记-技术交流群
  * @Version 1.0
  **/
 
@@ -27,8 +27,8 @@ public class MyBatisPlusGenerator {
         String userName = "root";
         String password = "xdclass.net168";
         String serverInfo = "120.79.56.211:3306";
-        String targetModuleNamePath = "/glen-account";
-        String dbName = "glen_account";
+        String targetModuleNamePath = "/dcloud-account";
+        String dbName = "test_account";
 //        String[] tables = {
 //                "project", "environment",
 //                "stress_case_module", "stress_case"
@@ -46,7 +46,7 @@ public class MyBatisPlusGenerator {
         // 数据源配置
         FastAutoGenerator.create("jdbc:mysql://"+serverInfo+"/"+dbName+"?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&tinyInt1isBit=true", userName, password)
                 .globalConfig(builder -> {
-                    builder.author("Glen Lee")        // 设置作者
+                    builder.author("小滴课堂-二当家小D,")        // 设置作者
                             .commentDate("yyyy-MM-dd")
                             .enableSpringdoc()
                             .disableOpenDir() //禁止打开输出目录
