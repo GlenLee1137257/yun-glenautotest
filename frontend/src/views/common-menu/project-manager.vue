@@ -10,8 +10,8 @@ const columns: ColumnsType = [
   },
   {
     title: '项目管理员',
-    dataIndex: 'projectAdmin',
-    key: 'projectAdmin',
+    dataIndex: 'projectAdminName',
+    key: 'projectAdminName',
     align: 'center',
   },
   {
@@ -46,7 +46,7 @@ const { config, loadingWithGetProjectDatas } = storeToRefs(
     localize-name="项目"
     :columns="columns"
     :loading-with-get-data-source="loadingWithGetProjectDatas"
-    :custom-fields="['projectAdmin', 'id']"
+    :custom-fields="['projectAdmin', 'projectAdminName', 'id']"
     @refresh-data="fetchGetProjectDatas"
   />
 </template>

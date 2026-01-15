@@ -236,13 +236,33 @@ async function handleOk() {
   selectedStepNum.value = -1
 }
 
-function handleSave() {
-  if (bodyRef.value?.isEditState) {
-    fetchUpdateApiCase(objectOmit(formModel.value, ['stepList'])).execute()
-  } else {
-    fetchCreateApiCase(formModel.value).execute()
+async function handleSave() {
+  try {
+    if (bodyRef.value?.isEditState) {
+      // 编辑模式：只更新用例基本信息，步骤已通过 handleOk 单独保存
+      const updateData = {
+        ...objectOmit(formModel.value, ['stepList', 'createAccountId', 'updateAccountId', 'gmtCreate', 'gmtModified']),
+      }
+      await fetchUpdateApiCase(updateData).execute()
+    } else {
+      // 新增模式：将 stepList 转换为 list，并移除不需要的字段
+      // 确保 stepList 存在且为数组
+      const stepList = formModel.value.stepList || []
+      const saveData = {
+        ...objectOmit(formModel.value, ['stepList', 'id', 'createAccountId', 'updateAccountId', 'gmtCreate', 'gmtModified']),
+        list: stepList.map((step) => 
+          objectOmit(step, ['id', 'caseId', 'createAccountId', 'updateAccountId', 'gmtCreate', 'gmtModified'])
+        ),
+      }
+      await fetchCreateApiCase(saveData).execute()
+    }
+    
+    // 等待请求完成后再返回
+    router.back()
+  } catch (error) {
+    console.error('保存失败:', error)
+    // 错误信息已在 afterFetch 中处理
   }
-  router.back()
 }
 
 onMounted(async () => {

@@ -49,21 +49,35 @@ const { execute: fetchApiModules, isFetching: loadingWithGetApiModules } =
       immediate: false,
       async afterFetch(ctx: AfterFetchContext<IBasic<IModule[]>>) {
         if (ctx.data && ctx.data.data.length > 0) {
+          // 项目切换后，总是使用新项目的第一个模块
           const moduleId = ctx.data.data[0].id
+          // 如果正在切换项目，或者当前选中的模块ID不在新项目中，或者为-1，则设置为第一个模块
+          const isModuleInNewProject = ctx.data.data.some(
+            (item) => item.id === selectedModuleId.value,
+          )
           if (
+            isProjectSwitching.value ||
             selectedModuleId.value === -1 ||
-            !ctx.data.data.some((item) => item.id === selectedModuleId.value)
+            !isModuleInNewProject
           ) {
             setSelectedModuleId(moduleId)
           }
           setModules(ctx.data.data)
         } else {
+          // 新项目没有模块，重置为-1并清空模块列表
           setSelectedModuleId(-1)
           setModules([])
+          // 清空表格数据
+          if (!notFetchDefaultData.value && tableDataSource.value) {
+            tableDataSource.value = []
+          }
         }
-        !notFetchDefaultData.value
-          ? await fetchGetTableDataSource()
-          : emits('fetchDataSource')
+        // 只有在有模块数据时才获取接口列表
+        if (ctx.data && ctx.data.data.length > 0) {
+          !notFetchDefaultData.value
+            ? await fetchGetTableDataSource()
+            : emits('fetchDataSource')
+        }
         return ctx
       },
     },
@@ -157,7 +171,10 @@ function handleEdit(record: T) {
 }
 
 async function handleDelete(id: number) {
-  await fetchDeleteApi({ id }).execute()
+  await fetchDeleteApi({ 
+    id,
+    projectId: globalConfigStore.config.projectId 
+  }).execute()
   !notFetchDefaultData.value
     ? fetchGetTableDataSource()
     : emits('fetchDataSource')
@@ -169,10 +186,25 @@ watch(selectedModuleId, () => {
     : emits('fetchDataSource')
 })
 
+// 用于标记是否正在切换项目
+const isProjectSwitching = ref(false)
+
 watchImmediate(
   () => globalConfigStore.config.projectId,
   async () => {
+    // 项目切换时，标记正在切换项目
+    isProjectSwitching.value = true
+    // 重置选中的模块ID，清空模块列表和表格数据
+    setSelectedModuleId(-1)
+    setModules([])
+    // 清空表格数据
+    if (!notFetchDefaultData.value && tableDataSource.value) {
+      tableDataSource.value = []
+    }
+    // 重新获取新项目的模块列表
     await fetchApiModules()
+    // 重置标记
+    isProjectSwitching.value = false
   },
 )
 </script>

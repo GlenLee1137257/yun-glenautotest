@@ -24,7 +24,7 @@ const requestConfigRef = ref<ComponentExposed<typeof RequestConfigVue>>()
 const columnsWithAssertion: ColumnsType<any> = [
   { title: '断言来源', dataIndex: 'from', key: 'from' },
   { title: '断言类型', dataIndex: 'type', key: 'type' },
-  { title: '断言动作', dataIndex: 'action', key: 'action' },
+  { title: '断言动作', dataIndex: 'action', key: 'action', width: 120 },
   { title: '关联表达式', dataIndex: 'express', key: 'express' },
   { title: '预期值', dataIndex: 'value', key: 'value' },
   { title: '操作', dataIndex: 'operator', key: 'operator', width: 200 },
@@ -32,7 +32,7 @@ const columnsWithAssertion: ColumnsType<any> = [
 const dataSourceWithAssertion = ref<IApiCaseStepAssertion[]>([])
 
 const columnsWithRelation: ColumnsType<any> = [
-  { title: '关联来源', dataIndex: 'from', key: 'from' },
+  { title: '关联来源', dataIndex: 'from', key: 'from', width: 150 },
   { title: '关联类型', dataIndex: 'type', key: 'type' },
   { title: '关联表达式', dataIndex: 'express', key: 'express' },
   { title: '关联变量名', dataIndex: 'name', key: 'name' },
@@ -123,7 +123,10 @@ defineExpose({ serialize })
           >
             <template #bodyCell="{ column, isEdit, currentEditableInstance }">
               <template v-if="isEdit && column.key === 'from'">
-                <Select v-model:value="currentEditableInstance[column.key!]">
+                <Select
+                  v-model:value="currentEditableInstance[column.key!]"
+                  style="width: 100%"
+                >
                   <Select.Option
                     v-for="item in apiConstantSelectOptions.api_relation_from"
                     :key="item.id"
@@ -193,7 +196,10 @@ defineExpose({ serialize })
               </template>
 
               <template v-if="isEdit && column.key === 'action'">
-                <Select v-model:value="currentEditableInstance[column.key!]">
+                <Select
+                  v-model:value="currentEditableInstance[column.key!]"
+                  style="width: 100%"
+                >
                   <Select.Option
                     v-for="item in apiConstantSelectOptions.api_assertion_action"
                     :key="item.id"

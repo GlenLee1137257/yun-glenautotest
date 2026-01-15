@@ -21,6 +21,7 @@ const emits = defineEmits<{
 const { id, selected, baseName, title } = toRefs(props)
 
 const { setSelectedModuleId } = useTemporaryStore()
+const globalConfig = useGlobalConfigStore()
 
 const isEditState = ref()
 const name = ref(title.value)
@@ -45,9 +46,6 @@ const { post: fetchUpdateModule } = useCustomFetch(
 const { post: fetchDeleteModule } = useCustomFetch(
   `/engine-service/api/v1/${baseName.value}_module/del`,
   {
-    body: JSON.stringify({ id: id.value }),
-  },
-  {
     immediate: false,
   },
 )
@@ -68,7 +66,10 @@ function handleSave() {
 }
 
 async function handleDelete() {
-  await fetchDeleteModule().execute()
+  await fetchDeleteModule({ 
+    id: id.value, 
+    projectId: globalConfig.config.projectId 
+  }).execute()
   emits('refreshModules')
 }
 

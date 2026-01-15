@@ -33,7 +33,7 @@ export const useGlobalConfigStore = defineStore(
         if (ctx.data && ctx.data.code === 0) {
           config.projectDatas = ctx.data.data
           config.projectListDataProxy = ctx.data.data.map((item) =>
-            objectPick(item, ['id', 'name', 'description', 'projectAdmin']),
+            objectPick(item, ['id', 'name', 'description', 'projectAdmin', 'projectAdminName']),
           )
           modifyConfig({ projectId: ctx.data.data[0].id })
 

@@ -156,10 +156,7 @@ router.beforeEach((to, from, next) => {
     to.path !== '/login' &&
     to.path !== '/register'
   ) {
-    if (to.path === '/') {
-      return next()
-    }
-    return next('/')
+    return next('/login')
   }
   const foundRoles = permissionStore.roles.roleList?.filter((role) =>
     role.permissionList.some(

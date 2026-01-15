@@ -1,6 +1,7 @@
 export interface IPorject {
   id: number
   projectAdmin: number
+  projectAdminName?: string
   name: string
   description: string
   createAccountId: number
@@ -11,5 +12,5 @@ export interface IPorject {
 
 export type ProjectTableNeeds = Pick<
   IPorject,
-  'id' | 'name' | 'description' | 'projectAdmin'
+  'id' | 'name' | 'description' | 'projectAdmin' | 'projectAdminName'
 >

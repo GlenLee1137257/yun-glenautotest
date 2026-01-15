@@ -47,9 +47,10 @@ function handleEditIndex(index: number, isNew: boolean = false) {
 }
 
 function getCurrentEditableInstance() {
-  return !currentEditableInstance.value
-    ? currentEditableInstance.value
-    : simplyObjectDeepClone(currentEditableInstance.value)
+  if (!currentEditableInstance.value) {
+    return currentEditableInstance.value
+  }
+  return simplyObjectDeepClone(currentEditableInstance.value)
 }
 
 function handleDeleteIndex(index: number) {
@@ -58,15 +59,57 @@ function handleDeleteIndex(index: number) {
 }
 
 function handleSaved() {
-  if (
-    Object.entries(currentEditableInstance.value)
-      .filter(([key]) => !customFields.value.includes(key))
-      .some(([, value]) => !value)
-  ) {
-    message.warning('请填写完整信息')
+  // 检查当前编辑实例是否存在
+  if (!currentEditableInstance.value) {
+    message.error('当前没有可保存的数据')
     return
   }
-  emits('save', getCurrentEditableInstance(), currentState.value === 'new')
+
+  // 检查必填字段 - 修改验证逻辑
+  // 1. 如果当前实例有 'from' 字段（断言或关联变量），进行业务逻辑验证
+  // 2. 如果没有 'from' 字段，则验证所有非自定义字段不为空
+  const hasFromField = 'from' in currentEditableInstance.value
+  
+  if (hasFromField) {
+    // 对于断言和关联变量：
+    // - 当 from === 'RESPONSE_CODE' 时，express 可以为空
+    // - 其他情况下，value 必填，express 根据业务判断
+    const from = currentEditableInstance.value['from']
+    const value = currentEditableInstance.value['value']
+    const name = currentEditableInstance.value['name']
+    
+    // 断言场景：value 必填
+    // 关联变量场景：name 必填
+    if (value !== undefined && !value) {
+      message.warning('请填写预期值')
+      return
+    }
+    if (name !== undefined && !name) {
+      message.warning('请填写变量名')
+      return
+    }
+    
+    // 当 from 不是 RESPONSE_CODE 时，express 应该填写（但不强制）
+    // 这里不做强制验证，因为某些场景下 express 可能确实为空
+  } else {
+    // 对于没有 from 字段的普通表格，验证所有非自定义字段不为空
+    if (
+      Object.entries(currentEditableInstance.value)
+        .filter(([key]) => !customFields.value.includes(key))
+        .some(([, value]) => !value)
+    ) {
+      message.warning('请填写完整信息')
+      return
+    }
+  }
+
+  const clonedInstance = getCurrentEditableInstance()
+  if (!clonedInstance) {
+    message.error('数据克隆失败，无法保存')
+    return
+  }
+
+  emits('save', clonedInstance, currentState.value === 'new')
 
   currentState.value = 'saved'
   editIndex.value = -1
@@ -89,14 +132,39 @@ function handleAddData() {
 
   handleEditIndex(dataSourceProxy.value.length - 1, true)
 }
+
+/**
+ * 截断文本，超过指定长度显示省略号
+ * @param text 要截断的文本
+ * @param maxLength 最大长度，默认60
+ * @returns 截断后的文本
+ */
+function truncateText(text: string | number | undefined | null, maxLength: number = 60): string {
+  if (text === null || text === undefined) {
+    return ''
+  }
+  const textStr = String(text)
+  if (textStr.length <= maxLength) {
+    return textStr
+  }
+  return textStr.substring(0, maxLength) + '...'
+}
 </script>
 
 <template>
   <div>
     <Table v-bind="$attrs" :data-source="dataSourceProxy">
       <template #bodyCell="{ index, column, record, text, value }">
+        <!-- Boolean 类型显示 Switch -->
         <template
-          v-if="
+          v-if="typeof record[column.key?.toString() ?? ''] === 'boolean'"
+        >
+          <Switch v-model:checked="record[column.key!]" />
+        </template>
+
+        <!-- 编辑状态显示 Input -->
+        <template
+          v-else-if="
             editIndex === index &&
             !customFieldsWithDefault.includes(column.key?.toString() ?? '')
           "
@@ -104,10 +172,16 @@ function handleAddData() {
           <Input v-model:value="record[column.key!]" />
         </template>
 
+        <!-- 非编辑状态显示截断文本 -->
         <template
-          v-if="typeof record[column.key?.toString() ?? ''] === 'boolean'"
+          v-else-if="
+            editIndex !== index &&
+            !customFieldsWithDefault.includes(column.key?.toString() ?? '')
+          "
         >
-          <Switch v-model:checked="record[column.key!]" />
+          <span :title="String(record[column.key!] ?? '')">
+            {{ truncateText(record[column.key!]) }}
+          </span>
         </template>
 
         <slot
