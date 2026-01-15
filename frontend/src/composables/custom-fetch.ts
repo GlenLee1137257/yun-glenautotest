@@ -4,7 +4,8 @@ import { message } from 'ant-design-vue'
 // export const baseUrl = 'http://192.168.3.138:8000'
 //线上 ip
 // export const baseUrl = 'http://120.25.217.15:8000'
-export const baseUrl = 'http://localhost:8000'
+// 使用相对路径，通过 Nginx 代理到网关
+export const baseUrl = ''
 
 export const useCustomFetch = createFetch({
   baseUrl,

@@ -62,9 +62,9 @@ if [ -f "src/composables/custom-fetch.ts" ]; then
     cp src/composables/custom-fetch.ts src/composables/custom-fetch.ts.bak
     echo -e "${GREEN}✓ 已备份原文件${NC}"
     
-    # 修改 baseUrl
-    sed -i "s|export const baseUrl = .*|export const baseUrl = '${API_BASE_URL}'|g" src/composables/custom-fetch.ts
-    echo -e "${GREEN}✓ API 基础 URL 已更新为: $API_BASE_URL${NC}"
+    # 修改 baseUrl 为相对路径（通过 Nginx 代理）
+    sed -i "s|export const baseUrl = .*|export const baseUrl = ''|g" src/composables/custom-fetch.ts
+    echo -e "${GREEN}✓ API 基础 URL 已更新为相对路径（通过 Nginx 代理）${NC}"
 else
     echo -e "${YELLOW}⚠ 未找到 custom-fetch.ts，跳过${NC}"
 fi
@@ -129,13 +129,15 @@ server {
         try_files \$uri \$uri/ /index.html;
     }
 
-    # API 代理到网关
-    location /server-api/ {
-        proxy_pass http://localhost:${GATEWAY_PORT}/;
+    # API 代理到网关（代理所有服务路径）
+    location ~ ^/(account-service|engine-service|data-service)/ {
+        proxy_pass http://localhost:${GATEWAY_PORT};
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header X-Forwarded-Host \$host;
+        proxy_set_header X-Forwarded-Port \$server_port;
     }
 
     # 静态资源缓存
