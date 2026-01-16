@@ -1,0 +1,19 @@
+{
+  "name": "glen-autotest-mock-server",
+  "version": "1.0.0",
+  "description": "Glen自动化云测平台 - Mock Server（模拟测试环境）",
+  "scripts": {
+    "start": "json-server --watch db.json --port 3000 --host 0.0.0.0",
+    "start:prod": "json-server --watch db.json --port 3001 --host 0.0.0.0"
+  },
+  "keywords": [
+    "mock-server",
+    "json-server",
+    "api-testing"
+  ],
+  "author": "Glen Lee",
+  "license": "MIT",
+  "devDependencies": {
+    "json-server": "^0.17.4"
+  }
+}
