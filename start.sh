@@ -34,7 +34,7 @@ fi
 
 # 启动Docker服务
 echo "Step 1: Starting Docker services (MySQL, Redis, Nacos, Kafka, MinIO)..."
-docker-compose up -d
+docker compose up -d
 
 echo "Waiting for services to be ready..."
 sleep 10
@@ -42,7 +42,7 @@ sleep 10
 # 检查服务健康状态
 echo ""
 echo "Checking service health..."
-docker-compose ps
+docker compose ps
 
 echo ""
 echo "========================================="

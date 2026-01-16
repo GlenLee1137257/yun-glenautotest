@@ -1,8 +1,8 @@
 export interface ITimePlan {
   caseId: number
   executeTime: string
-  gmtCreate: date
-  gmtModified: date
+  gmtCreate: string
+  gmtModified: string
   id: number
   isDisabled: number
   name: string

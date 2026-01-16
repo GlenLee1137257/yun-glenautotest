@@ -241,7 +241,7 @@ async function handleSave() {
     if (bodyRef.value?.isEditState) {
       // 编辑模式：只更新用例基本信息，步骤已通过 handleOk 单独保存
       const updateData = {
-        ...objectOmit(formModel.value, ['stepList', 'createAccountId', 'updateAccountId', 'gmtCreate', 'gmtModified']),
+        ...objectOmit(formModel.value, ['stepList', 'createAccountId', 'updateAccountId', 'gmtCreate', 'gmtModified'] as any),
       }
       await fetchUpdateApiCase(updateData).execute()
     } else {
@@ -249,9 +249,9 @@ async function handleSave() {
       // 确保 stepList 存在且为数组
       const stepList = formModel.value.stepList || []
       const saveData = {
-        ...objectOmit(formModel.value, ['stepList', 'id', 'createAccountId', 'updateAccountId', 'gmtCreate', 'gmtModified']),
-        list: stepList.map((step) => 
-          objectOmit(step, ['id', 'caseId', 'createAccountId', 'updateAccountId', 'gmtCreate', 'gmtModified'])
+        ...objectOmit(formModel.value, ['stepList', 'id', 'createAccountId', 'updateAccountId', 'gmtCreate', 'gmtModified'] as any),
+        list: stepList.map((step) =>
+          objectOmit(step, ['id', 'caseId', 'createAccountId', 'updateAccountId', 'gmtCreate', 'gmtModified'] as any)
         ),
       }
       await fetchCreateApiCase(saveData).execute()

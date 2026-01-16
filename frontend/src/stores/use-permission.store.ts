@@ -1,20 +1,22 @@
 import { type AfterFetchContext, objectPick } from '@vueuse/core'
 // import type { IPorject, ProjectTableNeeds } from '~/types/apis/project'
 import type { IBasic } from '~/types/apis/basic'
+import type { IRole } from '~/types/apis/role'
 
 export const usePermissionStore = defineStore('permission', () => {
-  const roles = ref<string[]>([])
+  const roles = ref<{ roleList: IRole[] }>({ roleList: [] })
 
   // 请求用户角色信息
-  const { execute: fetchUserRole } = useCustomFetch<string[]>(
+  const { execute: fetchUserRole } = useCustomFetch<{ roleList: IRole[] }>(
     '/account-service/api/v1/account/findLoginAccountRole',
     {
-      initialData: [],
+      initialData: { roleList: [] },
       immediate: true,
       afterFetch(ctx) {
         if (ctx.data && ctx.data.code === 0) {
           roles.value = ctx.data.data
         }
+        return ctx
       },
     },
   )

@@ -147,18 +147,18 @@ const handleOk = () => {
 const roleValue = reactive<IRole>({
   id: 0,
   name: '',
-  code: 0,
+  code: null,
   description: '',
-  permissionList: [{}],
+  permissionList: [],
 })
 
 //查找角色和权限
-const { get: getRolePower, data: rolePower } = useCustomFetch<IPerson>(
+const { get: getRolePower, data: rolePower } = useCustomFetch<IPerson[]>(
   '/account-service/api/permit/v1/permission/list',
   {
     immediate: false,
     initialData: [],
-    afterFetch: (ctx: AfterFetchContext<IBasic<IPerson>>) => {
+    afterFetch: (ctx: AfterFetchContext<IBasic<IPerson[]>>) => {
       if (ctx.data && ctx.data.code === 0) {
         return {
           data: ctx.data.data,
@@ -177,13 +177,13 @@ async function rolePowerFetch() {
   getRolePower().execute()
 }
 
-const handleEditRole = (role) => {
+const handleEditRole = (role: IRole) => {
   open.value = true
   roleValue.id = role.id
   roleValue.name = role.name
   roleValue.code = role.code
   roleValue.description = role.description
-  roleValue.permissionList = role.permissionList.map((permission) => ({
+  roleValue.permissionList = role.permissionList.map((permission: IPermissionList) => ({
     ...permission,
   }))
 }
@@ -215,8 +215,12 @@ async function handleDeleteRole(roleId: number, permissionId: number) {
     () => roleList.value,
     () => {
       //拿到已经改变的数据
-      const updatedRecord = roleList.value.find((role) => role.id === roleId)
-      handleEditRole(updatedRecord)
+      if (roleList.value) {
+        const updatedRecord = roleList.value.find((role) => role.id === roleId)
+        if (updatedRecord) {
+          handleEditRole(updatedRecord)
+        }
+      }
     },
     { deep: true },
   )
@@ -247,8 +251,12 @@ async function handleAddRole(roleId: number, permissionId: number) {
   watch(
     () => roleList.value,
     () => {
-      const updatedRecord = roleList.value.find((role) => role.id === roleId)
-      handleEditRole(updatedRecord)
+      if (roleList.value) {
+        const updatedRecord = roleList.value.find((role) => role.id === roleId)
+        if (updatedRecord) {
+          handleEditRole(updatedRecord)
+        }
+      }
     },
     { deep: true },
   )
@@ -259,8 +267,8 @@ async function handleAddRole(roleId: number, permissionId: number) {
   <Table :columns="tableValue" :data-source="roleList!" :loading="isFetching">
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'operator'">
-        <Button type="link" @click="handleEditRole(record)">编辑权限</Button>
-        <Popconfirm title="是否要删除此行？" @confirm="handleDelete(record.id)">
+        <Button type="link" @click="handleEditRole(record as IRole)">编辑权限</Button>
+        <Popconfirm title="是否要删除此行？" @confirm="handleDelete((record as IRole).id)">
           <Button type="link">删除</Button>
         </Popconfirm>
       </template>

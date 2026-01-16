@@ -55,7 +55,7 @@ export function simplyObjectDeepClone<T extends Record<string, any>>(
       typeof item === 'object' && item !== null
         ? simplyObjectDeepClone(item as T)
         : item,
-    ) as T
+    ) as unknown as T
   }
 
   Object.entries(shallowCloneObj).forEach(([key, value]) => {

@@ -131,9 +131,9 @@ const url = computed(() => {
 
 //查找某个账号的角色和权限
 const { get: getAccountPower, data: AccountPower } =
-  useCustomFetch<IAccountPower>(url, {
+  useCustomFetch<IAccountPower | null>(url, {
     immediate: false,
-    initialData: [],
+    initialData: null,
     afterFetch: (ctx: AfterFetchContext<IBasic<IAccountPower>>) => {
       if (ctx.data && ctx.data.code === 0) {
         return {
@@ -142,7 +142,7 @@ const { get: getAccountPower, data: AccountPower } =
         }
       }
       return {
-        data: [],
+        data: null,
         response: ctx.response,
       }
     },
@@ -358,7 +358,7 @@ const tableValue: ColumnsType = [
       <div>
         <div style="margin-bottom: 10px">角色名称</div>
         <div
-          v-for="role in AccountPower.roleList"
+          v-for="role in AccountPower?.roleList"
           :key="role.id"
           style="display: flex; justify-content: space-between; height: 30px"
         >
@@ -366,7 +366,7 @@ const tableValue: ColumnsType = [
           <Button
             type="primary"
             size="small"
-            @click="deleteRole(AccountPower.id, role.id)"
+            @click="deleteRole(AccountPower!.id, role.id)"
             >删除</Button
           >
         </div>
@@ -374,7 +374,7 @@ const tableValue: ColumnsType = [
       <div style="display: flex; flex-direction: column">
         <div style="margin-bottom: 10px">权限列表</div>
         <div
-          v-for="role in AccountPower.roleList"
+          v-for="role in AccountPower?.roleList"
           :key="role.id"
           style="display: flex; height: 30px"
         >

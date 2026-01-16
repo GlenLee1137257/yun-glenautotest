@@ -74,9 +74,10 @@ function handleSaved() {
     // 对于断言和关联变量：
     // - 当 from === 'RESPONSE_CODE' 时，express 可以为空
     // - 其他情况下，value 必填，express 根据业务判断
-    const from = currentEditableInstance.value['from']
-    const value = currentEditableInstance.value['value']
-    const name = currentEditableInstance.value['name']
+    const record = currentEditableInstance.value as Record<string, unknown>
+    const from = record['from']
+    const value = record['value']
+    const name = record['name']
     
     // 断言场景：value 必填
     // 关联变量场景：name 必填

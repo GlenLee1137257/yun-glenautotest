@@ -23,6 +23,7 @@ const searchParams = reactive<{
   size: number
   projectId: number | undefined
   name: string | undefined
+  totalSize: number
 }>({
   page: 1,
   size: 8,
@@ -31,10 +32,10 @@ const searchParams = reactive<{
   totalSize: 0,
 })
 
-const testTypeList = reactive<{
+const testTypeList = reactive<Array<{
   id: number
   type: string
-}>([
+}>>([
   {
     id: 1,
     type: 'STRESS',
@@ -149,15 +150,15 @@ async function handleDelete(record: ITimePlan) {
 //编辑
 const openUpdate = ref<boolean>(false)
 const oneUpdateValue = reactive<ITimePlan>({
-  id: null,
-  projectId: null,
-  executeTime: undefined,
+  id: 0,
+  projectId: 0,
+  executeTime: '',
   gmtModified: '',
   gmtCreate: '',
   name: '',
-  caseId: null,
+  caseId: 0,
   testType: '',
-  isDisabled: null,
+  isDisabled: 0,
 })
 const handleSelectUpdateTypeList = (type: string) => {
   oneUpdateValue.testType = type
@@ -166,15 +167,15 @@ const handleSelectUpdateTypeList = (type: string) => {
 const toggleDisabledStatus = () => {
   oneUpdateValue.isDisabled = oneUpdateValue.isDisabled === 0 ? 1 : 0
 }
-function formatToCustomFormat(dateString) {
-  return dayjs(dateString)
+function formatToCustomFormat(dateString: string) {
+  return dayjs(dateString).format('YYYY-MM-DD HH:mm:ss')
 }
 
 const handleOpenUpdate = (updateValue: ITimePlan) => {
   const { executeTime, ...rest } = updateValue
   oneUpdateValue.executeTime = executeTime
     ? formatToCustomFormat(executeTime)
-    : undefined
+    : ''
   Object.assign(oneUpdateValue, rest)
   openUpdate.value = true
 }
@@ -200,13 +201,13 @@ const handleUpdate = async () => {
 //新增
 const openAdd = ref<boolean>(false)
 const oneAddValue = reactive<ITimePlan>({
-  id: null,
-  projectId: null,
+  id: 0,
+  projectId: 0,
   executeTime: '',
   gmtModified: '',
   gmtCreate: '',
   name: '',
-  caseId: null,
+  caseId: 0,
   testType: '',
   isDisabled: 1,
 })
@@ -215,13 +216,13 @@ const handleSelectTypeList = (type: string) => {
   oneAddValue.testType = type
 }
 const cancelClick = () => {
-  oneAddValue.id = null
-  oneAddValue.projectId = null
+  oneAddValue.id = 0
+  oneAddValue.projectId = 0
   oneAddValue.executeTime = ''
   oneAddValue.gmtModified = ''
   oneAddValue.gmtCreate = ''
   oneAddValue.name = ''
-  oneAddValue.caseId = null
+  oneAddValue.caseId = 0
   oneAddValue.testType = ''
   oneAddValue.isDisabled = 1
 }
@@ -248,13 +249,13 @@ const { post: handleAddValue } = useCustomFetch<ITimePlan[]>(
 
 const handleAdd = async () => {
   await handleAddValue(toRaw(oneAddValue)).execute()
-  oneAddValue.id = null
-  oneAddValue.projectId = null
+  oneAddValue.id = 0
+  oneAddValue.projectId = 0
   oneAddValue.executeTime = ''
   oneAddValue.gmtModified = ''
   oneAddValue.gmtCreate = ''
   oneAddValue.name = ''
-  oneAddValue.caseId = null
+  oneAddValue.caseId = 0
   oneAddValue.testType = ''
   oneAddValue.isDisabled = 1
   openAdd.value = false
