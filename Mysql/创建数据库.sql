@@ -5,25 +5,25 @@
 -- ============================================
 
 -- 1. 账号权限数据库
-CREATE DATABASE IF NOT EXISTS test_account DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS glen_account DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- 2. 接口自动化数据库
-CREATE DATABASE IF NOT EXISTS test_api DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS glen_api DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- 3. UI自动化数据库
-CREATE DATABASE IF NOT EXISTS test_ui DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS glen_ui DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- 4. 压力测试数据库
-CREATE DATABASE IF NOT EXISTS test_stress DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS glen_stress DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- 5. 引擎服务数据库
-CREATE DATABASE IF NOT EXISTS test_engine DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS glen_engine DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- 6. 定时任务数据库
-CREATE DATABASE IF NOT EXISTS test_job DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS glen_job DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- 7. 系统字典数据库
-CREATE DATABASE IF NOT EXISTS test_dict DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS glen_dict DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- 8. Nacos配置数据库
 CREATE DATABASE IF NOT EXISTS nacos_config DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;

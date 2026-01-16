@@ -1,7 +1,7 @@
--- 为 test_engine 数据库创建 project 和 environment 表
+-- 为 glen_engine 数据库创建 project 和 environment 表
 -- 根据笔记中的表结构
 
-USE test_engine;
+USE glen_engine;
 
 -- 创建 project 表
 CREATE TABLE IF NOT EXISTS `project` (
