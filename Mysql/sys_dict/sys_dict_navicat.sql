@@ -1,5 +1,5 @@
 -- sys_dict表数据导入脚本
--- 请在Navicat中选择test_dict数据库后执行此脚本
+-- 请在Navicat中选择glen_dict数据库后执行此脚本
 
 INSERT INTO `sys_dict` (`id`, `category`, `category_name`, `name`, `value`, `extend`, `remark`, `gmt_create`, `gmt_modified`) VALUES (12, 'ui_location_type', 'UI元素定位', 'id定位', 'ID', NULL, NULL, '2024-02-26 10:31:16', '2024-02-28 09:25:09');
 INSERT INTO `sys_dict` (`id`, `category`, `category_name`, `name`, `value`, `extend`, `remark`, `gmt_create`, `gmt_modified`) VALUES (13, 'ui_location_type', 'UI元素定位', '链接文本内容定位', 'LINK_TEXT', NULL, NULL, '2024-02-26 10:32:01', '2024-02-28 09:25:13');

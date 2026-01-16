@@ -1,0 +1,104 @@
+package com.glen.autotest.service.stress.impl;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import com.glen.autotest.dto.stress.StressCaseDTO;
+import com.glen.autotest.dto.stress.StressCaseModuleDTO;
+import com.glen.autotest.mapper.StressCaseMapper;
+import com.glen.autotest.mapper.StressCaseModuleMapper;
+import com.glen.autotest.model.StressCaseDO;
+import com.glen.autotest.model.StressCaseModuleDO;
+import com.glen.autotest.req.stress.StressCaseModuleSaveReq;
+import com.glen.autotest.req.stress.StressCaseModuleUpdateReq;
+import com.glen.autotest.service.stress.StressCaseModuleService;
+import com.glen.autotest.util.SpringBeanUtil;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * Glen AutoTest Platform
+ *
+ * @Description
+ * @Author Glen Team
+ * @Remark Glen AutoTest Platform
+ * @Version 1.0
+ **/
+@Service
+@Slf4j
+public class StressCaseModuleServiceImpl implements StressCaseModuleService {
+
+    @Resource
+    private StressCaseModuleMapper caseModuleMapper;
+
+    @Resource
+    private StressCaseMapper stressCaseMapper;
+
+    @Override
+    public List<StressCaseModuleDTO> list(Long projectId) {
+
+        LambdaQueryWrapper<StressCaseModuleDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(StressCaseModuleDO::getProjectId, projectId);
+        List<StressCaseModuleDO> stressCaseModuleDOS = caseModuleMapper.selectList(queryWrapper);
+        List<StressCaseModuleDTO> list = SpringBeanUtil.copyProperties(stressCaseModuleDOS, StressCaseModuleDTO.class);
+        list.forEach(source -> {
+            //查询压测模型下的关联用例
+            LambdaQueryWrapper<StressCaseDO> caseQueryWrapper = new LambdaQueryWrapper<>();
+            caseQueryWrapper.eq(StressCaseDO::getModuleId, source.getId()).orderByDesc(StressCaseDO::getId);
+
+            List<StressCaseDO> stressCaseDOS = stressCaseMapper.selectList(caseQueryWrapper);
+            List<StressCaseDTO> stressCaseDTOS = SpringBeanUtil.copyProperties(stressCaseDOS, StressCaseDTO.class);
+            source.setList(stressCaseDTOS);
+        });
+        return list;
+    }
+
+    @Override
+    public StressCaseModuleDTO findById(Long projectId, Long moduleId) {
+        LambdaQueryWrapper<StressCaseModuleDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(StressCaseModuleDO::getProjectId, projectId).eq(StressCaseModuleDO::getId, moduleId);
+        StressCaseModuleDO stressCaseModuleDO = caseModuleMapper.selectOne(queryWrapper);
+        if (stressCaseModuleDO == null) {
+            return null;
+        }
+        StressCaseModuleDTO stressCaseModuleDTO = SpringBeanUtil.copyProperties(stressCaseModuleDO, StressCaseModuleDTO.class);
+
+        //查询压测模型下的关联用例
+        LambdaQueryWrapper<StressCaseDO> caseQueryWrapper = new LambdaQueryWrapper<>();
+        caseQueryWrapper.eq(StressCaseDO::getModuleId, moduleId).orderByDesc(StressCaseDO::getId);
+        List<StressCaseDO> stressCaseDOS = stressCaseMapper.selectList(caseQueryWrapper);
+        List<StressCaseDTO> stressCaseDTOS = SpringBeanUtil.copyProperties(stressCaseDOS, StressCaseDTO.class);
+        stressCaseModuleDTO.setList(stressCaseDTOS);
+        return stressCaseModuleDTO;
+    }
+
+    @Override
+    public int delete(Long projectId, Long id) {
+        LambdaQueryWrapper<StressCaseModuleDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(StressCaseModuleDO::getProjectId, projectId).eq(StressCaseModuleDO::getId, id);
+        int delete = caseModuleMapper.delete(queryWrapper);
+        //删除模块下的关联用例
+        if (delete > 0) {
+            LambdaQueryWrapper<StressCaseDO> caseQueryWrapper = new LambdaQueryWrapper<>();
+            caseQueryWrapper.eq(StressCaseDO::getModuleId, id);
+            stressCaseMapper.delete(caseQueryWrapper);
+        }
+        return delete;
+    }
+
+    @Override
+    public int save(StressCaseModuleSaveReq req) {
+
+        StressCaseModuleDO stressCaseModuleDO = SpringBeanUtil.copyProperties(req, StressCaseModuleDO.class);
+        return caseModuleMapper.insert(stressCaseModuleDO);
+    }
+
+    @Override
+    public int update(StressCaseModuleUpdateReq req) {
+        StressCaseModuleDO stressCaseModuleDO = SpringBeanUtil.copyProperties(req, StressCaseModuleDO.class);
+        LambdaQueryWrapper<StressCaseModuleDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(StressCaseModuleDO::getProjectId, stressCaseModuleDO.getProjectId()).eq(StressCaseModuleDO::getId, stressCaseModuleDO.getId());
+        return caseModuleMapper.update(stressCaseModuleDO, queryWrapper);
+    }
+}

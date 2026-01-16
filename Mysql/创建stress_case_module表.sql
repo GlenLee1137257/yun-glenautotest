@@ -1,7 +1,7 @@
--- 在 test_engine 数据库中创建 stress_case_module 表
+-- 在 glen_engine 数据库中创建 stress_case_module 表
 -- 使用 Navicat 执行此 SQL
 
-USE test_engine;
+USE glen_engine;
 
 -- 创建 stress_case_module 表
 CREATE TABLE IF NOT EXISTS `stress_case_module` (
