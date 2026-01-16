@@ -1,11 +1,32 @@
-# 功能：构建一个基于openjdk 17-jdk-slim-buster镜像的Docker镜像，用于运行dcloud-account.jar应用。
+# Glen AutoTest Platform - Account Service Dockerfile
 FROM openjdk:17-jdk-slim-buster
 
-# 将项目打包的jar文件复制到容器的root目录下
-COPY target/dcloud-account.jar /root
+# 定义构建参数
+ARG JAR_FILE=target/glen-account.jar
+ARG SERVICE_PORT=8081
 
-# 定义容器对外暴露的端口，使得外部可以通过这个端口与容器内的应用进行交互
-EXPOSE 8080
+# 设置环境变量
+ENV JAVA_OPTS="-Xms256m -Xmx512m" \
+    SERVER_PORT=${SERVICE_PORT} \
+    TZ=Asia/Shanghai
 
-# 定义容器启动时执行的命令，即直接运行jar包
-ENTRYPOINT ["java", "-jar", "/root/dcloud-account.jar"]
+# 安装必要的工具
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# 设置工作目录
+WORKDIR /app
+
+# 复制 JAR 文件
+COPY ${JAR_FILE} app.jar
+
+# 暴露端口
+EXPOSE ${SERVER_PORT}
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:${SERVER_PORT}/actuator/health || exit 1
+
+# 启动命令
+ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -jar /app/app.jar"]
