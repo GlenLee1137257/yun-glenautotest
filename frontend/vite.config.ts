@@ -40,8 +40,20 @@ export default defineConfig({
   },
   server: {
     proxy: {
+      '/account-service': {
+        target: 'http://192.168.117.237:8000',
+        changeOrigin: true,
+      },
+      '/engine-service': {
+        target: 'http://192.168.117.237:8000',
+        changeOrigin: true,
+      },
+      '/data-service': {
+        target: 'http://192.168.117.237:8000',
+        changeOrigin: true,
+      },
       '/server-api': {
-        target: 'http://120.25.217.15:8000',
+        target: 'http://192.168.117.237:8000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/server-api/, ''),
       },
