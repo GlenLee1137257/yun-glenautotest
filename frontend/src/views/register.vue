@@ -29,9 +29,11 @@ const { post } = useCustomFetch(`/account-service/api/v1/account/register`, {
 const validateIdentifier = (identifier: string) => {
   const phoneRegExp = /^1\d{10}$/
   const emailRegExp = /^\w+([+.-]\w+)*@\w+([.-]\w+)*\.\w+([.-]\w+)*$/
+  const isPhone = phoneRegExp.test(identifier)
+  const isEmail = emailRegExp.test(identifier)
   return {
-    isValid: phoneRegExp.test(identifier) || emailRegExp.test(identifier),
-    identityType: emailRegExp.test(identifier) ? 'mail' : 'phone',
+    isValid: isPhone || isEmail || identifier.length > 0, // Allow any non-empty identifier
+    identityType: isPhone ? 'phone' : (isEmail ? 'mail' : 'phone'),
   }
 }
 

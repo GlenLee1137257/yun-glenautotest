@@ -37,7 +37,8 @@ const { post, isFetching } = useCustomFetch(`/account-service/api/v1/account/log
 
 const checkIdentifierType = () => {
   const isPhone = /^1[3-9]\d{9}$/.test(formModel.identifier)
-  formModel.identityType = isPhone ? 'phone' : 'mail'
+  const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formModel.identifier)
+  formModel.identityType = isPhone ? 'phone' : (isEmail ? 'mail' : 'phone')
 }
 
 const handleLogin = () => {
