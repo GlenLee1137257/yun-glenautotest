@@ -11,7 +11,7 @@
  Target Server Version : 80044 (8.0.44)
  File Encoding         : 65001
 
- Date: 18/01/2026 02:52:47
+ Date: 18/01/2026 18:08:31
 */
 
 SET NAMES utf8mb4;
@@ -28,13 +28,14 @@ CREATE TABLE `account`  (
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '账号表：存储用户账号基本信息' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of account
 -- ----------------------------
 INSERT INTO `account` VALUES (1, 'admin', 0, '2026-01-18 00:03:27', '2026-01-18 00:03:27');
 INSERT INTO `account` VALUES (2, 'test', 0, '2026-01-18 01:20:07', '2026-01-18 01:20:07');
+INSERT INTO `account` VALUES (3, '李冠标', 0, '2026-01-18 03:05:33', '2026-01-18 03:05:33');
 
 -- ----------------------------
 -- Table structure for account_role
@@ -47,13 +48,14 @@ CREATE TABLE `account_role`  (
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '账号角色关联表：用户与角色的多对多关系' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of account_role
 -- ----------------------------
 INSERT INTO `account_role` VALUES (1, 1, 1, '2026-01-18 00:03:27', '2026-01-18 00:03:27');
 INSERT INTO `account_role` VALUES (2, 1, 2, '2026-01-18 01:20:07', '2026-01-18 01:20:07');
+INSERT INTO `account_role` VALUES (3, 1, 3, '2026-01-18 03:05:33', '2026-01-18 03:05:33');
 
 -- ----------------------------
 -- Table structure for permission
@@ -67,7 +69,7 @@ CREATE TABLE `permission`  (
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 103 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 103 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '权限表：系统权限定义' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of permission
@@ -127,7 +129,7 @@ CREATE TABLE `role`  (
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色表：系统角色定义' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of role
@@ -147,7 +149,7 @@ CREATE TABLE `role_permission`  (
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 263 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 263 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色权限关联表：角色与权限的多对多关系' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of role_permission
@@ -326,11 +328,12 @@ CREATE TABLE `social_account`  (
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 234546 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 234547 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '社交账号表：用户登录凭证信息' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of social_account
 -- ----------------------------
 INSERT INTO `social_account` VALUES (234545, 2, 'mail', 'test', '47ec2dd791e31e2ef2076caf64ed9b3d', NULL, '2026-01-18 01:20:07', '2026-01-18 01:20:07');
+INSERT INTO `social_account` VALUES (234546, 3, 'phone', '13432898570', '8ae3732b466210fcff1942c39050bf61', NULL, '2026-01-18 03:05:33', '2026-01-18 03:18:46');
 
 SET FOREIGN_KEY_CHECKS = 1;

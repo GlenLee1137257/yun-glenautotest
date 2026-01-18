@@ -39,7 +39,7 @@ public class ApiModuleController {
     /**
      * 根据projectId和moduleId删除用例模块
      */
-    @PostMapping("/delete")
+    @PostMapping("/del")
     public JsonData delete(@RequestBody ApiModuleDelReq req) {
         return JsonData.buildSuccess(apiModuleService.delete(req.getId(),req.getProjectId()));
     }

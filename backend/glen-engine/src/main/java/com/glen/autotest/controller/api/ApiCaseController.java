@@ -50,7 +50,7 @@ public class ApiCaseController {
     /**
      * 删除
      */
-    @PostMapping("/delete")
+    @PostMapping("/del")
     public JsonData delete(@RequestBody ApiCaseDelReq req) {
         return JsonData.buildSuccess(apiCaseService.del(req.getProjectId(), req.getId()));
     }
