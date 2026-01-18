@@ -20,7 +20,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("stress_case_module")
+@TableName("glen_stress.stress_case_module")
 @Schema(name = "StressCaseModuleDO", description = "")
 public class StressCaseModuleDO implements Serializable {
 

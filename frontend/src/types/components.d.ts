@@ -27,7 +27,6 @@ declare module 'vue' {
     ReportModalTable: typeof import('./../components/Report/ReportModalTable.vue')['default']
     RequestBody: typeof import('./../components/NewOrEdit/RequestBody.vue')['default']
     RequestConfig: typeof import('./../components/NewOrEdit/RequestConfig.vue')['default']
-    ResizeableContainer: typeof import('./../components/Index/ResizeableContainer.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SimplyTableModal: typeof import('./../components/SimplyTableModal.vue')['default']

@@ -116,20 +116,50 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     public AccountDTO login(AccountLoginReq req) {
-        //先查找子表
-        LambdaQueryWrapper<SocialAccountDO> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(SocialAccountDO::getIdentifier,req.getIdentifier());
-        queryWrapper.eq(SocialAccountDO::getIdentityType,req.getIdentityType());
-        queryWrapper.eq(SocialAccountDO::getCredential,SaSecureUtil.md5(req.getCredential())).last("limit 1");
-        SocialAccountDO socialAccountDO = socialAccountMapper.selectOne(queryWrapper);
-        if(socialAccountDO!=null){
+        String identityType = StringUtils.isNotBlank(req.getIdentityType()) ? req.getIdentityType() : "mail";
+        log.info("登录请求: identifier={}, identityType={}", req.getIdentifier(), identityType);
+        
+        String md5Credential = SaSecureUtil.md5(req.getCredential());
+        log.debug("密码MD5: {}", md5Credential);
+        
+        // 先使用请求的identityType查询
+        SocialAccountDO socialAccountDO = findSocialAccount(req.getIdentifier(), identityType, md5Credential);
+        
+        // 如果没找到，且identityType不是mail，则尝试用mail查询
+        if(socialAccountDO == null && !"mail".equals(identityType)){
+            log.info("使用{}类型未找到，尝试使用mail类型查询", identityType);
+            socialAccountDO = findSocialAccount(req.getIdentifier(), "mail", md5Credential);
+        }
+        
+        if(socialAccountDO != null){
+            log.info("找到登录凭证: accountId={}", socialAccountDO.getAccountId());
             //查询主账号表
             AccountDO accountDO = accountMapper.selectById(socialAccountDO.getAccountId());
             //不为空，且不是冻结状态
-            if(accountDO!=null && !accountDO.getIsDisabled()){
+            if(accountDO != null && !accountDO.getIsDisabled()){
+                log.info("登录成功: accountId={}, username={}", accountDO.getId(), accountDO.getUsername());
                 return SpringBeanUtil.copyProperties(accountDO, AccountDTO.class);
+            } else {
+                if(accountDO == null){
+                    log.warn("账号不存在: accountId={}", socialAccountDO.getAccountId());
+                } else if(accountDO.getIsDisabled()){
+                    log.warn("账号已禁用: accountId={}, username={}", accountDO.getId(), accountDO.getUsername());
+                }
             }
+        } else {
+            log.warn("未找到登录凭证: identifier={}", req.getIdentifier());
         }
         return null;
+    }
+    
+    /**
+     * 查找登录凭证
+     */
+    private SocialAccountDO findSocialAccount(String identifier, String identityType, String md5Credential){
+        LambdaQueryWrapper<SocialAccountDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SocialAccountDO::getIdentifier, identifier);
+        queryWrapper.eq(SocialAccountDO::getIdentityType, identityType);
+        queryWrapper.eq(SocialAccountDO::getCredential, md5Credential).last("limit 1");
+        return socialAccountMapper.selectOne(queryWrapper);
     }
 }

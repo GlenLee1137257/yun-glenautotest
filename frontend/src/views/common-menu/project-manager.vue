@@ -46,7 +46,7 @@ const { config, loadingWithGetProjectDatas } = storeToRefs(
     localize-name="项目"
     :columns="columns"
     :loading-with-get-data-source="loadingWithGetProjectDatas"
-    :custom-fields="['projectAdmin', 'projectAdminName', 'id']"
+    :custom-fields="['projectAdmin', 'projectAdminName', 'id', 'projectId']"
     @refresh-data="fetchGetProjectDatas"
   />
 </template>

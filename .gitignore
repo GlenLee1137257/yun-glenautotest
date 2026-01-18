@@ -1,4 +1,107 @@
-# 操作系统文件
+# ============================================
+# Glen 自动化测试平台 - .gitignore
+# ============================================
+
+# ============================================
+# Java / Maven 相关
+# ============================================
+# Maven 编译输出
+backend/**/target/
+backend/**/*.class
+backend/**/*.jar
+backend/**/*.war
+backend/**/*.ear
+backend/**/*.nar
+backend/**/hs_err_pid*
+
+# Maven 本地仓库（如果项目内包含）
+.m2/repository/
+.m2/wrapper/
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# ============================================
+# Node.js / Vue / Vite 相关
+# ============================================
+# 依赖目录
+frontend/node_modules/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 构建输出
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+frontend/.vite/
+frontend/.vitepress/cache
+frontend/.vitepress/dist
+
+# 打包工具
+frontend/.pnpm-store/
+frontend/.pnpm-debug.log*
+
+# ============================================
+# IDE / 编辑器 相关
+# ============================================
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+build/
+
+# VSCode
+.vscode/
+!.vscode/extensions.json
+.history/
+*.code-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.vim/
+
+# ============================================
+# 日志文件
+# ============================================
+# 应用日志
+logs/
+*.log
+*.log.*
+*.out
+log/
+backend/logs/
+*.pid
+
+# 系统日志
+*.syslog
+*.log.txt
+
+# ============================================
+# 临时文件 / 缓存
+# ============================================
+# 系统临时文件
+*.tmp
+*.temp
+*.cache
+.cache/
+.tmp/
+temp/
+
+# 操作系统生成的文件
 .DS_Store
 .DS_Store?
 ._*
@@ -6,142 +109,102 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
-desktop.ini
+Desktop.ini
 
-# IDE 和编辑器
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-.project
-.classpath
-.settings/
-*.iml
-*.ipr
-*.iws
-
-# Java 编译文件
-*.class
-*.jar
-*.war
-*.ear
-*.nar
-*.zip
-*.rar
-target/
-!**/src/main/**/target/
-!**/src/test/**/target/
-build/
-out/
-
-# Maven
-.mvn/
-mvnw
-mvnw.cmd
-
-# Node.js
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-.pnpm-store/
-
-# 前端构建产物
-dist/
-dist-ssr/
-coverage/
-*.local
-
-# 日志文件
-*.log
-logs/
-*.log.*
-
-# 临时文件
-*.tmp
-*.temp
-*.bak
-*.swp
-*.swo
-*~
-
-# 敏感信息（密码、密钥等）
-*.key
-*.pem
-*.p12
-*.jks
-账密.md
+# ============================================
+# 环境变量 / 配置文件（敏感信息）
+# ============================================
+# 环境变量文件
 .env
 .env.local
 .env.*.local
-.env.prod
+.env.production
+.env.development
+.env.test
+*.env
 
-# 数据库文件
+# 配置文件（包含敏感信息）
+application-local.properties
+application-local.yml
+application-prod.properties
+application-prod.yml
+config/local/
+config/prod/
+
+# ============================================
+# Docker 相关（可选）
+# ============================================
+# Docker Compose 覆盖文件（可能包含敏感配置）
+docker-compose.override.yml
+docker-compose.local.yml
+
+# ============================================
+# 数据库相关
+# ============================================
+# 数据库备份文件
+*.sql.backup
+*.sql.bak
+*.dump
 *.db
-*.sqlite
-*.sqlite3
 
-# Docker
-.dockerignore
+# 数据库工具生成的文件
+*.db-journal
 
-# 压缩包
+# ============================================
+# 测试覆盖率报告
+# ============================================
+# 覆盖率报告
+coverage/
+.nyc_output/
+*.lcov
+.jest/
+
+# 单元测试输出
+test-results/
+test-output/
+.spec/
+
+# ============================================
+# 打包 / 构建产物
+# ============================================
+# 打包文件
+*.zip
 *.tar
 *.tar.gz
-*.zip
 *.rar
 *.7z
 
-# 镜像文件（太大，不上传）
-kafka-images/
-*.tar
+# 构建产物
+build/
+dist/
+release/
+output/
 
-# 笔记和学习资料（不上传）
-笔记/
-Glen自动化云测平台-*.md
-Glen自动化云测平台使用手册.md
-Glen自动化云测平台分析报告.md
-Docker.md
-README-配置文档说明.md
-setup-git-repository.md
-setup-mysql-remote-access.sh
-修复的Bug列表.md
-项目启动指南.md
-云服务器部署指南.md
+# ============================================
+# 脚本执行产生的临时文件
+# ============================================
+# Shell 脚本临时文件
+*.sh.bak
+*.sh~
+deploy.log
+start.log
+stop.log
 
-# 简历文件（不上传）
-李冠标的简历-*.md
+# ============================================
+# 其他
+# ============================================
+# 备份文件
+*.bak
+*.backup
+*.old
+*.orig
 
-# SQL 文件（如果需要可以保留，但通常不需要上传到代码仓库）
-# account_sql/
-# dcloud_api_sql/
-# dcloud_ui_sql/
-# dcloud_stress_sql/
-# job_sql/
-# sys_dict/
-# Mysql/
-# web_ui_detail_sql/
+# 压缩文件
+*.gz
+*.bz2
 
-# 部署脚本（如果需要可以保留）
-# deploy-middleware.sh
-# deploy-with-local-images.sh
-# import-images.sh
-# init-cloud-databases.sh
-# fix-kafka.sh
-
-# 学习资料和安装包
-software_install_part1/
-software_install_part2/
-software_install_part3/
-
-# Mock 服务器（如果需要可以保留）
-# mock-server/
-
-# 其他临时文件
-.cache/
-.temp/
-tmp/
-export-images.bat
-账密.md
+# 项目特定
+.npm
+.eslintcache
+.stylelintcache
+.parcel-cache

@@ -25,6 +25,16 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
+        <!-- Sa-Token 依赖，用于获取当前登录用户ID -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-spring-boot3-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-redis-jackson</artifactId>
+        </dependency>
+
         <!--jmeter相关包-->
         <dependency>
             <groupId>org.apache.jmeter</groupId>

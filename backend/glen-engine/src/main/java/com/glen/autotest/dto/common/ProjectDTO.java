@@ -23,6 +23,8 @@ public class ProjectDTO {
 
     private Long projectAdmin;
 
+    private String projectAdminName;
+
     private String name;
 
     private String description;

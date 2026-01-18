@@ -2,6 +2,7 @@ package com.glen.autotest.mapper;
 
 import com.glen.autotest.model.ProjectDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * <p>
@@ -13,4 +14,11 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface ProjectMapper extends BaseMapper<ProjectDO> {
 
+    /**
+     * 根据账号ID获取账号用户名（跨库查询）
+     * @param accountId 账号ID
+     * @return 账号用户名
+     */
+    @Select("SELECT username FROM glen_account.account WHERE id = #{accountId}")
+    String getAccountUsernameById(Long accountId);
 }

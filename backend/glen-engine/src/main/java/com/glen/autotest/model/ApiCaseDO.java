@@ -20,7 +20,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("api_case")
+@TableName("glen_api.api_case")
 @Schema(name = "ApiCaseDO", description = "")
 public class ApiCaseDO implements Serializable {
 

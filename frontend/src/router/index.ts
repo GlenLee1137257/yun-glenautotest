@@ -65,16 +65,16 @@ export const routerMetas: Record<string, RouteMeta> = {
       'ui-automation': {
         title: 'UI自动化',
         children: {
-          // elements: {
-          //   title: '元素库管理',
-          //   path: '/ui-automation/elements',
-          //   children: {
-          //     'new-or-edit': {
-          //       title: '新建/编辑页面',
-          //       path: '/ui-automation/elements/new-or-edit',
-          //     },
-          //   },
-          // },
+          elements: {
+            title: '元素库管理',
+            path: '/ui-automation/elements',
+            children: {
+              'new-or-edit': {
+                title: '新建/编辑页面',
+                path: '/ui-automation/elements/new-or-edit',
+              },
+            },
+          },
           case: {
             title: '用例管理',
             path: '/ui-automation/case',

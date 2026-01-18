@@ -20,7 +20,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("api_module")
+@TableName("glen_api.api_module")
 @Schema(name = "ApiModuleDO", description = "")
 public class ApiModuleDO implements Serializable {
 

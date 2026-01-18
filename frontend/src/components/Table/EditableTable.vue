@@ -94,11 +94,13 @@ function handleSaved() {
     // 这里不做强制验证，因为某些场景下 express 可能确实为空
   } else {
     // 对于没有 from 字段的普通表格，验证所有非自定义字段不为空
-    if (
-      Object.entries(currentEditableInstance.value)
-        .filter(([key]) => !customFields.value.includes(key))
-        .some(([, value]) => !value)
-    ) {
+    const fieldsToCheck = Object.entries(currentEditableInstance.value)
+      .filter(([key]) => !customFields.value.includes(key))
+    
+    // 检查是否有空字段（排除 0 和 false，因为它们是有效值）
+    const emptyFields = fieldsToCheck.filter(([, value]) => !value && value !== 0 && value !== false)
+    
+    if (emptyFields.length > 0) {
       message.warning('请填写完整信息')
       return
     }

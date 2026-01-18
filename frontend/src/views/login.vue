@@ -22,6 +22,7 @@ const formModel = reactive({
 
 const router = useRouter()
 const globalConfigStore = useGlobalConfigStore()
+const permissionStore = usePermissionStore()
 
 const { post, isFetching } = useCustomFetch(`/account-service/api/v1/account/login`, {
   immediate: false,
@@ -29,6 +30,8 @@ const { post, isFetching } = useCustomFetch(`/account-service/api/v1/account/log
     if (ctx.data && ctx.data.code === 0) {
       message.success('登录成功')
       globalConfigStore.setLoginToken(ctx.data.data.tokenValue as string)
+      // 登录成功后获取用户权限信息
+      permissionStore.fetchUserRole()
       router.push('/home')
     }
     return ctx
@@ -443,42 +446,78 @@ const floatingTechs = [
 .custom-input {
   height: 48px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  background: rgba(15, 23, 42, 0.4) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff !important;
   transition: all 0.3s ease;
 }
 
 .custom-input:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(15, 23, 42, 0.5) !important;
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .custom-input:focus,
 :deep(.ant-input-affix-wrapper-focused) {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(15, 23, 42, 0.6) !important;
   border-color: #60a5fa;
   box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
 }
 
 .custom-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.5) !important;
 }
 
 :deep(.ant-input-affix-wrapper-lg) {
   padding: 10px 16px;
+  background: rgba(15, 23, 42, 0.4) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 12px !important;
+}
+
+:deep(.ant-input-affix-wrapper-lg:hover) {
+  background: rgba(15, 23, 42, 0.5) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+:deep(.ant-input-affix-wrapper-lg.ant-input-affix-wrapper-focused) {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2) !important;
 }
 
 :deep(.ant-input-affix-wrapper .anticon) {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.7) !important;
 }
 
 :deep(.ant-input-affix-wrapper input) {
-  color: #ffffff;
+  color: #ffffff !important;
+  background: transparent !important;
 }
 
 :deep(.ant-input-affix-wrapper input::placeholder) {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+:deep(.ant-input-password) {
+  background: transparent !important;
+}
+
+:deep(.ant-input-password-icon) {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+:deep(.ant-input) {
+  background: transparent !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+:deep(.ant-input:focus) {
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .form-actions {
@@ -506,18 +545,23 @@ const floatingTechs = [
   margin-top: 20px;
   text-align: center;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .register-link {
-  color: #2563eb;
-  font-weight: 600;
+  color: #60a5fa !important;
+  font-weight: 700;
   cursor: pointer;
-  transition: color 0.3s ease;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: all 0.3s ease;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .register-link:hover {
-  color: #3b82f6;
+  color: #93c5fd !important;
+  text-shadow: 0 2px 6px rgba(96, 165, 250, 0.5);
+  transform: translateY(-1px);
 }
 
 /* 底部开发者信息简约样式 */

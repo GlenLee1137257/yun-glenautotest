@@ -11,7 +11,7 @@ export const usePermissionStore = defineStore('permission', () => {
     '/account-service/api/v1/account/findLoginAccountRole',
     {
       initialData: { roleList: [] },
-      immediate: true,
+      immediate: false,
       afterFetch(ctx) {
         if (ctx.data && ctx.data.code === 0) {
           roles.value = ctx.data.data

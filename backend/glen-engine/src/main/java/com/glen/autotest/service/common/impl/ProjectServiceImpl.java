@@ -1,5 +1,6 @@
 package com.glen.autotest.service.common.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import com.glen.autotest.dto.common.ProjectDTO;
@@ -12,6 +13,7 @@ import com.glen.autotest.util.SpringBeanUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Glen AutoTest Platform
@@ -32,12 +34,37 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<ProjectDTO> list() {
         List<ProjectDO> projectDOS = projectMapper.selectList(null);
-        return SpringBeanUtil.copyProperties(projectDOS, ProjectDTO.class);
+        List<ProjectDTO> projectDTOList = SpringBeanUtil.copyProperties(projectDOS, ProjectDTO.class);
+        
+        // 设置项目管理员名称
+        for (ProjectDTO projectDTO : projectDTOList) {
+            if (projectDTO.getProjectAdmin() != null) {
+                String adminName = projectMapper.getAccountUsernameById(projectDTO.getProjectAdmin());
+                projectDTO.setProjectAdminName(adminName);
+            }
+        }
+        
+        return projectDTOList;
     }
 
     @Override
     public int save(ProjectSaveReq projectSaveReq) {
         ProjectDO projectDO = SpringBeanUtil.copyProperties(projectSaveReq, ProjectDO.class);
+        
+        // 设置项目管理员为当前登录用户
+        try {
+            Object loginId = StpUtil.getLoginId();
+            if (loginId != null) {
+                Long accountId = Long.parseLong(loginId.toString());
+                projectDO.setProjectAdmin(accountId);
+                log.info("设置项目管理员: accountId={}", accountId);
+            } else {
+                log.warn("未获取到登录用户ID，项目管理员将为空");
+            }
+        } catch (Exception e) {
+            log.error("获取登录用户ID失败: {}", e.getMessage(), e);
+        }
+        
         return projectMapper.insert(projectDO);
     }
 

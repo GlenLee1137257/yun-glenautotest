@@ -39,21 +39,23 @@ export default defineConfig({
     },
   },
   server: {
+    host: '0.0.0.0', // 允许外部访问
+    port: 5173, // Vite默认端口
     proxy: {
       '/account-service': {
-        target: 'http://192.168.117.237:8000',
+        target: 'http://localhost:8000',
         changeOrigin: true,
       },
       '/engine-service': {
-        target: 'http://192.168.117.237:8000',
+        target: 'http://localhost:8000',
         changeOrigin: true,
       },
       '/data-service': {
-        target: 'http://192.168.117.237:8000',
+        target: 'http://localhost:8000',
         changeOrigin: true,
       },
       '/server-api': {
-        target: 'http://192.168.117.237:8000',
+        target: 'http://localhost:8000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/server-api/, ''),
       },

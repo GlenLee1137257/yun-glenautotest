@@ -20,7 +20,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("ui_case")
+@TableName("glen_ui.ui_case")
 @Schema(name = "UiCaseDO", description = "")
 public class UiCaseDO implements Serializable {
 

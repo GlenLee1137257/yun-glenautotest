@@ -20,7 +20,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("api")
+@TableName("glen_api.api")
 @Schema(name = "ApiDO", description = "")
 public class ApiDO implements Serializable {
 
