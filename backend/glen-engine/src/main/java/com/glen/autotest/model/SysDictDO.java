@@ -20,7 +20,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("sys_dict")
+@TableName("glen_dict.sys_dict")
 @Schema(name = "SysDictDO", description = "")
 public class SysDictDO implements Serializable {
 

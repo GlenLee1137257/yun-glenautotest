@@ -4,6 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import com.glen.autotest.dto.common.ProjectDTO;
+import com.glen.autotest.exception.BizException;
 import com.glen.autotest.mapper.ProjectMapper;
 import com.glen.autotest.model.ProjectDO;
 import com.glen.autotest.req.common.ProjectSaveReq;
@@ -49,6 +50,14 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public int save(ProjectSaveReq projectSaveReq) {
+        // 验证必填字段：名字和描述都必须填写
+        if (projectSaveReq.getName() == null || projectSaveReq.getName().trim().isEmpty()) {
+            throw new BizException(-1, "项目名称不能为空");
+        }
+        if (projectSaveReq.getDescription() == null || projectSaveReq.getDescription().trim().isEmpty()) {
+            throw new BizException(-1, "项目描述不能为空");
+        }
+        
         ProjectDO projectDO = SpringBeanUtil.copyProperties(projectSaveReq, ProjectDO.class);
         
         // 设置项目管理员为当前登录用户

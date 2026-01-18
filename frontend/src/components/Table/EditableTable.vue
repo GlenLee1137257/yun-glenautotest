@@ -31,6 +31,8 @@ const dataSourceProxy = defineModel<T[]>('dataSourceProxy', { required: true })
 
 const editIndex = ref<number>(-1)
 const currentState = ref<StateType>('default')
+// 保存编辑前的原始数据，用于取消时还原
+const originalData = ref<T | null>(null)
 
 const customFieldsWithDefault = computed(() => [
   ...customFields.value,
@@ -44,6 +46,12 @@ const currentEditableInstance = computed(() => {
 function handleEditIndex(index: number, isNew: boolean = false) {
   currentState.value = isNew ? 'new' : 'editable'
   editIndex.value = index
+  // 如果是编辑现有数据（不是新增），保存原始数据的深拷贝
+  if (!isNew && dataSourceProxy.value[index]) {
+    originalData.value = simplyObjectDeepClone(dataSourceProxy.value[index])
+  } else {
+    originalData.value = null
+  }
 }
 
 function getCurrentEditableInstance() {
@@ -94,11 +102,25 @@ function handleSaved() {
     // 这里不做强制验证，因为某些场景下 express 可能确实为空
   } else {
     // 对于没有 from 字段的普通表格，验证所有非自定义字段不为空
-    const fieldsToCheck = Object.entries(currentEditableInstance.value)
+    // 注意：需要同时检查对象中存在的字段和可能缺失的字段
+    const record = currentEditableInstance.value as Record<string, unknown>
+    const fieldsToCheck = Object.entries(record)
       .filter(([key]) => !customFields.value.includes(key))
     
     // 检查是否有空字段（排除 0 和 false，因为它们是有效值）
-    const emptyFields = fieldsToCheck.filter(([, value]) => !value && value !== 0 && value !== false)
+    // 空字符串、null、undefined 都被视为空值
+    const emptyFields = fieldsToCheck.filter(([, value]) => {
+      // 检查是否为空：null、undefined、空字符串都视为空
+      if (value === null || value === undefined || value === '') {
+        return true
+      }
+      // 0 和 false 是有效值，不算空
+      if (value === 0 || value === false) {
+        return false
+      }
+      // 其他情况视为非空
+      return false
+    })
     
     if (emptyFields.length > 0) {
       message.warning('请填写完整信息')
@@ -120,10 +142,19 @@ function handleSaved() {
 
 function handleCancel() {
   if (currentState.value === 'new') {
+    // 新增模式：直接删除新添加的行
     dataSourceProxy.value.pop()
+  } else if (currentState.value === 'editable' && originalData.value !== null) {
+    // 编辑模式：还原原始数据
+    const index = editIndex.value
+    if (index >= 0 && index < dataSourceProxy.value.length) {
+      // 直接替换整个对象，确保响应式更新
+      dataSourceProxy.value[index] = simplyObjectDeepClone(originalData.value)
+    }
   }
   editIndex.value = -1
   currentState.value = 'default'
+  originalData.value = null
 }
 
 function handleAddData() {

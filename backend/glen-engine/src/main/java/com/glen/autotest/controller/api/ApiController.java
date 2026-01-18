@@ -51,7 +51,7 @@ public class ApiController {
     /**
      * 删除接口
      */
-    @PostMapping("/delete")
+    @PostMapping("/del")
     public JsonData delete(@RequestBody ApiDelReq req) {
         return JsonData.buildSuccess(apiService.delete(req));
     }

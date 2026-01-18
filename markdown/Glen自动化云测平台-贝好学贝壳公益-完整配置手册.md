@@ -210,7 +210,7 @@ Glen 自动化云测平台支持以下测试类型:
 【JSON格式填写】(如果平台支持JSON输入框):
 {
   "Content-Type": "application/json",
-  "Cookie": "lianjia_token=xxx; renovation-token=xxx"
+  "Cookie": "lianjia_token=lianjia_uuid=94d933e0-e34e-424b-a596-8b0293a15c36; crosSdkDT2019DeviceId=9lmz05-8lw8p3-bexbpc0lmo6nrr7-gk6nzz0c4; Hm_lvt_b160d5571570fd63c347b9d4ab5ca610=1765508265; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22%24device_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E8%87%AA%E7%84%B6%E6%90%9C%E7%B4%A2%E6%B5%81%E9%87%8F%22%2C%22%24latest_referrer%22%3A%22https%3A%2F%2Fwww.baidu.com%2Flink%22%2C%22%24latest_referrer_host%22%3A%22www.baidu.com%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC%22%7D%7D; login_ucid=1000000031501213; security_ticket=kBPzL+zM0En8lsXaljtSrw8XD6Mv+DgF3ROoqomLv8gywF3vyiofdlWInPmbW4YjadGhsQtCZAAcblmNYzudl/Mn4mwP6nA7gcAX9JaV0lMVgsueQH6wMynia1WryYzHl4/V9QYC63rkNAOSJKbt/U8HTtI2arJV9nkEHAQXZUo=; lianjia_ssid=8f5c3546-8703-4266-bf90-dac99992b599; security_ticket_test=nSfRx9amarX8LMZLUsmRxpE55+vcen4nKFTnn5qqksuKeKokqfvRq5liUKqoVHSondl3D2SnfvO3kPTTDncCQAKzOZQA5NngClGipPzhy+PqBhx/SrutlQb7O0ds/8XGbRFvSKxS6YObyr4tnolwWgr+9APyQQyAz1r0XCp5NXA=; renovation-token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a; lianjia_token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a"
 }
 
 注意: 根据实际平台界面选择填写方式。表格形式直接填写名称和值(不带引号)，JSON格式需要完整的JSON语法(带引号)。
@@ -230,7 +230,7 @@ Body类型: JSON
 请求头:
 {
   "Content-Type": "application/json",
-  "Cookie": "lianjia_token=xxx; renovation-token=xxx"
+  "Cookie": "lianjia_token=lianjia_uuid=94d933e0-e34e-424b-a596-8b0293a15c36; crosSdkDT2019DeviceId=9lmz05-8lw8p3-bexbpc0lmo6nrr7-gk6nzz0c4; Hm_lvt_b160d5571570fd63c347b9d4ab5ca610=1765508265; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22%24device_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E8%87%AA%E7%84%B6%E6%90%9C%E7%B4%A2%E6%B5%81%E9%87%8F%22%2C%22%24latest_referrer%22%3A%22https%3A%2F%2Fwww.baidu.com%2Flink%22%2C%22%24latest_referrer_host%22%3A%22www.baidu.com%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC%22%7D%7D; login_ucid=1000000031501213; security_ticket=kBPzL+zM0En8lsXaljtSrw8XD6Mv+DgF3ROoqomLv8gywF3vyiofdlWInPmbW4YjadGhsQtCZAAcblmNYzudl/Mn4mwP6nA7gcAX9JaV0lMVgsueQH6wMynia1WryYzHl4/V9QYC63rkNAOSJKbt/U8HTtI2arJV9nkEHAQXZUo=; lianjia_ssid=8f5c3546-8703-4266-bf90-dac99992b599; security_ticket_test=nSfRx9amarX8LMZLUsmRxpE55+vcen4nKFTnn5qqksuKeKokqfvRq5liUKqoVHSondl3D2SnfvO3kPTTDncCQAKzOZQA5NngClGipPzhy+PqBhx/SrutlQb7O0ds/8XGbRFvSKxS6YObyr4tnolwWgr+9APyQQyAz1r0XCp5NXA=; renovation-token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a; lianjia_token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a"
 }
 请求体: (空)
 Body类型: JSON
@@ -251,7 +251,7 @@ Body类型: JSON
 请求头:
 {
   "Content-Type": "application/json",
-  "Cookie": "lianjia_token=xxx; renovation-token=xxx"
+  "Cookie": "lianjia_token=lianjia_uuid=94d933e0-e34e-424b-a596-8b0293a15c36; crosSdkDT2019DeviceId=9lmz05-8lw8p3-bexbpc0lmo6nrr7-gk6nzz0c4; Hm_lvt_b160d5571570fd63c347b9d4ab5ca610=1765508265; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22%24device_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E8%87%AA%E7%84%B6%E6%90%9C%E7%B4%A2%E6%B5%81%E9%87%8F%22%2C%22%24latest_referrer%22%3A%22https%3A%2F%2Fwww.baidu.com%2Flink%22%2C%22%24latest_referrer_host%22%3A%22www.baidu.com%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC%22%7D%7D; login_ucid=1000000031501213; security_ticket=kBPzL+zM0En8lsXaljtSrw8XD6Mv+DgF3ROoqomLv8gywF3vyiofdlWInPmbW4YjadGhsQtCZAAcblmNYzudl/Mn4mwP6nA7gcAX9JaV0lMVgsueQH6wMynia1WryYzHl4/V9QYC63rkNAOSJKbt/U8HTtI2arJV9nkEHAQXZUo=; lianjia_ssid=8f5c3546-8703-4266-bf90-dac99992b599; security_ticket_test=nSfRx9amarX8LMZLUsmRxpE55+vcen4nKFTnn5qqksuKeKokqfvRq5liUKqoVHSondl3D2SnfvO3kPTTDncCQAKzOZQA5NngClGipPzhy+PqBhx/SrutlQb7O0ds/8XGbRFvSKxS6YObyr4tnolwWgr+9APyQQyAz1r0XCp5NXA=; renovation-token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a; lianjia_token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a"
 }
 请求体: (空)
 Body类型: JSON
@@ -277,7 +277,7 @@ Body类型: JSON
 请求头:
 {
   "Content-Type": "application/json",
-  "Cookie": "lianjia_token=xxx; renovation-token=xxx"
+  "Cookie": "lianjia_token=lianjia_uuid=94d933e0-e34e-424b-a596-8b0293a15c36; crosSdkDT2019DeviceId=9lmz05-8lw8p3-bexbpc0lmo6nrr7-gk6nzz0c4; Hm_lvt_b160d5571570fd63c347b9d4ab5ca610=1765508265; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22%24device_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E8%87%AA%E7%84%B6%E6%90%9C%E7%B4%A2%E6%B5%81%E9%87%8F%22%2C%22%24latest_referrer%22%3A%22https%3A%2F%2Fwww.baidu.com%2Flink%22%2C%22%24latest_referrer_host%22%3A%22www.baidu.com%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC%22%7D%7D; login_ucid=1000000031501213; security_ticket=kBPzL+zM0En8lsXaljtSrw8XD6Mv+DgF3ROoqomLv8gywF3vyiofdlWInPmbW4YjadGhsQtCZAAcblmNYzudl/Mn4mwP6nA7gcAX9JaV0lMVgsueQH6wMynia1WryYzHl4/V9QYC63rkNAOSJKbt/U8HTtI2arJV9nkEHAQXZUo=; lianjia_ssid=8f5c3546-8703-4266-bf90-dac99992b599; security_ticket_test=nSfRx9amarX8LMZLUsmRxpE55+vcen4nKFTnn5qqksuKeKokqfvRq5liUKqoVHSondl3D2SnfvO3kPTTDncCQAKzOZQA5NngClGipPzhy+PqBhx/SrutlQb7O0ds/8XGbRFvSKxS6YObyr4tnolwWgr+9APyQQyAz1r0XCp5NXA=; renovation-token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a; lianjia_token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a"
 }
 请求体:
 {
@@ -304,7 +304,7 @@ Body类型: JSON
 请求头:
 {
   "Content-Type": "application/json",
-  "Cookie": "lianjia_token=xxx; renovation-token=xxx"
+  "Cookie": "lianjia_token=lianjia_uuid=94d933e0-e34e-424b-a596-8b0293a15c36; crosSdkDT2019DeviceId=9lmz05-8lw8p3-bexbpc0lmo6nrr7-gk6nzz0c4; Hm_lvt_b160d5571570fd63c347b9d4ab5ca610=1765508265; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22%24device_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E8%87%AA%E7%84%B6%E6%90%9C%E7%B4%A2%E6%B5%81%E9%87%8F%22%2C%22%24latest_referrer%22%3A%22https%3A%2F%2Fwww.baidu.com%2Flink%22%2C%22%24latest_referrer_host%22%3A%22www.baidu.com%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC%22%7D%7D; login_ucid=1000000031501213; security_ticket=kBPzL+zM0En8lsXaljtSrw8XD6Mv+DgF3ROoqomLv8gywF3vyiofdlWInPmbW4YjadGhsQtCZAAcblmNYzudl/Mn4mwP6nA7gcAX9JaV0lMVgsueQH6wMynia1WryYzHl4/V9QYC63rkNAOSJKbt/U8HTtI2arJV9nkEHAQXZUo=; lianjia_ssid=8f5c3546-8703-4266-bf90-dac99992b599; security_ticket_test=nSfRx9amarX8LMZLUsmRxpE55+vcen4nKFTnn5qqksuKeKokqfvRq5liUKqoVHSondl3D2SnfvO3kPTTDncCQAKzOZQA5NngClGipPzhy+PqBhx/SrutlQb7O0ds/8XGbRFvSKxS6YObyr4tnolwWgr+9APyQQyAz1r0XCp5NXA=; renovation-token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a; lianjia_token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a"
 }
 请求体: (空)
 Body类型: JSON
@@ -325,7 +325,7 @@ Body类型: JSON
 请求头:
 {
   "Content-Type": "application/json",
-  "Cookie": "lianjia_token=xxx; renovation-token=xxx"
+  "Cookie": "lianjia_token=lianjia_uuid=94d933e0-e34e-424b-a596-8b0293a15c36; crosSdkDT2019DeviceId=9lmz05-8lw8p3-bexbpc0lmo6nrr7-gk6nzz0c4; Hm_lvt_b160d5571570fd63c347b9d4ab5ca610=1765508265; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22%24device_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E8%87%AA%E7%84%B6%E6%90%9C%E7%B4%A2%E6%B5%81%E9%87%8F%22%2C%22%24latest_referrer%22%3A%22https%3A%2F%2Fwww.baidu.com%2Flink%22%2C%22%24latest_referrer_host%22%3A%22www.baidu.com%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC%22%7D%7D; login_ucid=1000000031501213; security_ticket=kBPzL+zM0En8lsXaljtSrw8XD6Mv+DgF3ROoqomLv8gywF3vyiofdlWInPmbW4YjadGhsQtCZAAcblmNYzudl/Mn4mwP6nA7gcAX9JaV0lMVgsueQH6wMynia1WryYzHl4/V9QYC63rkNAOSJKbt/U8HTtI2arJV9nkEHAQXZUo=; lianjia_ssid=8f5c3546-8703-4266-bf90-dac99992b599; security_ticket_test=nSfRx9amarX8LMZLUsmRxpE55+vcen4nKFTnn5qqksuKeKokqfvRq5liUKqoVHSondl3D2SnfvO3kPTTDncCQAKzOZQA5NngClGipPzhy+PqBhx/SrutlQb7O0ds/8XGbRFvSKxS6YObyr4tnolwWgr+9APyQQyAz1r0XCp5NXA=; renovation-token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a; lianjia_token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a"
 }
 请求体: (空)
 Body类型: JSON
@@ -343,7 +343,7 @@ Body类型: JSON
 请求头:
 {
   "Content-Type": "application/json",
-  "Cookie": "lianjia_token=xxx; renovation-token=xxx"
+  "Cookie": "lianjia_token=lianjia_uuid=94d933e0-e34e-424b-a596-8b0293a15c36; crosSdkDT2019DeviceId=9lmz05-8lw8p3-bexbpc0lmo6nrr7-gk6nzz0c4; Hm_lvt_b160d5571570fd63c347b9d4ab5ca610=1765508265; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22%24device_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E8%87%AA%E7%84%B6%E6%90%9C%E7%B4%A2%E6%B5%81%E9%87%8F%22%2C%22%24latest_referrer%22%3A%22https%3A%2F%2Fwww.baidu.com%2Flink%22%2C%22%24latest_referrer_host%22%3A%22www.baidu.com%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC%22%7D%7D; login_ucid=1000000031501213; security_ticket=kBPzL+zM0En8lsXaljtSrw8XD6Mv+DgF3ROoqomLv8gywF3vyiofdlWInPmbW4YjadGhsQtCZAAcblmNYzudl/Mn4mwP6nA7gcAX9JaV0lMVgsueQH6wMynia1WryYzHl4/V9QYC63rkNAOSJKbt/U8HTtI2arJV9nkEHAQXZUo=; lianjia_ssid=8f5c3546-8703-4266-bf90-dac99992b599; security_ticket_test=nSfRx9amarX8LMZLUsmRxpE55+vcen4nKFTnn5qqksuKeKokqfvRq5liUKqoVHSondl3D2SnfvO3kPTTDncCQAKzOZQA5NngClGipPzhy+PqBhx/SrutlQb7O0ds/8XGbRFvSKxS6YObyr4tnolwWgr+9APyQQyAz1r0XCp5NXA=; renovation-token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a; lianjia_token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a"
 }
 请求体: (空)
 Body类型: JSON
@@ -373,7 +373,7 @@ Body类型: JSON
 请求头:
 {
   "Content-Type": "application/json",
-  "Cookie": "lianjia_token=xxx; renovation-token=xxx"
+  "Cookie": "lianjia_token=lianjia_uuid=94d933e0-e34e-424b-a596-8b0293a15c36; crosSdkDT2019DeviceId=9lmz05-8lw8p3-bexbpc0lmo6nrr7-gk6nzz0c4; Hm_lvt_b160d5571570fd63c347b9d4ab5ca610=1765508265; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22%24device_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E8%87%AA%E7%84%B6%E6%90%9C%E7%B4%A2%E6%B5%81%E9%87%8F%22%2C%22%24latest_referrer%22%3A%22https%3A%2F%2Fwww.baidu.com%2Flink%22%2C%22%24latest_referrer_host%22%3A%22www.baidu.com%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC%22%7D%7D; login_ucid=1000000031501213; security_ticket=kBPzL+zM0En8lsXaljtSrw8XD6Mv+DgF3ROoqomLv8gywF3vyiofdlWInPmbW4YjadGhsQtCZAAcblmNYzudl/Mn4mwP6nA7gcAX9JaV0lMVgsueQH6wMynia1WryYzHl4/V9QYC63rkNAOSJKbt/U8HTtI2arJV9nkEHAQXZUo=; lianjia_ssid=8f5c3546-8703-4266-bf90-dac99992b599; security_ticket_test=nSfRx9amarX8LMZLUsmRxpE55+vcen4nKFTnn5qqksuKeKokqfvRq5liUKqoVHSondl3D2SnfvO3kPTTDncCQAKzOZQA5NngClGipPzhy+PqBhx/SrutlQb7O0ds/8XGbRFvSKxS6YObyr4tnolwWgr+9APyQQyAz1r0XCp5NXA=; renovation-token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a; lianjia_token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a"
 }
 请求体: (空)
 Body类型: JSON
@@ -394,7 +394,7 @@ Body类型: JSON
 请求头:
 {
   "Content-Type": "application/json",
-  "Cookie": "lianjia_token=xxx; renovation-token=xxx"
+  "Cookie": "lianjia_token=lianjia_uuid=94d933e0-e34e-424b-a596-8b0293a15c36; crosSdkDT2019DeviceId=9lmz05-8lw8p3-bexbpc0lmo6nrr7-gk6nzz0c4; Hm_lvt_b160d5571570fd63c347b9d4ab5ca610=1765508265; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22%24device_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E8%87%AA%E7%84%B6%E6%90%9C%E7%B4%A2%E6%B5%81%E9%87%8F%22%2C%22%24latest_referrer%22%3A%22https%3A%2F%2Fwww.baidu.com%2Flink%22%2C%22%24latest_referrer_host%22%3A%22www.baidu.com%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC%22%7D%7D; login_ucid=1000000031501213; security_ticket=kBPzL+zM0En8lsXaljtSrw8XD6Mv+DgF3ROoqomLv8gywF3vyiofdlWInPmbW4YjadGhsQtCZAAcblmNYzudl/Mn4mwP6nA7gcAX9JaV0lMVgsueQH6wMynia1WryYzHl4/V9QYC63rkNAOSJKbt/U8HTtI2arJV9nkEHAQXZUo=; lianjia_ssid=8f5c3546-8703-4266-bf90-dac99992b599; security_ticket_test=nSfRx9amarX8LMZLUsmRxpE55+vcen4nKFTnn5qqksuKeKokqfvRq5liUKqoVHSondl3D2SnfvO3kPTTDncCQAKzOZQA5NngClGipPzhy+PqBhx/SrutlQb7O0ds/8XGbRFvSKxS6YObyr4tnolwWgr+9APyQQyAz1r0XCp5NXA=; renovation-token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a; lianjia_token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a"
 }
 请求体: (空)
 Body类型: JSON
@@ -412,7 +412,7 @@ Body类型: JSON
 请求头:
 {
   "Content-Type": "application/json",
-  "Cookie": "lianjia_token=xxx; renovation-token=xxx"
+  "Cookie": "lianjia_token=lianjia_uuid=94d933e0-e34e-424b-a596-8b0293a15c36; crosSdkDT2019DeviceId=9lmz05-8lw8p3-bexbpc0lmo6nrr7-gk6nzz0c4; Hm_lvt_b160d5571570fd63c347b9d4ab5ca610=1765508265; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22%24device_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E8%87%AA%E7%84%B6%E6%90%9C%E7%B4%A2%E6%B5%81%E9%87%8F%22%2C%22%24latest_referrer%22%3A%22https%3A%2F%2Fwww.baidu.com%2Flink%22%2C%22%24latest_referrer_host%22%3A%22www.baidu.com%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC%22%7D%7D; login_ucid=1000000031501213; security_ticket=kBPzL+zM0En8lsXaljtSrw8XD6Mv+DgF3ROoqomLv8gywF3vyiofdlWInPmbW4YjadGhsQtCZAAcblmNYzudl/Mn4mwP6nA7gcAX9JaV0lMVgsueQH6wMynia1WryYzHl4/V9QYC63rkNAOSJKbt/U8HTtI2arJV9nkEHAQXZUo=; lianjia_ssid=8f5c3546-8703-4266-bf90-dac99992b599; security_ticket_test=nSfRx9amarX8LMZLUsmRxpE55+vcen4nKFTnn5qqksuKeKokqfvRq5liUKqoVHSondl3D2SnfvO3kPTTDncCQAKzOZQA5NngClGipPzhy+PqBhx/SrutlQb7O0ds/8XGbRFvSKxS6YObyr4tnolwWgr+9APyQQyAz1r0XCp5NXA=; renovation-token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a; lianjia_token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a"
 }
 请求体:
 {
@@ -626,21 +626,6 @@ Body类型: JSON
 
 #### 操作路径
 **接口自动化 → 用例管理 → (选择项目) → + 新增用例**
-
-#### 4.2.0 用例管理逻辑说明
-
-**重要概念理解**:
-
-1. **接口管理 vs 用例管理的区别**:
-   - **接口管理**: 单独管理和测试接口(可选功能)
-     - 作用: 可以单独定义和测试接口，方便接口文档管理
-     - 使用场景: 单接口测试、接口文档记录
-     - 注意: 接口管理与用例管理是**独立的**，用例步骤不关联接口管理中的接口
-   
-   - **用例管理**: 直接在步骤中配置完整的接口信息，组合成测试场景
-     - 作用: 将多个接口步骤组合成完整的业务流程测试
-     - 配置内容: 每个步骤直接配置接口地址、请求方式、请求头、请求体等
-     - 可以理解为: 实际执行的"测试脚本"
 
 2. **用例管理的三层结构**:
    ```
@@ -1294,7 +1279,7 @@ Ramp-Up时间(秒): 10
 请求头:
 {
   "Content-Type": "application/json",
-  "Cookie": "lianjia_token=xxx; renovation-token=xxx"
+  "Cookie": "lianjia_token=lianjia_uuid=94d933e0-e34e-424b-a596-8b0293a15c36; crosSdkDT2019DeviceId=9lmz05-8lw8p3-bexbpc0lmo6nrr7-gk6nzz0c4; Hm_lvt_b160d5571570fd63c347b9d4ab5ca610=1765508265; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22%24device_id%22%3A%2219b107e36aa466-0214b17eb2e366-26061c51-2073600-19b107e36ab7cf%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E8%87%AA%E7%84%B6%E6%90%9C%E7%B4%A2%E6%B5%81%E9%87%8F%22%2C%22%24latest_referrer%22%3A%22https%3A%2F%2Fwww.baidu.com%2Flink%22%2C%22%24latest_referrer_host%22%3A%22www.baidu.com%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC%22%7D%7D; login_ucid=1000000031501213; security_ticket=kBPzL+zM0En8lsXaljtSrw8XD6Mv+DgF3ROoqomLv8gywF3vyiofdlWInPmbW4YjadGhsQtCZAAcblmNYzudl/Mn4mwP6nA7gcAX9JaV0lMVgsueQH6wMynia1WryYzHl4/V9QYC63rkNAOSJKbt/U8HTtI2arJV9nkEHAQXZUo=; lianjia_ssid=8f5c3546-8703-4266-bf90-dac99992b599; security_ticket_test=nSfRx9amarX8LMZLUsmRxpE55+vcen4nKFTnn5qqksuKeKokqfvRq5liUKqoVHSondl3D2SnfvO3kPTTDncCQAKzOZQA5NngClGipPzhy+PqBhx/SrutlQb7O0ds/8XGbRFvSKxS6YObyr4tnolwWgr+9APyQQyAz1r0XCp5NXA=; renovation-token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a; lianjia_token=2.0111a9beb2841c6f400001cb5408aaa28b50cfe84a"
 }
 请求体: (空)
 Body类型: JSON
