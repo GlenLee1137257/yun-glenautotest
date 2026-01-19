@@ -89,10 +89,14 @@ const dataSource = computed<(Omit<IExexuteList<T>, 'step'> & T)[]>(() => {
 
   const list = executeInfo.value.list
 
-  return list.map((item) => ({
-    ...objectOmit(item, ['step']),
-    ...item.step,
-  }))
+  return list.map((item: any) => {
+    // 后端返回的字段名是 apiCaseStep（API用例）或 uiCaseStep（UI用例），前端统一使用 step
+    const step = item.step || item.apiCaseStep || item.uiCaseStep
+    return {
+      ...objectOmit(item, ['step', 'apiCaseStep', 'uiCaseStep']),
+      ...step,
+    }
+  })
 })
 
 watchImmediate(executeId, () => executeId.value !== -1 && fetchGetExecuteInfo())

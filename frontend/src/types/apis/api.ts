@@ -2,6 +2,7 @@ import type { BodyType } from './basic'
 
 export const defaultWithIApi: IApi = {
   id: -1,
+  projectId: -1,
   moduleId: -1,
   environmentId: -1,
   name: '默认名称',
@@ -22,6 +23,7 @@ export const defaultWithIApi: IApi = {
 
 export interface IApi {
   id: number
+  projectId?: number
   moduleId: number
   environmentId: number
   name: string

@@ -171,13 +171,29 @@ function handleEdit(record: T) {
 }
 
 async function handleDelete(id: number) {
-  await fetchDeleteApi({ 
-    id,
-    projectId: globalConfigStore.config.projectId 
-  }).execute()
-  !notFetchDefaultData.value
-    ? fetchGetTableDataSource()
-    : emits('fetchDataSource')
+  try {
+    await fetchDeleteApi({ 
+      id,
+      projectId: globalConfigStore.config.projectId 
+    }).execute()
+    // 删除成功后，先从本地数据源移除该项（立即更新UI）
+    const index = tableDataSource.value.findIndex(item => item.id === id)
+    if (index > -1) {
+      tableDataSource.value.splice(index, 1)
+    }
+    // 等待删除操作完成，然后强制刷新数据（避免缓存问题）
+    await nextTick()
+    if (!notFetchDefaultData.value) {
+      // 先清空数据源，强制刷新
+      tableDataSource.value = []
+      await nextTick()
+      await fetchGetTableDataSource()
+    } else {
+      emits('fetchDataSource')
+    }
+  } catch (error) {
+    console.error('删除失败:', error)
+  }
 }
 
 watch(selectedModuleId, () => {

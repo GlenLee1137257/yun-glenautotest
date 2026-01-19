@@ -48,42 +48,42 @@ export type IApiCaseStep = Omit<IApi, 'moduleId'> & {
 }
 
 export const defaultWithIApiCaseStepAssertion: IApiCaseStepAssertion = {
-  from: 'response_code',
-  type: 'regexp',
-  action: 'equal',
+  from: 'RESPONSE_CODE',
+  type: 'REGEXP',
+  action: 'EQUAL',
   express: '',
   value: '',
 }
 
 export interface IApiCaseStepAssertion {
-  from: 'response_code' | 'response_header' | 'response_body'
-  type: 'regexp' | 'jsonpath'
+  from: 'RESPONSE_CODE' | 'RESPONSE_HEADER' | 'RESPONSE_DATA'
+  type: 'REGEXP' | 'JSONPATH'
   action:
-    | 'contain'
-    | 'not_contain'
-    | 'equal'
-    | 'not_equal'
-    | 'great_then'
-    | 'less_then'
+    | 'CONTAIN'
+    | 'NOT_CONTAIN'
+    | 'EQUAL'
+    | 'NOT_EQUAL'
+    | 'GREAT_THEN'
+    | 'LESS_THEN'
   express: string
   value: string
 }
 
 export const defaultWithIApiCaseStepRelation: IApiCaseStepRelation = {
-  from: 'request_header',
-  type: 'regexp',
+  from: 'REQUEST_HEADER',
+  type: 'REGEXP',
   express: '',
   name: '',
 }
 
 export interface IApiCaseStepRelation {
   from:
-    | 'request_header'
-    | 'request_body'
-    | 'request_query'
-    | 'response_header'
-    | 'response_body'
-  type: 'regexp' | 'jsonpath'
+    | 'REQUEST_HEADER'
+    | 'REQUEST_BODY'
+    | 'REQUEST_QUERY'
+    | 'RESPONSE_HEADER'
+    | 'RESPONSE_DATA'
+  type: 'REGEXP' | 'JSONPATH'
   express: string
   name: string
 }

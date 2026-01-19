@@ -17,6 +17,7 @@ import type { ColumnsType } from 'ant-design-vue/es/table'
 import type NewOrEditBodyVue from './NewOrEditBody.vue'
 import type { ComponentExposed } from 'vue-component-type-helpers'
 import type { IDict } from '~/types/apis/dict'
+import { useGlobalConfigStore } from '~/stores/global-config.store'
 
 const props = withDefaults(
   defineProps<{
@@ -38,6 +39,7 @@ const { info, baseApiName, defaultWithStepItem, defaultWithStepInstance } =
 
 const route = useRoute()
 const router = useRouter()
+const globalConfigStore = useGlobalConfigStore()
 const [createModalVisible, toggleCreateModalVisible] = useToggle(false)
 
 const controlStepState = ref<'new' | 'edit' | 'default'>('default')
@@ -162,7 +164,7 @@ const url = computed(() => {
   if (info.value === 'api') {
     return handleParams(_url, {
       category:
-        'api_relation_from, api_relation_type, api_assertion_from, api_assertion_type, api_assertion_action',
+        'api_relation_from,api_relation_type,api_assertion_from,api_assertion_type,api_assertion_action',
     })
   } else {
     return handleParams(_url, {
@@ -189,6 +191,7 @@ function handleAdd() {
   }
   formModel.value.stepList.push({
     ...defaultWithStepItem.value,
+    projectId: globalConfigStore.config.projectId,
     caseId: formModel.value.id,
     num: formModel.value.stepList.length,
   })
@@ -225,8 +228,21 @@ async function handleOk() {
       await fetchCreateApiCaseStep(
         objectOmit(selectedStep.value, ['id']),
       ).execute()
+      // 新增后重新获取数据
+      await fetchGetApiCase()
     } else {
       await fetchUpdateApiCaseStep(selectedStep.value).execute()
+      // 更新后同步更新本地 formModel 中的对应步骤数据
+      const stepIndex = formModel.value.stepList.findIndex(
+        (step) => step.id === selectedStep.value.id
+      )
+      if (stepIndex !== -1) {
+        // 更新本地数据，确保序列化后的数据（包括断言和关联变量）被保存
+        formModel.value.stepList[stepIndex] = {
+          ...formModel.value.stepList[stepIndex],
+          ...selectedStep.value,
+        }
+      }
     }
     // 恢复默认的 StepState
     controlStepState.value = 'default'
@@ -266,12 +282,16 @@ async function handleSave() {
 }
 
 onMounted(async () => {
-  await nextTick()
-  if (isEditState.value) {
-    fetchGetApiCase()
-  }
+  try {
+    await nextTick()
+    if (isEditState.value) {
+      fetchGetApiCase()
+    }
 
-  await execute()
+    await execute()
+  } catch (error) {
+    console.error('初始化字典数据失败:', error)
+  }
 })
 </script>
 

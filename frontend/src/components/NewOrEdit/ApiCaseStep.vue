@@ -12,7 +12,7 @@ import type { ColumnsType } from 'ant-design-vue/es/table'
 import type RequestConfigVue from './RequestConfig.vue'
 import type { ComponentExposed } from 'vue-component-type-helpers'
 
-defineProps<{
+const props = defineProps<{
   apiConstantSelectOptions: IApiConstantSelectOptions
 }>()
 const selectedStep = defineModel<IApiCaseStep>('selectedStep', {
@@ -20,6 +20,13 @@ const selectedStep = defineModel<IApiCaseStep>('selectedStep', {
 })
 
 const requestConfigRef = ref<ComponentExposed<typeof RequestConfigVue>>()
+
+// 根据字典类别和value值获取对应的中文名称
+function getDictName(category: keyof IApiConstantSelectOptions, value: string): string {
+  const dictList = props.apiConstantSelectOptions[category]
+  const dictItem = dictList?.find((item) => item.value === value)
+  return dictItem?.name ?? value
+}
 
 const columnsWithAssertion: ColumnsType<any> = [
   { title: '断言来源', dataIndex: 'from', key: 'from' },
@@ -121,7 +128,8 @@ defineExpose({ serialize })
               })
             "
           >
-            <template #bodyCell="{ column, isEdit, currentEditableInstance }">
+            <template #bodyCell="{ column, isEdit, currentEditableInstance, record }">
+              <!-- 编辑状态：显示下拉选择框 -->
               <template v-if="isEdit && column.key === 'from'">
                 <Select
                   v-model:value="currentEditableInstance[column.key!]"
@@ -139,6 +147,11 @@ defineExpose({ serialize })
                 </Select>
               </template>
 
+              <template v-else-if="!isEdit && column.key === 'from'">
+                <!-- 非编辑状态：显示中文名称 -->
+                <span>{{ getDictName('api_relation_from', record.from) }}</span>
+              </template>
+
               <template v-if="isEdit && column.key === 'type'">
                 <Select v-model:value="currentEditableInstance[column.key!]">
                   <Select.Option
@@ -151,6 +164,11 @@ defineExpose({ serialize })
                     </Tooltip>
                   </Select.Option>
                 </Select>
+              </template>
+
+              <template v-else-if="!isEdit && column.key === 'type'">
+                <!-- 非编辑状态：显示中文名称 -->
+                <span>{{ getDictName('api_relation_type', record.type) }}</span>
               </template>
             </template>
           </EditableTable>
@@ -166,7 +184,8 @@ defineExpose({ serialize })
               })
             "
           >
-            <template #bodyCell="{ column, isEdit, currentEditableInstance }">
+            <template #bodyCell="{ column, isEdit, currentEditableInstance, record }">
+              <!-- 编辑状态：显示下拉选择框 -->
               <template v-if="isEdit && column.key === 'from'">
                 <Select v-model:value="currentEditableInstance[column.key!]">
                   <Select.Option
@@ -181,6 +200,11 @@ defineExpose({ serialize })
                 </Select>
               </template>
 
+              <template v-else-if="!isEdit && column.key === 'from'">
+                <!-- 非编辑状态：显示中文名称 -->
+                <span>{{ getDictName('api_assertion_from', record.from) }}</span>
+              </template>
+
               <template v-if="isEdit && column.key === 'type'">
                 <Select v-model:value="currentEditableInstance[column.key!]">
                   <Select.Option
@@ -193,6 +217,11 @@ defineExpose({ serialize })
                     </Tooltip>
                   </Select.Option>
                 </Select>
+              </template>
+
+              <template v-else-if="!isEdit && column.key === 'type'">
+                <!-- 非编辑状态：显示中文名称 -->
+                <span>{{ getDictName('api_assertion_type', record.type) }}</span>
               </template>
 
               <template v-if="isEdit && column.key === 'action'">
@@ -210,6 +239,11 @@ defineExpose({ serialize })
                     </Tooltip>
                   </Select.Option>
                 </Select>
+              </template>
+
+              <template v-else-if="!isEdit && column.key === 'action'">
+                <!-- 非编辑状态：显示中文名称 -->
+                <span>{{ getDictName('api_assertion_action', record.action) }}</span>
               </template>
             </template>
           </EditableTable>
