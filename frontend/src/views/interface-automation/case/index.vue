@@ -101,15 +101,44 @@ function handleClickForOpenResponseModal(
     resultContent += `${space ? '  ' : ''}${content}\n`
   }
 
-  appendContent('请求头：', false)
-  header.forEach((item) => {
-    appendContent(`${item.name}: ${item.value}`)
-  })
-  appendContent('请求体: ', false)
-  if (body === '') appendContent('空')
-  else
-    for (const line of JSON.stringify(JSON.parse(body), null, 2).split('\n'))
-      appendContent(line)
+  appendContent('响应头：', false)
+  try {
+    // 后端返回的 responseHeader 可能是 JSON 字符串，需要解析
+    let headerArray: Array<{ name?: string; key?: string; value: string }> = []
+    if (typeof header === 'string') {
+      // 如果是字符串，尝试解析为 JSON
+      headerArray = JSON.parse(header || '[]')
+    } else if (Array.isArray(header)) {
+      // 如果已经是数组，直接使用
+      headerArray = header
+    }
+    
+    if (Array.isArray(headerArray) && headerArray.length > 0) {
+      headerArray.forEach((item) => {
+        const name = item.name || item.key || '未知'
+        appendContent(`${name}: ${item.value}`)
+      })
+    } else {
+      appendContent('空')
+    }
+  } catch (error) {
+    appendContent(`解析响应头失败: ${error}`)
+  }
+  
+  appendContent('响应体: ', false)
+  try {
+    if (!body || body === '') {
+      appendContent('空')
+    } else {
+      // 尝试解析 JSON 并格式化
+      const parsedBody = JSON.parse(body)
+      for (const line of JSON.stringify(parsedBody, null, 2).split('\n'))
+        appendContent(line)
+    }
+  } catch (error) {
+    // 如果不是 JSON，直接显示原始内容
+    appendContent(body || '空')
+  }
 
   executeModalRef.value?.setModalDetails('接口响应', resultContent.trim())
 }

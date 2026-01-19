@@ -80,6 +80,8 @@ public class ApiCaseServiceImpl implements ApiCaseService {
         req.getList().forEach(step -> {
             ApiCaseStepDO apiCaseStepDO = SpringBeanUtil.copyProperties(step, ApiCaseStepDO.class);
             apiCaseStepDO.setCaseId(apiCaseDO.getId());
+            // 设置 projectId，确保步骤关联到正确的项目
+            apiCaseStepDO.setProjectId(req.getProjectId());
             apiCaseStepMapper.insert(apiCaseStepDO);
         });
 
@@ -132,28 +134,36 @@ public class ApiCaseServiceImpl implements ApiCaseService {
                 throw new BizException(BizCodeEnum.API_CASE_STEP_IS_EMPTY);
             }
             //初始化测试报告
-            ReportSaveReq reportSaveReq = ReportSaveReq.builder().projectId(apiCaseDO.getProjectId())
-                    .caseId(apiCaseDO.getId())
-                    .startTime(System.currentTimeMillis())
-                    .executeState(ReportStateEnum.EXECUTING.name())
-                    .name(apiCaseDO.getName())
-                    .type(TestTypeEnum.API.name()).build();
-            JsonData jsonData = reportFeignService.save(reportSaveReq);
-            if(jsonData.isSuccess()){
-                //执行用例
-                ReportDTO reportDTO = jsonData.getData(ReportDTO.class);
+            try {
+                ReportSaveReq reportSaveReq = ReportSaveReq.builder().projectId(apiCaseDO.getProjectId())
+                        .caseId(apiCaseDO.getId())
+                        .startTime(System.currentTimeMillis())
+                        .executeState(ReportStateEnum.EXECUTING.name())
+                        .name(apiCaseDO.getName())
+                        .type(TestTypeEnum.API.name()).build();
+                JsonData jsonData = reportFeignService.save(reportSaveReq);
+                if(jsonData != null && jsonData.isSuccess()){
+                    //执行用例
+                    ReportDTO reportDTO = jsonData.getData(ReportDTO.class);
 
-                CaseInfoDTO caseInfoDTO = new CaseInfoDTO();
-                caseInfoDTO.setId(apiCaseDO.getId());
-                caseInfoDTO.setModuleId(apiCaseDO.getModuleId());
-                caseInfoDTO.setName(apiCaseDO.getName());
+                    CaseInfoDTO caseInfoDTO = new CaseInfoDTO();
+                    caseInfoDTO.setId(apiCaseDO.getId());
+                    caseInfoDTO.setModuleId(apiCaseDO.getModuleId());
+                    caseInfoDTO.setName(apiCaseDO.getName());
 
-                ApiExecuteEngine apiExecuteEngine = new ApiExecuteEngine(reportDTO);
-                ApiCaseResultDTO  apiCaseResultDTO = apiExecuteEngine.execute(caseInfoDTO, apiCaseStepDOS);
-                return JsonData.buildSuccess(apiCaseResultDTO);
-            }else {
-                log.error("API接口用例执行，初始化测试报告失败,{}",apiCaseDO);
-                return JsonData.buildError("API接口用例执行，初始化测试报告失败");
+                    ApiExecuteEngine apiExecuteEngine = new ApiExecuteEngine(reportDTO);
+                    ApiCaseResultDTO  apiCaseResultDTO = apiExecuteEngine.execute(caseInfoDTO, apiCaseStepDOS);
+                    return JsonData.buildSuccess(apiCaseResultDTO);
+                }else {
+                    String errorMsg = jsonData != null ? jsonData.getMsg() : "Feign调用返回null";
+                    log.error("API接口用例执行，初始化测试报告失败，用例ID：{}，项目ID：{}，错误信息：{}", 
+                        apiCaseDO.getId(), apiCaseDO.getProjectId(), errorMsg);
+                    return JsonData.buildError("API接口用例执行，初始化测试报告失败：" + errorMsg);
+                }
+            } catch (Exception e) {
+                log.error("API接口用例执行，初始化测试报告异常，用例ID：{}，项目ID：{}，异常信息：{}", 
+                    apiCaseDO.getId(), apiCaseDO.getProjectId(), e.getMessage(), e);
+                return JsonData.buildError("API接口用例执行，初始化测试报告失败：" + e.getMessage() + "。请确保glen-data服务已正常运行。");
             }
         } else {
             return JsonData.buildError("用例不存在");

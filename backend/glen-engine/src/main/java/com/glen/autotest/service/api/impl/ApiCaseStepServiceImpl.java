@@ -33,8 +33,10 @@ public class ApiCaseStepServiceImpl implements ApiCaseStepService {
     @Override
     public int update(ApiCaseStepUpdateReq req) {
         ApiCaseStepDO apiCaseStepDO = SpringBeanUtil.copyProperties(req, ApiCaseStepDO.class);
+        // 只使用 id 作为 WHERE 条件（id 是主键，已经唯一）
+        // 不使用 project_id，因为旧数据中 project_id 可能为 null，导致匹配失败
         LambdaQueryWrapper<ApiCaseStepDO> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ApiCaseStepDO::getId, req.getId()).eq(ApiCaseStepDO::getProjectId,req.getProjectId());
+        queryWrapper.eq(ApiCaseStepDO::getId, req.getId());
         return apiCaseStepMapper.update(apiCaseStepDO,queryWrapper);
     }
 

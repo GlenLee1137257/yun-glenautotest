@@ -1,4 +1,4 @@
-# Glen 自动化云测平台 - 完整配置使用手册
+# Glen 自动化云测平台 -MOCK- 完整配置使用手册
 
 > **文档版本**: v3.0  
 > **更新日期**: 2026年1月13日  
@@ -740,15 +740,15 @@ npm run start:prod
 
 | 关联来源 | 关联类型 | 关联表达式 | 关联变量名 | 变量描述 |
 |---------|---------|-----------|-----------|---------|
-| response_body | jsonPath | $[0].id | category_id | 提取第一个分类的ID |
+| RESPONSE_DATA | JSONPATH | $[0].id | category_id | 提取第一个分类的ID |
 
 **断言配置**：
 
-| 断言类型 | 表达式/字段 | 期望值 | 说明 |
-|---------|-----------|-------|------|
-| 状态码 | - | 200 | 验证请求成功 |
-| JSONPath | $[0].name | 测试技术 | 验证分类名称 |
-| JSONPath | $[0].isShow | 1 | 验证分类可见 |
+| 断言来源 | 断言类型 | 断言动作 | 关联表达式 | 预期值 | 说明 |
+|---------|---------|---------|-----------|-------|------|
+| RESPONSE_CODE | REGEXP | EQUAL | 200 | 200 | 验证请求成功（状态码） |
+| RESPONSE_DATA | JSONPATH | EQUAL | $[0].name | 测试技术 | 验证分类名称 |
+| RESPONSE_DATA | JSONPATH | EQUAL | $[0].isShow | 1 | 验证分类可见 |
 
 ---
 
@@ -785,16 +785,16 @@ npm run start:prod
 
 | 关联来源 | 关联类型 | 关联表达式 | 关联变量名 | 变量描述 |
 |---------|---------|-----------|-----------|---------|
-| response_body | jsonPath | $[0].id | course_id | 提取第一个课程的ID |
-| response_body | jsonPath | $[0].name | course_name | 提取课程名称 |
+| RESPONSE_DATA | JSONPATH | $[0].id | course_id | 提取第一个课程的ID |
+| RESPONSE_DATA | JSONPATH | $[0].name | course_name | 提取课程名称 |
 
 **断言配置**：
 
-| 断言类型 | 表达式/字段 | 期望值 | 说明 |
-|---------|-----------|-------|------|
-| 状态码 | - | 200 | 验证请求成功 |
-| JSONPath | $[0].categoryId | {{category_id}} | 验证分类ID一致 |
-| JSONPath | $.length | 1（操作符：>=） | 验证至少返回1条数据 |
+| 断言来源 | 断言类型 | 断言动作 | 关联表达式 | 预期值 | 说明 |
+|---------|---------|---------|-----------|-------|------|
+| RESPONSE_CODE | REGEXP | EQUAL | 200 | 200 | 验证请求成功（状态码） |
+| RESPONSE_DATA | JSONPATH | EQUAL | $[0].categoryId | {{category_id}} | 验证分类ID一致 |
+| RESPONSE_DATA | JSONPATH | GREAT_THEN | $.length | 0 | 验证至少返回1条数据 |
 
 ---
 
@@ -819,12 +819,12 @@ npm run start:prod
 
 **断言配置**：
 
-| 断言类型 | 表达式/字段 | 期望值 | 说明 |
-|---------|-----------|-------|------|
-| 状态码 | - | 200 | 验证请求成功 |
-| JSONPath | $.id | {{course_id}} | 验证课程ID一致 |
-| JSONPath | $.name | {{course_name}} | 验证课程名称一致 |
-| JSONPath | $.categoryId | {{category_id}} | 验证分类ID一致 |
+| 断言来源 | 断言类型 | 断言动作 | 关联表达式 | 预期值 | 说明 |
+|---------|---------|---------|-----------|-------|------|
+| RESPONSE_CODE | REGEXP | EQUAL | 200 | 200 | 验证请求成功（状态码） |
+| RESPONSE_DATA | JSONPATH | EQUAL | $.id | {{course_id}} | 验证课程ID一致 |
+| RESPONSE_DATA | JSONPATH | EQUAL | $.name | {{course_name}} | 验证课程名称一致 |
+| RESPONSE_DATA | JSONPATH | EQUAL | $.categoryId | {{category_id}} | 验证分类ID一致 |
 
 ---
 
@@ -872,15 +872,14 @@ npm run start:prod
 
 | 关联来源 | 关联类型 | 关联表达式 | 关联变量名 | 变量描述 |
 |---------|---------|-----------|-----------|---------|
-| response_body | jsonPath | $.id | new_course_id | 提取新创建的课程ID |
+| RESPONSE_DATA | JSONPATH | $.id | new_course_id | 提取新创建的课程ID |
 
 **断言配置**：
 
-| 断言类型 | 表达式/字段 | 期望值 | 说明 |
-|---------|-----------|-------|------|
-| 状态码 | - | 201 | 验证创建成功 |
-| JSONPath | $.id | exists（操作符） | 验证ID存在 |
-| JSONPath | $.name | 自动化测试新课程（操作符：contains） | 验证名称包含关键词 |
+| 断言来源 | 断言类型 | 断言动作 | 关联表达式 | 预期值 | 说明 |
+|---------|---------|---------|-----------|-------|------|
+| RESPONSE_CODE | REGEXP | EQUAL | 201 | 201 | 验证创建成功（状态码） |
+| RESPONSE_DATA | JSONPATH | CONTAIN | $.name | 自动化测试新课程 | 验证名称包含关键词 |
 
 ---
 
@@ -914,11 +913,11 @@ npm run start:prod
 
 **断言配置**：
 
-| 断言类型 | 表达式/字段 | 期望值 | 说明 |
-|---------|-----------|-------|------|
-| 状态码 | - | 200 | 验证更新成功 |
-| JSONPath | $.id | {{new_course_id}} | 验证课程ID一致 |
-| JSONPath | $.price | 199 | 验证价格已更新 |
+| 断言来源 | 断言类型 | 断言动作 | 关联表达式 | 预期值 | 说明 |
+|---------|---------|---------|-----------|-------|------|
+| RESPONSE_CODE | REGEXP | EQUAL | 200 | 200 | 验证更新成功（状态码） |
+| RESPONSE_DATA | JSONPATH | EQUAL | $.id | {{new_course_id}} | 验证课程ID一致 |
+| RESPONSE_DATA | JSONPATH | EQUAL | $.price | 199 | 验证价格已更新 |
 
 ---
 
@@ -953,10 +952,10 @@ npm run start:prod
 
 **断言配置**：
 
-| 断言类型 | 表达式/字段 | 期望值 | 说明 |
-|---------|-----------|-------|------|
-| 状态码 | - | 200 | 验证请求成功 |
-| JSONPath | $[0].courseId | {{course_id}} | 验证课程ID一致 |
+| 断言来源 | 断言类型 | 断言动作 | 关联表达式 | 预期值 | 说明 |
+|---------|---------|---------|-----------|-------|------|
+| RESPONSE_CODE | REGEXP | EQUAL | 200 | 200 | 验证请求成功（状态码） |
+| RESPONSE_DATA | JSONPATH | EQUAL | $[0].courseId | {{course_id}} | 验证课程ID一致 |
 
 ---
 
