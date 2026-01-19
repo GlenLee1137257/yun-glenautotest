@@ -3,6 +3,7 @@ package com.glen.autotest.controller;
 import cn.hutool.http.server.HttpServerResponse;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
+import com.glen.autotest.controller.req.ReportBatchDelReq;
 import com.glen.autotest.controller.req.ReportDelReq;
 import com.glen.autotest.controller.req.ReportExportReq;
 import com.glen.autotest.controller.req.ReportPageReq;
@@ -55,10 +56,31 @@ public class ReportController {
      */
     @PostMapping("del")
     public JsonData delete(@RequestBody ReportDelReq req){
+        try {
+            int rows = reportService.delete(req);
+            return JsonData.buildSuccess(rows);
+        } catch (IllegalArgumentException e) {
+            return JsonData.buildError(e.getMessage());
+        } catch (Exception e) {
+            return JsonData.buildError("删除报告失败：" + e.getMessage());
+        }
+    }
 
-        int  rows = reportService.delete(req);
-
-        return JsonData.buildSuccess(rows);
+    /**
+     * 批量删除
+     * @param req
+     * @return
+     */
+    @PostMapping("batchDel")
+    public JsonData batchDelete(@RequestBody ReportBatchDelReq req){
+        try {
+            int rows = reportService.batchDelete(req);
+            return JsonData.buildSuccess(rows);
+        } catch (IllegalArgumentException e) {
+            return JsonData.buildError(e.getMessage());
+        } catch (Exception e) {
+            return JsonData.buildError("批量删除报告失败：" + e.getMessage());
+        }
     }
 
 

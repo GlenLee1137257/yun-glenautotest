@@ -1,5 +1,6 @@
 package com.glen.autotest.service;
 
+import com.glen.autotest.controller.req.ReportBatchDelReq;
 import com.glen.autotest.controller.req.ReportDelReq;
 import com.glen.autotest.controller.req.ReportExportReq;
 import com.glen.autotest.controller.req.ReportPageReq;
@@ -45,4 +46,11 @@ public interface ReportService {
      * @return
      */
     int delete(ReportDelReq req);
+
+    /**
+     * 批量删除报告
+     * @param req
+     * @return
+     */
+    int batchDelete(ReportBatchDelReq req);
 }

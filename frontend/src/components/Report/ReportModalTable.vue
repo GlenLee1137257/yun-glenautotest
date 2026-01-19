@@ -138,19 +138,43 @@ const { post: executeDeleteReport } = useCustomFetch<IReport[]>(
   },
 )
 
+const { post: executeBatchDeleteReport } = useCustomFetch<IReport[]>(
+  '/data-service/api/v1/report/batchDel',
+  {
+    immediate: false,
+    initialData: [],
+    afterFetch: (ctx: AfterFetchContext<IBasicWithPage<IReport>>) => {
+      if (ctx.data && ctx.data.code === 0) {
+        message.success(`成功删除 ${ctx.data.data ?? 0} 条测试报告！`)
+      }
+      return ctx
+    },
+  },
+)
+
+// 选中的行
+const selectedRowKeys = ref<number[]>([])
+
 async function reFetch() {
   await nextTick()
   executeGetReportPage(objectOmit(toRaw(searchParams), ['totalSize'])).execute()
+  // 清空选中状态（因为数据可能已变化）
+  selectedRowKeys.value = []
 }
 
 function resetSearchParams() {
+  // 重置页码为第一页
   searchParams.page = 1
-  searchParams.type = 'STRESS'
-  searchParams.projectId = undefined
+  // 根据报告类型设置正确的 type（'api' -> 'API', 'ui' -> 'UI', 'stress' -> 'STRESS'）
+  searchParams.type = props.reportType.toUpperCase()
+  // 不清空 projectId，保留当前项目ID（因为测试报告是按项目查询的）
+  // searchParams.projectId = undefined  // 注释掉，不清空项目ID
+  // 只清空搜索条件
   searchParams.caseId = undefined
   searchParams.name = undefined
   searchParams.startTime = undefined
   searchParams.endTime = undefined
+  // 重新获取数据（会使用保留的 projectId 和正确的 type）
   reFetch()
 }
 
@@ -176,8 +200,42 @@ async function handleDelete(record: IReport) {
   await executeDeleteReport({
     id: record.id,
     type: record.type,
+    projectId: searchParams.projectId,
   }).execute()
+  // 如果删除的记录在选中列表中，从选中列表中移除
+  const index = selectedRowKeys.value.indexOf(record.id)
+  if (index > -1) {
+    selectedRowKeys.value.splice(index, 1)
+  }
   reFetch()
+}
+
+// 表格行选择变化
+function handleSelectChange(keys: number[]) {
+  selectedRowKeys.value = keys
+}
+
+// 批量删除
+async function handleBatchDelete() {
+  if (selectedRowKeys.value.length === 0) {
+    message.warning('请至少选择一条记录！')
+    return
+  }
+
+  try {
+    await executeBatchDeleteReport({
+      ids: selectedRowKeys.value,
+      type: searchParams.type,
+      projectId: searchParams.projectId,
+    }).execute()
+    // 清空选中状态
+    selectedRowKeys.value = []
+    // 刷新数据
+    reFetch()
+  } catch (error) {
+    console.error('批量删除失败:', error)
+    message.error('批量删除失败，请稍后重试')
+  }
 }
 
 const downloadExcel = async () => {
@@ -306,13 +364,34 @@ onMounted(() => {
         </Form.Item>
       </Form>
 
-      <Button type="dashed" size="small" @click="reFetch()">刷新</Button>
-      <Button type="dashed" size="small" @click="downloadExcel()">导出</Button>
+      <div flex="~ items-center gap-2">
+        <span v-if="selectedRowKeys.length > 0" text="sm gray-600 font-500">
+          已选择 {{ selectedRowKeys.length }} 条记录
+        </span>
+        <Popconfirm
+          v-if="selectedRowKeys.length > 0"
+          :title="`确定要删除选中的 ${selectedRowKeys.length} 条测试报告吗？（此操作不可逆！）`"
+          ok-text="确定"
+          cancel-text="取消"
+          @confirm="handleBatchDelete"
+        >
+          <Button type="primary" danger size="small">
+            批量删除
+          </Button>
+        </Popconfirm>
+        <Button type="dashed" size="small" @click="reFetch()">刷新</Button>
+        <Button type="dashed" size="small" @click="downloadExcel()">导出</Button>
+      </div>
     </div>
     <Table
       :loading="isFetching"
       :data-source="dataSource!"
       :columns="columns"
+      :row-selection="{
+        selectedRowKeys: selectedRowKeys,
+        onChange: handleSelectChange,
+        columnWidth: 50,
+      }"
       :pagination="{
         showLessItems: true,
         current: searchParams.page,
@@ -321,9 +400,12 @@ onMounted(() => {
         onChange(page, pageSize) {
           searchParams.page = page
           searchParams.size = pageSize
+          // 切换页码时清空选中状态
+          selectedRowKeys.value = []
           reFetch()
         },
       }"
+      row-key="id"
     >
       <template #bodyCell="{ column, record }">
         <template
