@@ -20,7 +20,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("report_detail_ui")
+@TableName("glen_ui.report_detail_ui")
 @Schema(name = "ReportDetailUiDO", description = "")
 public class ReportDetailUiDO implements Serializable {
 
