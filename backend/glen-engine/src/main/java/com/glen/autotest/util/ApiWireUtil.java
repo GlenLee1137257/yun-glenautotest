@@ -34,7 +34,10 @@ public class ApiWireUtil {
      * @param path
      */
     public static void wireBase(RequestSpecification request, String base, String path) {
-        request.baseUri(base + path);
+        // 支持在路径中使用关联变量占位符，例如 /courses/{{course_id}}
+        // 这里先对 path 做一次变量替换，再与 base 组合
+        String finalPath = ApiRelationGetUtil.getParameter(path);
+        request.baseUri(base + finalPath);
     }
 
     /**
@@ -152,24 +155,22 @@ public class ApiWireUtil {
                         Object subValue = jsonArray.get(i);
                         if (subValue instanceof String subStringValue) {
                             String parameterizedValue = ApiRelationGetUtil.getParameter(subStringValue);
-                            jsonArray.remove(subStringValue);
-                            jsonArray.add(parameterizedValue);
+                            // 使用索引来替换，避免 remove(Object) 可能移除错误元素的问题
+                            jsonArray.set(i, parameterizedValue);
                             // 仅在实际需要日志记录时，使用占位符记录
                             // log.info("Parameterized string: {} -> {}", subStringValue, parameterizedValue);
                         } else if (subValue instanceof JSONObject subJsonObject) {
                             traverseJsonObject(subJsonObject);
-                        } else {
-                            log.info("Unsupported type encountered: {}", subValue.getClass().getName());
                         }
+                        // 其他类型（Integer、Long、Boolean、Double等）不需要变量替换，直接跳过
                     }
                 } else if (value instanceof String stringValue) {
                     String parameterizedValue = ApiRelationGetUtil.getParameter(stringValue);
                     jsonObject.put(key, parameterizedValue);
                     // 仅在实际需要日志记录时，使用占位符记录
                     // log.info("Parameterized string: {} -> {}", stringValue, parameterizedValue);
-                } else {
-                    log.info("Unsupported type encountered: {}", value.getClass().getName());
                 }
+                // 其他类型（Integer、Long、Boolean、Double等）不需要变量替换，直接跳过
             }
         }
     }

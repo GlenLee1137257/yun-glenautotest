@@ -356,7 +356,8 @@ onMounted(async () => {
               }}
             </template>
             <template v-else-if="column.key!.toString() === 'num'">
-              {{ index }}
+              <!-- 显示时从 1 开始，方便与“步骤1 / 步骤2 ...”对应；实际存储仍从 0 开始 -->
+              {{ index + 1 }}
             </template>
             <template v-else>
               <p truncate :title="record[column.key!.toString()]">

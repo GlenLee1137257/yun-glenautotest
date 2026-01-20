@@ -41,3 +41,33 @@ export interface IReportDetails {
   gmtCreate: string
   gmtModified: string
 }
+
+// 接口测试报告详情
+export interface IApiReportDetail {
+  id: number
+  reportId: number
+  executeState: boolean
+  assertionState: boolean
+  exceptionMsg: string
+  expendTime: number
+  requestHeader: string
+  requestQuery: string
+  requestBody: string
+  responseHeader: string
+  responseBody: string
+  environmentId: number
+  caseId: number
+  num: number
+  name: string
+  description: string
+  assertion: string // JSON字符串
+  relation: string // JSON字符串
+  path: string
+  method: string
+  query: string
+  header: string
+  body: string
+  bodyType: string
+  gmtCreate: string
+  gmtModified: string
+}

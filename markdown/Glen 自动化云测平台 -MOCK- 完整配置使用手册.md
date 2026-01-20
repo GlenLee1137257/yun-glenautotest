@@ -746,9 +746,9 @@ npm run start:prod
 
 | 断言来源 | 断言类型 | 断言动作 | 关联表达式 | 预期值 | 说明 |
 |---------|---------|---------|-----------|-------|------|
-| RESPONSE_CODE | REGEXP | EQUAL | 200 | 200 | 验证请求成功（状态码） |
-| RESPONSE_DATA | JSONPATH | EQUAL | $[0].name | 测试技术 | 验证分类名称 |
-| RESPONSE_DATA | JSONPATH | EQUAL | $[0].isShow | 1 | 验证分类可见 |
+| RESPONSE_CODE | REGEXP | 等于 | 200 | 200 | 验证步骤1请求成功（状态码为200） |
+| RESPONSE_DATA | JSONPATH | 等于 | $[0].name | 测试技术 | 验证步骤1返回的第一个分类名称为“测试技术” |
+| RESPONSE_DATA | JSONPATH | 等于 | $[0].isShow | 1 | 验证步骤1返回的第一个分类为可见状态（isShow=1） |
 
 ---
 
@@ -792,9 +792,9 @@ npm run start:prod
 
 | 断言来源 | 断言类型 | 断言动作 | 关联表达式 | 预期值 | 说明 |
 |---------|---------|---------|-----------|-------|------|
-| RESPONSE_CODE | REGEXP | 等于 | 200 | 200 | 验证请求成功（状态码） |
-| RESPONSE_DATA | JSONPATH | 等于 | $[0].categoryId | {{category_id}} | 验证分类ID一致 |
-| RESPONSE_DATA | JSONPATH | 大于 | $.length() | 0 | 验证至少返回1条数据 |
+| RESPONSE_CODE | REGEXP | 等于 | 200 | 200 | 验证步骤2请求成功（状态码为200） |
+| RESPONSE_DATA | JSONPATH | 等于 | $[0].categoryId | {{category_id}} | 验证步骤2返回的第一个课程分类ID与步骤1提取的分类ID一致 |
+| RESPONSE_DATA | JSONPATH | 大于 | $.length() | 0 | 验证步骤2返回的课程列表数量大于0 |
 
 ---
 
@@ -821,10 +821,10 @@ npm run start:prod
 
 | 断言来源 | 断言类型 | 断言动作 | 关联表达式 | 预期值 | 说明 |
 |---------|---------|---------|-----------|-------|------|
-| RESPONSE_CODE | REGEXP | EQUAL | 200 | 200 | 验证请求成功（状态码） |
-| RESPONSE_DATA | JSONPATH | EQUAL | $.id | {{course_id}} | 验证课程ID一致 |
-| RESPONSE_DATA | JSONPATH | EQUAL | $.name | {{course_name}} | 验证课程名称一致 |
-| RESPONSE_DATA | JSONPATH | EQUAL | $.categoryId | {{category_id}} | 验证分类ID一致 |
+| RESPONSE_CODE | REGEXP | 等于 | 200 | 200 | 验证步骤3请求成功（状态码为200） |
+| RESPONSE_DATA | JSONPATH | 等于 | $.id | {{course_id}} | 验证步骤3返回的课程ID与步骤2提取的课程ID一致 |
+| RESPONSE_DATA | JSONPATH | 等于 | $.name | {{course_name}} | 验证步骤3返回的课程名称与步骤2提取的课程名称一致 |
+| RESPONSE_DATA | JSONPATH | 等于 | $.categoryId | {{category_id}} | 验证步骤3返回的课程分类ID与步骤1提取的分类ID一致 |
 
 ---
 
@@ -854,7 +854,7 @@ npm run start:prod
   "name": "自动化测试新课程-{{$timestamp}}",
   "description": "这是一个自动创建的测试课程",
   "price": 299.00,
-  "categoryId": {{category_id}},
+  "categoryId": "{{category_id}}",
   "categoryName": "测试技术",
   "teacherName": "自动化测试",
   "courseDuration": 3600,
@@ -878,8 +878,8 @@ npm run start:prod
 
 | 断言来源 | 断言类型 | 断言动作 | 关联表达式 | 预期值 | 说明 |
 |---------|---------|---------|-----------|-------|------|
-| RESPONSE_CODE | REGEXP | EQUAL | 201 | 201 | 验证创建成功（状态码） |
-| RESPONSE_DATA | JSONPATH | CONTAIN | $.name | 自动化测试新课程 | 验证名称包含关键词 |
+| RESPONSE_CODE | REGEXP | 等于 | 201 | 201 | 验证步骤4创建课程请求成功（状态码为201） |
+| RESPONSE_DATA | JSONPATH | 包含 | $.name | 自动化测试新课程 | 验证步骤4返回的新课程名称包含“自动化测试新课程”关键字 |
 
 ---
 
@@ -915,9 +915,9 @@ npm run start:prod
 
 | 断言来源 | 断言类型 | 断言动作 | 关联表达式 | 预期值 | 说明 |
 |---------|---------|---------|-----------|-------|------|
-| RESPONSE_CODE | REGEXP | EQUAL | 200 | 200 | 验证更新成功（状态码） |
-| RESPONSE_DATA | JSONPATH | EQUAL | $.id | {{new_course_id}} | 验证课程ID一致 |
-| RESPONSE_DATA | JSONPATH | EQUAL | $.price | 199 | 验证价格已更新 |
+| RESPONSE_CODE | REGEXP | 等于 | 200 | 200 | 验证步骤5更新课程请求成功（状态码为200） |
+| RESPONSE_DATA | JSONPATH | 等于 | $.id | {{new_course_id}} | 验证步骤5返回的课程ID与步骤4提取的新课程ID一致 |
+| RESPONSE_DATA | JSONPATH | 等于 | $.price | 199 | 验证步骤5返回的课程价格已更新为199 |
 
 ---
 
@@ -954,8 +954,8 @@ npm run start:prod
 
 | 断言来源 | 断言类型 | 断言动作 | 关联表达式 | 预期值 | 说明 |
 |---------|---------|---------|-----------|-------|------|
-| RESPONSE_CODE | REGEXP | EQUAL | 200 | 200 | 验证请求成功（状态码） |
-| RESPONSE_DATA | JSONPATH | EQUAL | $[0].courseId | {{course_id}} | 验证课程ID一致 |
+| RESPONSE_CODE | REGEXP | 等于 | 200 | 200 | 验证步骤6请求成功（状态码为200） |
+| RESPONSE_DATA | JSONPATH | 等于 | $[0].courseId | {{course_id}} | 验证步骤6返回的第一条评论中的课程ID与步骤2提取的课程ID一致 |
 
 ---
 

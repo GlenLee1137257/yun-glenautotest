@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Button, Modal, Table } from 'ant-design-vue'
+import { Button, Modal, Table, Tooltip } from 'ant-design-vue'
 import dayjs from 'dayjs'
 import JsonEditorVue from 'json-editor-vue'
 import type { IBasicWithPage } from '~/types/apis/basic'
@@ -124,14 +124,23 @@ onMounted(() => {
       <template #bodyCell="{ column, record, value }">
         <slot :column="column" :record="record" />
 
+        <!-- 日期时间字段 -->
         <template
           v-if="['gmtCreate', 'gmtModified'].includes(column.key!.toString())"
         >
-          {{
-            dayjs(record[column.key as string]).format('YYYY-MM-DD - HH:mm:ss')
-          }}
+          <Tooltip
+            :title="dayjs(record[column.key as string]).format('YYYY-MM-DD - HH:mm:ss')"
+            placement="topLeft"
+          >
+            <span style="cursor: pointer">
+              {{
+                dayjs(record[column.key as string]).format('YYYY-MM-DD - HH:mm:ss')
+              }}
+            </span>
+          </Tooltip>
         </template>
 
+        <!-- 操作按钮字段 -->
         <template v-else-if="column.key?.toString() === 'checkDetails'">
           <Button
             type="primary"
@@ -147,14 +156,18 @@ onMounted(() => {
           </Button>
         </template>
 
+        <!-- 布尔值字段（是/否） -->
         <template
           v-else-if="
             column.key === 'isContinue' || column.key === 'isScreenshot'
           "
         >
-          {{ value ? '是' : '否' }}
+          <Tooltip :title="value ? '是' : '否'" placement="topLeft">
+            <span style="cursor: pointer">{{ value ? '是' : '否' }}</span>
+          </Tooltip>
         </template>
 
+        <!-- 截图URL字段 -->
         <template v-else-if="column.key === 'screenshotUrl'">
           <Button
             v-if="value"
@@ -173,16 +186,45 @@ onMounted(() => {
           <span v-else> - </span>
         </template>
 
+        <!-- 布尔值字段（执行状态） -->
         <template v-else-if="typeof value === 'boolean'">
-          <div font-bold>
-            <ExecuteState :model-value="value" />
-          </div>
+          <Tooltip :title="value ? '成功' : '失败'" placement="topLeft">
+            <div font-bold style="cursor: pointer">
+              <ExecuteState :model-value="value" />
+            </div>
+          </Tooltip>
         </template>
 
-        <template v-else-if="value">
-          <p truncate>{{ value }}</p>
+        <!-- 执行信息字段：无异常时显示“正常” -->
+        <template v-else-if="column.key === 'exceptionMsg'">
+          <span v-if="!value || value === ''">正常</span>
+          <Tooltip v-else :title="String(value)" placement="topLeft">
+            <p truncate style="cursor: pointer; margin: 0">{{ value }}</p>
+          </Tooltip>
         </template>
 
+        <!-- 耗时字段格式化显示（毫秒转换为友好格式） -->
+        <template v-else-if="column.key === 'expendTime'">
+          <Tooltip
+            v-if="value && value > 0"
+            :title="`${value}ms (${(value / 1000).toFixed(2)}s)`"
+            placement="topLeft"
+          >
+            <span style="cursor: pointer">
+              {{ value >= 1000 ? `${(value / 1000).toFixed(2)}s` : `${value}ms` }}
+            </span>
+          </Tooltip>
+          <span v-else> - </span>
+        </template>
+
+        <!-- 所有其他有值的字段都使用 Tooltip 显示完整内容 -->
+        <template v-else-if="value && value !== ''">
+          <Tooltip :title="String(value)" placement="topLeft">
+            <p truncate style="cursor: pointer; margin: 0">{{ value }}</p>
+          </Tooltip>
+        </template>
+
+        <!-- 空值显示 -->
         <template v-else-if="value == null || value === ''"> - </template>
       </template>
     </Table>

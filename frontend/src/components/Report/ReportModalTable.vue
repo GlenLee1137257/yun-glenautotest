@@ -7,6 +7,7 @@ import {
   Input,
   Popconfirm,
   Table,
+  Tooltip,
   message,
 } from 'ant-design-vue'
 import { type AfterFetchContext, objectOmit } from '@vueuse/core'
@@ -437,14 +438,50 @@ onMounted(() => {
       }"
       row-key="id"
     >
-      <template #bodyCell="{ column, record }">
+      <template #bodyCell="{ column, record, value }">
         <template
           v-if="['gmtCreate', 'gmtModified'].includes(column.key!.toString())"
         >
           {{ dayjs(record[column.key!]).format('YYYY-MM-DD - HH:mm:ss') }}
         </template>
 
-        <template v-if="column.key === 'summary'">
+        <!-- 执行状态字段：将英文枚举值转换为中文 -->
+        <template v-else-if="column.key === 'executeState'">
+          <Tooltip :title="value" placement="topLeft">
+            <span style="cursor: pointer">
+              {{
+                value === 'EXECUTE_SUCCESS'
+                  ? '执行成功'
+                  : value === 'EXECUTE_FAIL'
+                    ? '执行失败'
+                    : value === 'EXECUTING'
+                      ? '执行中'
+                      : value === 'COUNTING_REPORT'
+                        ? '统计中'
+                        : value || '-'
+              }}
+            </span>
+          </Tooltip>
+        </template>
+
+        <!-- 报告类型字段：将英文类型转换为中文 -->
+        <template v-else-if="column.key === 'type'">
+          <Tooltip :title="value" placement="topLeft">
+            <span style="cursor: pointer">
+              {{
+                value === 'API'
+                  ? '接口'
+                  : value === 'UI'
+                    ? 'UI'
+                    : value === 'STRESS'
+                      ? '压力'
+                      : value || '-'
+              }}
+            </span>
+          </Tooltip>
+        </template>
+
+        <template v-else-if="column.key === 'summary'">
           <span v-if="!record[column.key!]"> - </span>
           <div v-else grid="~ cols-2 gap-2">
             <div
@@ -459,7 +496,7 @@ onMounted(() => {
           </div>
         </template>
 
-        <template v-if="column.key === 'operator'">
+        <template v-else-if="column.key === 'operator'">
           <Button type="link" @click="handleOpenDetail(record as IReport)">
             详情
           </Button>
@@ -470,6 +507,15 @@ onMounted(() => {
             <Button type="link" danger>删除</Button>
           </Popconfirm>
         </template>
+
+        <!-- 其他字段使用 Tooltip 显示完整内容 -->
+        <template v-else-if="value && value !== ''">
+          <Tooltip :title="String(value)" placement="topLeft">
+            <span style="cursor: pointer">{{ value }}</span>
+          </Tooltip>
+        </template>
+
+        <template v-else-if="value == null || value === ''"> - </template>
       </template>
     </Table>
   </div>

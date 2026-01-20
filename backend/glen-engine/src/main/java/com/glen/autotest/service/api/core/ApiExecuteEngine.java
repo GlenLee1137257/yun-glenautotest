@@ -20,7 +20,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -56,6 +58,14 @@ public class ApiExecuteEngine {
     public ApiCaseResultDTO execute(CaseInfoDTO caseInfoDTO, List<ApiCaseStepDO> apiCaseStepDOList){
 
         try {
+            // 预置内置关联变量（例如 {{$timestamp}}），供整个用例执行过程使用
+            // 注意：变量名需要和占位符中的内容完全一致，这里为 `$timestamp`
+            // 生成秒级时间戳并格式化为 yyyy-MM-dd HH:mm:ss 格式
+            long currentTimeSeconds = System.currentTimeMillis() / 1000;
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String formattedTimestamp = sdf.format(new Date(currentTimeSeconds * 1000));
+            ApiRelationContext.set("$timestamp", formattedTimestamp);
+
             int quantity = apiCaseStepDOList.size();
             long startTime = System.currentTimeMillis();
             //进行执行
@@ -69,8 +79,12 @@ public class ApiExecuteEngine {
             result.setExpendTime(endTime-startTime);
             result.setQuantity(quantity);
 
-            int passQuantity = result.getList().stream().filter(item -> {
+            // 为所有步骤结果设置 reportId（必须在 filter 之前设置，确保明细数据能正确保存）
+            result.getList().forEach(item -> {
                 item.setReportId(reportDTO.getId());
+            });
+
+            int passQuantity = result.getList().stream().filter(item -> {
                 return item.getExecuteState() && item.getAssertionState();
             }).toList().size();
 
@@ -140,10 +154,17 @@ public class ApiExecuteEngine {
 
         }catch (BizException e){
             e.printStackTrace();
-            //断言失败
+            //断言失败或业务异常
             resultItem.setAssertionState(false);
-            //TODO 如何改进断言信息返回 exceptionMsg
-            resultItem.setExceptionMsg(e.getDetail());
+            // 优先使用 detail，如果没有则使用 msg，最后使用 message
+            String exceptionMsg = e.getDetail();
+            if (exceptionMsg == null || exceptionMsg.trim().isEmpty()) {
+                exceptionMsg = e.getMsg();
+            }
+            if (exceptionMsg == null || exceptionMsg.trim().isEmpty()) {
+                exceptionMsg = e.getMessage();
+            }
+            resultItem.setExceptionMsg(exceptionMsg);
         }catch (Exception e){
             e.printStackTrace();
             resultItem.setExecuteState(false);

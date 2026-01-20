@@ -8,6 +8,8 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ApiCaseStep: typeof import('./../components/NewOrEdit/ApiCaseStep.vue')['default']
+    ApiReportStepTimeline: typeof import('./../components/Report/ApiReportStepTimeline.vue')['default']
+    AssertionComparisonTable: typeof import('./../components/Report/AssertionComparisonTable.vue')['default']
     EditableTable: typeof import('./../components/Table/EditableTable.vue')['default']
     ExecuteModal: typeof import('./../components/Execute/ExecuteModal.vue')['default']
     ExecuteResult: typeof import('./../components/Execute/ExecuteResult.vue')['default']
@@ -27,10 +29,12 @@ declare module 'vue' {
     ReportModalTable: typeof import('./../components/Report/ReportModalTable.vue')['default']
     RequestBody: typeof import('./../components/NewOrEdit/RequestBody.vue')['default']
     RequestConfig: typeof import('./../components/NewOrEdit/RequestConfig.vue')['default']
+    RequestResponseDetail: typeof import('./../components/Report/RequestResponseDetail.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SimplyTableModal: typeof import('./../components/SimplyTableModal.vue')['default']
     TableModal: typeof import('./../components/TableModal.vue')['default']
     UploadFile: typeof import('./../components/UploadFile.vue')['default']
+    VariableChainView: typeof import('./../components/Report/VariableChainView.vue')['default']
   }
 }

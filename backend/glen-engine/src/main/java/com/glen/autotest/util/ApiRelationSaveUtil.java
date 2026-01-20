@@ -60,8 +60,14 @@ public class ApiRelationSaveUtil {
             if(json!= null){
                 ApiRelationContext.set(relation.getName(),String.valueOf(json));
             }
+        }catch (BizException e){
+            // 如果是业务异常，直接抛出
+            throw e;
         }catch (Exception e){
-            throw new BizException(BizCodeEnum.API_OPERATION_UNSUPPORTED_RELATION);
+            // 记录详细的异常信息，便于排查问题
+            String errorMsg = String.format("关联取值失败 - 来源: %s, 表达式: %s, 变量名: %s, 错误: %s",
+                    relation.getFrom(), relation.getExpress(), relation.getName(), e.getMessage());
+            throw new BizException(BizCodeEnum.API_OPERATION_UNSUPPORTED_RELATION.getCode(), errorMsg);
         }
 
     }
