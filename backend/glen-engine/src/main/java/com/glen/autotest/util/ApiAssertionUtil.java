@@ -70,7 +70,8 @@ public class ApiAssertionUtil {
         for (ApiJsonAssertionDTO assertion : request.getAssertionList()) {
             boolean state = true;
             String express = assertion.getExpress();
-            String expectValue = assertion.getValue();
+            // 对预期值进行变量替换（如将 {{category_id}} 替换为实际值）
+            String expectValue = ApiRelationGetUtil.getParameter(assertion.getValue());
             ApiAssertFieldFromEnum fieldFromEnum = ApiAssertFieldFromEnum.valueOf(assertion.getFrom());
             try {
                 if (ApiAssertTypeEnum.JSONPATH.name().equals(assertion.getType())) {

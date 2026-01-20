@@ -53,6 +53,7 @@ export const defaultWithIApiCaseStepAssertion: IApiCaseStepAssertion = {
   action: 'EQUAL',
   express: '',
   value: '',
+  remark: '',
 }
 
 export interface IApiCaseStepAssertion {
@@ -67,6 +68,10 @@ export interface IApiCaseStepAssertion {
     | 'LESS_THEN'
   express: string
   value: string
+  /**
+   * 说明（可选），用于对该断言的业务含义进行简短描述
+   */
+  remark?: string
 }
 
 export const defaultWithIApiCaseStepRelation: IApiCaseStepRelation = {

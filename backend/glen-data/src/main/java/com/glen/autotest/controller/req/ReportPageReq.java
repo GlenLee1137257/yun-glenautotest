@@ -28,6 +28,11 @@ public class ReportPageReq {
     private Long caseId;
 
     /**
+     * 报告id
+     */
+    private Long reportId;
+
+    /**
      * 用例类型，API, UI STRESS
      */
     private String type;

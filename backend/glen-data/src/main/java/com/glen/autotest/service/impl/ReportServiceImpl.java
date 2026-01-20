@@ -176,8 +176,22 @@ public class ReportServiceImpl implements ReportService {
         if (req.getProjectId() != null){
             queryWrapper.eq(ReportDO::getProjectId,req.getProjectId());
         }
-        if (req.getCaseId() != null){
-            queryWrapper.eq(ReportDO::getCaseId,req.getCaseId());
+        // 如果同时提供了用例ID和报告ID，使用OR查询（匹配任一即可）
+        if (req.getReportId() != null && req.getCaseId() != null && req.getReportId().equals(req.getCaseId())){
+            // 如果两个ID相同，说明是统一搜索框输入的值，使用OR查询
+            queryWrapper.and(wrapper -> wrapper
+                .eq(ReportDO::getId, req.getReportId())
+                .or()
+                .eq(ReportDO::getCaseId, req.getCaseId())
+            );
+        } else {
+            // 如果只提供了其中一个，单独查询
+            if (req.getReportId() != null){
+                queryWrapper.eq(ReportDO::getId,req.getReportId());
+            }
+            if (req.getCaseId() != null){
+                queryWrapper.eq(ReportDO::getCaseId,req.getCaseId());
+            }
         }
         if (req.getType() != null){
             queryWrapper.eq(ReportDO::getType,req.getType());

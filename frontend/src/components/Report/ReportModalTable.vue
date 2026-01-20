@@ -20,10 +20,14 @@ const props = defineProps<{
   reportType: 'stress' | 'api' | 'ui'
 }>()
 
+// 统一的ID搜索字段（用于输入用例ID或报告ID）
+const idSearchValue = ref<string>('')
+
 const searchParams = reactive<{
   page: number
   size: number
   projectId: number | undefined
+  reportId: number | undefined
   caseId: number | undefined
   name: string | undefined
   startTime: string | undefined
@@ -34,6 +38,7 @@ const searchParams = reactive<{
   page: 1,
   size: 8,
   projectId: undefined,
+  reportId: undefined,
   caseId: undefined,
   name: undefined,
   type: props.reportType,
@@ -41,6 +46,21 @@ const searchParams = reactive<{
   endTime: undefined,
   totalSize: 0,
 })
+
+// 处理ID搜索输入，同时设置用例ID和报告ID
+function handleIdSearchChange(value: string) {
+  idSearchValue.value = value
+  const numValue = value.trim() ? Number(value.trim()) : undefined
+  if (numValue && !isNaN(numValue)) {
+    // 如果输入的是有效数字，同时设置用例ID和报告ID，后端会进行OR查询
+    searchParams.caseId = numValue
+    searchParams.reportId = numValue
+  } else {
+    // 清空时，同时清空两个字段
+    searchParams.caseId = undefined
+    searchParams.reportId = undefined
+  }
+}
 
 const columns: ColumnsType = [
   {
@@ -170,6 +190,8 @@ function resetSearchParams() {
   // 不清空 projectId，保留当前项目ID（因为测试报告是按项目查询的）
   // searchParams.projectId = undefined  // 注释掉，不清空项目ID
   // 只清空搜索条件
+  idSearchValue.value = ''
+  searchParams.reportId = undefined
   searchParams.caseId = undefined
   searchParams.name = undefined
   searchParams.startTime = undefined
@@ -293,7 +315,10 @@ onMounted(() => {
   if (route.query?.projectId) {
     searchParams.projectId = Number(route.query.projectId)
     if (route.query?.caseId) {
-      searchParams.caseId = Number(route.query.caseId)
+      const caseIdValue = Number(route.query.caseId)
+      searchParams.caseId = caseIdValue
+      // 同步到统一搜索框
+      idSearchValue.value = String(caseIdValue)
       if (route.query?.type) {
         searchParams.type = route.query.type as string
       }
@@ -305,10 +330,10 @@ onMounted(() => {
 
 <template>
   <div>
-    <div flex="~ justify-between">
-      <Form layout="inline" autocomplete="off" mb>
+    <div flex="~ justify-between items-start">
+      <Form layout="inline" autocomplete="off" mb style="flex: 1">
         <Form.Item label="报告类型">
-          <span>
+          <span style="font-weight: 500">
             {{
               reportType === 'ui'
                 ? '功能'
@@ -319,11 +344,13 @@ onMounted(() => {
           </span>
         </Form.Item>
 
-        <Form.Item label="用例 ID">
+        <Form.Item label="用例/报告 ID">
           <Input
-            v-model:value="searchParams.caseId"
-            placeholder="无"
-            style="width: 50px"
+            :value="idSearchValue"
+            @update:value="handleIdSearchChange"
+            placeholder="用例ID或报告ID"
+            style="width: 140px"
+            allow-clear
           />
         </Form.Item>
 
@@ -331,7 +358,8 @@ onMounted(() => {
           <Input
             v-model:value="searchParams.name"
             placeholder="请输入用例名称"
-            style="width: 200px"
+            style="width: 180px"
+            allow-clear
           />
         </Form.Item>
 
@@ -342,6 +370,7 @@ onMounted(() => {
             value-format="YYYY-MM-DD HH:mm:ss"
             type="date"
             placeholder="开始时间"
+            style="width: 180px"
           />
         </Form.Item>
 
@@ -352,6 +381,7 @@ onMounted(() => {
             value-format="YYYY-MM-DD HH:mm:ss"
             type="date"
             placeholder="结束时间"
+            style="width: 180px"
           />
         </Form.Item>
 
@@ -360,7 +390,7 @@ onMounted(() => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" @click="resetSearchParams()"> 清空 </Button>
+          <Button @click="resetSearchParams()"> 清空 </Button>
         </Form.Item>
       </Form>
 

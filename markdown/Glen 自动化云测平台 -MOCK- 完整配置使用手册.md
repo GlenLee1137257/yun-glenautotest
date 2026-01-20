@@ -792,9 +792,9 @@ npm run start:prod
 
 | 断言来源 | 断言类型 | 断言动作 | 关联表达式 | 预期值 | 说明 |
 |---------|---------|---------|-----------|-------|------|
-| RESPONSE_CODE | REGEXP | EQUAL | 200 | 200 | 验证请求成功（状态码） |
-| RESPONSE_DATA | JSONPATH | EQUAL | $[0].categoryId | {{category_id}} | 验证分类ID一致 |
-| RESPONSE_DATA | JSONPATH | GREAT_THEN | $.length | 0 | 验证至少返回1条数据 |
+| RESPONSE_CODE | REGEXP | 等于 | 200 | 200 | 验证请求成功（状态码） |
+| RESPONSE_DATA | JSONPATH | 等于 | $[0].categoryId | {{category_id}} | 验证分类ID一致 |
+| RESPONSE_DATA | JSONPATH | 大于 | $.length() | 0 | 验证至少返回1条数据 |
 
 ---
 

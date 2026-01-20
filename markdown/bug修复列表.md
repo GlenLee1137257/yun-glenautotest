@@ -2,8 +2,8 @@
 原因：主服务器的安全组未开Redis的端口入向规则，
 修复：增加规则即可
 
-### 用户输入 test 时，登录失败
-原因：前端会设置 identityType='phone'，但数据库是 'mail'。
+### 用户输入 test 时，登录失败
+原因：前端会设置 identityType='phone'，但数据库是 'mail'。
 修复：调整登录逻辑，支持多类型查询：如果identityType为空，默认使用mail
 
 ### 公共菜单-项目管理-编辑取消还原原始数据
@@ -22,3 +22,10 @@
 原因：report_detail_api 表不存在，且 ReportDetail*DO 模型类未指定数据库前缀
 修复：创建 report_detail_api 表，修复所有 ReportDetail*DO 的 @TableName 注解添加数据库前缀
 
+### 接口自动化断言中变量未替换导致断言失败
+原因：断言时预期值中的变量（如 {{category_id}}）未进行替换，直接与实际值比较
+修复：在 ApiAssertionUtil.dispatcher 中对预期值调用 ApiRelationGetUtil.getParameter 进行变量替换
+
+### 接口自动化-用例管理-断言配置与JSONPath表达式易混淆
+原因：文档中断言表达式使用 $.length 而非 $.length()，且前端缺少对关联变量/断言配置的说明提示，容易导致理解偏差和断言失败
+修复：将文档中的断言表达式更正为 $.length()，并在前端用例编辑页为“关联变量”增加说明提示、为断言增加“说明”字段，建议使用「验证第一个课程分类ID与步骤1一致」「验证返回课程列表数量大于0」等中文说明

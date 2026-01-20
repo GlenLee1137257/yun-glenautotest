@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { Form, Input, Select, TabPane, Tooltip } from 'ant-design-vue'
+import { QuestionCircleOutlined } from '@ant-design/icons-vue'
 import {
   type IApiCaseStep,
   type IApiCaseStepAssertion,
@@ -29,12 +30,13 @@ function getDictName(category: keyof IApiConstantSelectOptions, value: string): 
 }
 
 const columnsWithAssertion: ColumnsType<any> = [
-  { title: '断言来源', dataIndex: 'from', key: 'from' },
-  { title: '断言类型', dataIndex: 'type', key: 'type' },
+  { title: '断言来源', dataIndex: 'from', key: 'from', width: 120 },
+  { title: '断言类型', dataIndex: 'type', key: 'type', width: 120 },
   { title: '断言动作', dataIndex: 'action', key: 'action', width: 120 },
-  { title: '关联表达式', dataIndex: 'express', key: 'express' },
-  { title: '预期值', dataIndex: 'value', key: 'value' },
-  { title: '操作', dataIndex: 'operator', key: 'operator', width: 200 },
+  { title: '关联表达式', dataIndex: 'express', key: 'express', width: 220 },
+  { title: '预期值', dataIndex: 'value', key: 'value', width: 160 },
+  { title: '说明', dataIndex: 'remark', key: 'remark', width: 200 },
+  { title: '操作', dataIndex: 'operator', key: 'operator', width: 180 },
 ]
 const dataSourceWithAssertion = ref<IApiCaseStepAssertion[]>([])
 
@@ -117,7 +119,17 @@ defineExpose({ serialize })
       v-model:body-type="selectedStep.bodyType"
     >
       <template #foot>
-        <TabPane key="relation" tab="关联变量">
+        <TabPane key="relation">
+          <template #tab>
+            <span flex="~ items-center gap-1">
+              关联变量
+              <Tooltip
+                title="从上一步或当前响应中提取字段，保存为变量；后续步骤可在路径、查询参数、请求体、断言预期值中通过 {{变量名}} 使用。"
+              >
+                <QuestionCircleOutlined style="color: #999" />
+              </Tooltip>
+            </span>
+          </template>
           <EditableTable
             v-model:data-source-proxy="dataSourceWithRelation"
             :custom-fields="['from', 'type']"
