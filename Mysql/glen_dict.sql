@@ -11,7 +11,7 @@
  Target Server Version : 80044 (8.0.44)
  File Encoding         : 65001
 
- Date: 18/01/2026 18:08:54
+ Date: 20/01/2026 23:58:18
 */
 
 SET NAMES utf8mb4;
@@ -32,7 +32,7 @@ CREATE TABLE `sys_dict`  (
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 108 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 182 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_dict
@@ -88,5 +88,23 @@ INSERT INTO `sys_dict` VALUES (89, 'assertion', '断言', '元素被选中', 'AS
 INSERT INTO `sys_dict` VALUES (90, 'assertion', '断言', '元素未被选中', 'ASSERTION_ELEMENT_UNSELECT', '[{\"name\":\"元素定位类型\",\"field\":\"locationType\"},{\"name\":\"元素定位表达式\",\"field\":\"locationExpress\"}]', NULL, '2024-02-27 10:49:27', '2024-02-28 14:29:17');
 INSERT INTO `sys_dict` VALUES (106, 'browser_type', '浏览器类型', '谷歌浏览器', 'CHROME', NULL, NULL, '2024-02-28 09:20:14', '2024-02-28 09:20:14');
 INSERT INTO `sys_dict` VALUES (107, 'browser_type', '浏览器类型', '苹果浏览器', 'SAFARI', NULL, NULL, '2024-02-28 09:20:20', '2024-02-28 09:20:37');
+INSERT INTO `sys_dict` VALUES (164, 'api_relation_from', '关联来源', '请求头', 'REQUEST_HEADER', NULL, '从请求头中提取数据', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
+INSERT INTO `sys_dict` VALUES (165, 'api_relation_from', '关联来源', '请求体', 'REQUEST_BODY', NULL, '从请求体中提取数据', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
+INSERT INTO `sys_dict` VALUES (166, 'api_relation_from', '关联来源', '请求查询参数', 'REQUEST_QUERY', NULL, '从请求查询参数中提取数据', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
+INSERT INTO `sys_dict` VALUES (167, 'api_relation_from', '关联来源', '响应头', 'RESPONSE_HEADER', NULL, '从响应头中提取数据', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
+INSERT INTO `sys_dict` VALUES (168, 'api_relation_from', '关联来源', '响应体', 'RESPONSE_DATA', NULL, '从响应体中提取数据', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
+INSERT INTO `sys_dict` VALUES (169, 'api_relation_type', '关联类型', 'JSON路径', 'JSONPATH', NULL, '使用JSONPath表达式提取数据，例如：$.data.id', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
+INSERT INTO `sys_dict` VALUES (170, 'api_relation_type', '关联类型', '正则表达式', 'REGEXP', NULL, '使用正则表达式提取数据', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
+INSERT INTO `sys_dict` VALUES (171, 'api_assertion_from', '断言来源', '响应状态码', 'RESPONSE_CODE', NULL, '对响应状态码进行断言', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
+INSERT INTO `sys_dict` VALUES (172, 'api_assertion_from', '断言来源', '响应头', 'RESPONSE_HEADER', NULL, '对响应头进行断言', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
+INSERT INTO `sys_dict` VALUES (173, 'api_assertion_from', '断言来源', '响应体', 'RESPONSE_DATA', NULL, '对响应体进行断言', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
+INSERT INTO `sys_dict` VALUES (174, 'api_assertion_type', '断言类型', 'JSON路径', 'JSONPATH', NULL, '使用JSONPath表达式断言，例如：$.data.code', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
+INSERT INTO `sys_dict` VALUES (175, 'api_assertion_type', '断言类型', '正则表达式', 'REGEXP', NULL, '使用正则表达式断言', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
+INSERT INTO `sys_dict` VALUES (176, 'api_assertion_action', '断言动作', '等于', 'EQUAL', NULL, '断言实际值等于预期值', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
+INSERT INTO `sys_dict` VALUES (177, 'api_assertion_action', '断言动作', '不等于', 'NOT_EQUAL', NULL, '断言实际值不等于预期值', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
+INSERT INTO `sys_dict` VALUES (178, 'api_assertion_action', '断言动作', '包含', 'CONTAIN', NULL, '断言实际值包含预期值', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
+INSERT INTO `sys_dict` VALUES (179, 'api_assertion_action', '断言动作', '不包含', 'NOT_CONTAIN', NULL, '断言实际值不包含预期值', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
+INSERT INTO `sys_dict` VALUES (180, 'api_assertion_action', '断言动作', '大于', 'GREAT_THEN', NULL, '断言实际值大于预期值（数值比较）', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
+INSERT INTO `sys_dict` VALUES (181, 'api_assertion_action', '断言动作', '小于', 'LESS_THEN', NULL, '断言实际值小于预期值（数值比较）', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
 
 SET FOREIGN_KEY_CHECKS = 1;

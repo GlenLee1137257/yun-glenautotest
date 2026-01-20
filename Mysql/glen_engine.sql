@@ -11,7 +11,7 @@
  Target Server Version : 80044 (8.0.44)
  File Encoding         : 65001
 
- Date: 18/01/2026 18:09:09
+ Date: 20/01/2026 23:58:25
 */
 
 SET NAMES utf8mb4;
@@ -32,7 +32,7 @@ CREATE TABLE `environment`  (
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of environment
@@ -44,6 +44,8 @@ INSERT INTO `environment` VALUES (4, 6, '贝壳公益测试环境(H5移动端)',
 INSERT INTO `environment` VALUES (5, 6, '贝壳公益测试环境(PC管理端)', 'HTTP', 'test-gongyi-admin.ke.com', 80, 'PC管理端接口，用于活动管理、数据统计等后台管理功能测试', '2026-01-18 14:37:39', '2026-01-18 14:37:39');
 INSERT INTO `environment` VALUES (6, 6, '贝壳公益测试环境(善贝GO小程序)', 'HTTP', 'test-shanbeigo.ke.com', 80, '贝壳公益测试环境 - 善贝GO小程序接口，用于C端用户公益分/公益币、PK功能等测试', '2026-01-18 14:38:12', '2026-01-18 14:38:12');
 INSERT INTO `environment` VALUES (7, 6, '贝壳公益生产环境(H5移动端)', 'HTTPS', 'gongyi-mobile.ke.com', 443, '贝壳公益生产环境 - H5移动端接口，仅用于生产环境验证测试', '2026-01-18 14:38:48', '2026-01-18 14:38:48');
+INSERT INTO `environment` VALUES (10, 17, '花桥学堂测试环境', 'HTTP', 'localhost', 3000, '在线教育平台的完整测试场景，包含课程、考试、证书等核心业务模块', '2026-01-18 19:30:30', '2026-01-18 19:30:30');
+INSERT INTO `environment` VALUES (11, 17, '花桥学堂生产测试', 'HTTP', 'localhost', 3001, '用于生产环境验证测试', '2026-01-18 19:30:55', '2026-01-18 19:31:07');
 
 -- ----------------------------
 -- Table structure for project
@@ -57,13 +59,14 @@ CREATE TABLE `project`  (
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 17 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 18 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of project
 -- ----------------------------
 INSERT INTO `project` VALUES (5, 3, '贝好学培训', '在线教育培训平台，包含课程学习、考试系统、证书管理等核心功能。', '2026-01-18 03:19:12', '2026-01-18 12:15:31');
 INSERT INTO `project` VALUES (6, 3, '贝壳公益', '社区公益平台，包含公益活动管理、成长体系(公益分/公益币)、徽章系统、PK功能等。', '2026-01-18 12:15:43', '2026-01-18 12:16:19');
+INSERT INTO `project` VALUES (17, 3, '花桥学堂', '在线教育平台的完整测试场景，包含课程、考试、证书等核心业务模块', '2026-01-18 19:17:34', '2026-01-18 19:17:34');
 
 -- ----------------------------
 -- Table structure for stress_case_module
@@ -76,7 +79,7 @@ CREATE TABLE `stress_case_module`  (
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of stress_case_module
