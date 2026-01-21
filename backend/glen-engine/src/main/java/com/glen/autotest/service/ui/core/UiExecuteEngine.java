@@ -21,9 +21,7 @@ import java.io.FileInputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -59,11 +57,12 @@ public class UiExecuteEngine {
      * @param caseInfoDTO
      * @param browser
      * @param stepList
+     * @param headlessMode 无头模式 0-显示窗口 1-无头模式
      * @return
      */
-    public UiCaseResultDTO execute(CaseInfoDTO caseInfoDTO, String browser, List<UiCaseStepDO> stepList) {
+    public UiCaseResultDTO execute(CaseInfoDTO caseInfoDTO, String browser, List<UiCaseStepDO> stepList, Integer headlessMode) {
         //获取浏览器驱动，并且配置上下文
-        WebDriver webDriver = SeleniumFetchUtil.getWebDriver(browser);
+        WebDriver webDriver = SeleniumFetchUtil.getWebDriver(browser, headlessMode);
         SeleniumWebdriverContext.set(webDriver);
         try {
             //获取步骤数量
@@ -115,14 +114,31 @@ public class UiExecuteEngine {
             return result;
         }
         UiCaseStepDO uiCaseStepDO = stepList.get(0);
-        //TODO 加餐拓展
-        // 判断 step_type 类型，
-        // 如果是local则照常进行；
-        // 如果是refer类型，则根据refer_step_id查找步骤表其他内容，进行执行
-//        if(uiCaseStepDO.getStepType().equals("REFER")){
-//            UiCaseStepMapper uiCaseStepMapper = SpringContextHolder.getBean(UiCaseStepMapper.class);
-//            uiCaseStepDO = uiCaseStepMapper.selectById(uiCaseStepDO.getReferStepId());
-//        }
+        
+        // 步骤复用功能：判断步骤类型
+        // 如果是 REFER 类型，则根据 refer_step_id 查找被引用的步骤内容
+        if(uiCaseStepDO.getStepType() != null && "REFER".equals(uiCaseStepDO.getStepType())){
+            if(uiCaseStepDO.getReferStepId() == null){
+                throw new IllegalArgumentException("引用步骤的referStepId不能为空");
+            }
+            
+            // 循环引用检测：防止A引用B，B引用A的情况
+            Set<Long> visitedStepIds = new HashSet<>();
+            UiCaseStepMapper uiCaseStepMapper = SpringContextHolder.getBean(UiCaseStepMapper.class);
+            UiCaseStepDO referStep = resolveReferStep(uiCaseStepMapper, uiCaseStepDO.getReferStepId(), visitedStepIds);
+            
+            // 保留原步骤的ID、num等信息，但使用被引用步骤的操作内容
+            Long originalId = uiCaseStepDO.getId();
+            Long originalNum = uiCaseStepDO.getNum();
+            String originalName = uiCaseStepDO.getName();
+            uiCaseStepDO = referStep;
+            uiCaseStepDO.setId(originalId);
+            uiCaseStepDO.setNum(originalNum);
+            // 如果引用步骤有自定义名称，则使用自定义名称，否则使用被引用步骤的名称
+            if(originalName != null && !originalName.isEmpty()){
+                uiCaseStepDO.setName(originalName);
+            }
+        }
 
         //用例步骤初始化
         UiCaseResultItemDTO resultItem = new UiCaseResultItemDTO();
@@ -191,6 +207,35 @@ public class UiExecuteEngine {
         }
     }
 
-
+    /**
+     * 递归解析引用步骤，并检测循环引用
+     * @param uiCaseStepMapper 步骤Mapper
+     * @param stepId 要解析的步骤ID
+     * @param visitedStepIds 已访问的步骤ID集合（用于检测循环引用）
+     * @return 解析后的步骤
+     */
+    private UiCaseStepDO resolveReferStep(UiCaseStepMapper uiCaseStepMapper, Long stepId, Set<Long> visitedStepIds){
+        // 检测循环引用
+        if(visitedStepIds.contains(stepId)){
+            throw new IllegalArgumentException("检测到循环引用，步骤ID: " + stepId + "，引用链: " + visitedStepIds);
+        }
+        
+        visitedStepIds.add(stepId);
+        
+        UiCaseStepDO step = uiCaseStepMapper.selectById(stepId);
+        if(step == null){
+            throw new IllegalArgumentException("引用的步骤不存在，stepId: " + stepId);
+        }
+        
+        // 如果被引用的步骤本身也是引用类型，则继续解析
+        if(step.getStepType() != null && "REFER".equals(step.getStepType())){
+            if(step.getReferStepId() == null){
+                throw new IllegalArgumentException("引用步骤的referStepId不能为空，stepId: " + stepId);
+            }
+            return resolveReferStep(uiCaseStepMapper, step.getReferStepId(), visitedStepIds);
+        }
+        
+        return step;
+    }
 
 }

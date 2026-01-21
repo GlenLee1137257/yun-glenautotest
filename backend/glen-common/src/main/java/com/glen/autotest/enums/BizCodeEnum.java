@@ -35,6 +35,7 @@ public enum BizCodeEnum {
     API_CASE_STEP_IS_EMPTY(280404,"API用例步骤不存在" ),
 
     UI_UNSUPPORTED_BROWSER_DRIVER(401000, "暂不支持该浏览器"),
+    UI_DRIVER_INIT_FAILED(401001, "浏览器驱动初始化失败，请检查Chrome浏览器是否已安装，或设置CHROME_DRIVER_PATH环境变量"),
     UI_ELEMENT_NOT_EXIST(401404,"元素定位不存在" ),
     UI_OPERATION_UNSUPPORTED(401405,"不支持操作类型" ),
     UI_OPERATION_UNSUPPORTED_BROWSER(401406,"不支持浏览器操作" ),

@@ -105,7 +105,11 @@ public class UiCaseStepDO implements Serializable {
     @TableField("gmt_modified")
     private Date gmtModified;
 
+    @Schema(description = "步骤类型 LOCAL-本地步骤 REFER-引用步骤")
+    @TableField("step_type")
     private String stepType;
 
+    @Schema(description = "引用步骤ID(当stepType=REFER时有效)")
+    @TableField("refer_step_id")
     private Long referStepId;
 }

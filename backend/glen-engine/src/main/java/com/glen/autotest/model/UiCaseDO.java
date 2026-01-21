@@ -53,6 +53,10 @@ public class UiCaseDO implements Serializable {
     @TableField("level")
     private String level;
 
+    @Schema(description = "无头模式 0-显示窗口 1-无头模式")
+    @TableField("headless_mode")
+    private Integer headlessMode;
+
     @Schema(description = "创建时间")
     @TableField("gmt_create")
     private Date gmtCreate;

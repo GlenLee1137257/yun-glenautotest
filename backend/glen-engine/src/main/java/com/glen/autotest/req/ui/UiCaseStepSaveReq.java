@@ -58,5 +58,8 @@ public class UiCaseStepSaveReq implements Serializable {
 
     private Boolean isScreenshot;
 
+    private String stepType;
+
+    private Long referStepId;
 
 }

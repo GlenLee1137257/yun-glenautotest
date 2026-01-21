@@ -63,4 +63,8 @@ public class UiCaseStepDTO implements Serializable {
     private Date gmtCreate;
 
     private Date gmtModified;
+
+    private String stepType;
+
+    private Long referStepId;
 }

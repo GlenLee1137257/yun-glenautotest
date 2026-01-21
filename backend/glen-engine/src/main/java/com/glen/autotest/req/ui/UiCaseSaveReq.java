@@ -29,6 +29,8 @@ public class UiCaseSaveReq {
 
     private String level;
 
+    private Integer headlessMode;
+
     private List<UiCaseStepSaveReq> list;
 
 }

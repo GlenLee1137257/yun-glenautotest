@@ -8,6 +8,7 @@ export const defualtWithIUICase: IUICase = {
   level: 'p0',
   status: '未执行',
   description: '无描述',
+  headlessMode: 0, // 默认显示窗口
   createAccountId: 0,
   updateAccountId: 0,
   gmtCreate: new Date(),
@@ -23,6 +24,7 @@ export interface IUICase {
   level: string
   status: string
   description: string
+  headlessMode: number // 0-显示窗口 1-无头模式
   createAccountId: number
   updateAccountId: number
   gmtCreate: Date
@@ -48,6 +50,8 @@ export const defaultWithIUICaseStep: IUICaseStep = {
   description: '',
   isContinue: false,
   isScreenshot: false,
+  stepType: 'LOCAL',
+  referStepId: null,
   createAccountId: -1,
   updateAccountId: -1,
   gmtCreate: new Date(),
@@ -72,6 +76,8 @@ export interface IUICaseStep {
   description: string
   isContinue: boolean
   isScreenshot: boolean
+  stepType: string // 'LOCAL' | 'REFER'
+  referStepId: number | null
   createAccountId: number
   updateAccountId: number
   gmtCreate: Date

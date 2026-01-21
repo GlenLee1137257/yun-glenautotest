@@ -66,6 +66,13 @@ const constantSelectOptions = reactive<C>({
   ...props.defaultConstantSelectOptions,
 })
 
+// 表格分页状态，用于计算全局排序序号
+const tablePagination = reactive({
+  current: 1,
+  pageSize: 10,
+  showSizeChanger: false,
+})
+
 const { post: fetchCreateApiCase } = useCustomFetch(
   `/engine-service/api/v1/${baseApiName.value}/save`,
   {
@@ -185,6 +192,11 @@ const { execute } = useCustomFetch(url, {
   },
 })
 
+function handleTableChange(pagination: any) {
+  tablePagination.current = pagination.current
+  tablePagination.pageSize = pagination.pageSize
+}
+
 function handleAdd() {
   if (isEditState.value) {
     controlStepState.value = 'new'
@@ -199,26 +211,56 @@ function handleAdd() {
   toggleCreateModalVisible()
 }
 
-function handleEdit(num: number) {
+function handleEdit(step: StepItem<T>) {
   if (isEditState.value) {
     controlStepState.value = 'edit'
   }
-  selectedStepNum.value = num
+
+  // 根据 id 或 num 从完整 stepList 中找到真正的索引，避免分页导致 index 错乱
+  const index = formModel.value.stepList.findIndex((item: any) => {
+    // 已保存到后端的步骤优先使用 id 匹配
+    if (step.id && step.id !== -1 && item.id === step.id) return true
+    // 新建但未保存到后端的步骤使用 num 匹配
+    return item.num === step.num
+  })
+
+  selectedStepNum.value = index > -1 ? index : 0
   toggleCreateModalVisible()
 }
 
-async function handleDelete(num: number) {
+async function handleDelete(step: StepItem<T>) {
   if (isEditState.value) {
+    // 编辑模式：根据步骤 id 删除，避免受分页影响
     await fetchDeleteApiCaseStep({
-      id: formModel.value.stepList[num].id,
+      id: step.id,
+      projectId: step.projectId || globalConfigStore.config.projectId, // 优先使用步骤自己的 projectId
     }).execute()
     await fetchGetApiCase()
+    
+    // 删除后，检查当前页是否有效，如果当前页超出范围，自动调整到最后一页
+    const totalPages = Math.ceil((formModel.value.stepList?.length || 0) / tablePagination.pageSize)
+    if (tablePagination.current > totalPages && totalPages > 0) {
+      tablePagination.current = totalPages
+    } else if (totalPages === 0) {
+      tablePagination.current = 1
+    }
     return
   }
+
+  // 新增模式：本地删除，根据 num 删除对应步骤
   formModel.value.stepList = formModel.value.stepList.filter(
-    (item) => item.num !== num,
+    (item) => item.num !== step.num,
   )
+  // 重新整理本地步骤的 num 序号
   formModel.value.stepList?.forEach((item, index) => (item.num = index))
+  
+  // 删除后，检查当前页是否有效，如果当前页超出范围，自动调整到最后一页
+  const totalPages = Math.ceil((formModel.value.stepList?.length || 0) / tablePagination.pageSize)
+  if (tablePagination.current > totalPages && totalPages > 0) {
+    tablePagination.current = totalPages
+  } else if (totalPages === 0) {
+    tablePagination.current = 1
+  }
 }
 
 async function handleOk() {
@@ -310,15 +352,17 @@ onMounted(async () => {
         <Table
           :columns="columns"
           :data-source="formModel.stepList"
-          :scroll="{ x: 1500, y: 500 }"
+          :scroll="{ x: 1500, y: 820 }"
           :loading="isFetching"
+          :pagination="tablePagination"
+          @change="handleTableChange"
         >
           <template #bodyCell="{ column, record, index }">
             <template v-if="column.key!.toString() === 'operation'">
-              <Button type="link" @click="handleEdit(index)">编辑</Button>
+              <Button type="link" @click="handleEdit(record)">编辑</Button>
               <Popconfirm
                 title="确认是否删除此行！（注意此操作不可逆！）"
-                @confirm="handleDelete(index)"
+                @confirm="handleDelete(record)"
               >
                 <Button type="link">删除</Button>
               </Popconfirm>
@@ -356,8 +400,12 @@ onMounted(async () => {
               }}
             </template>
             <template v-else-if="column.key!.toString() === 'num'">
-              <!-- 显示时从 1 开始，方便与“步骤1 / 步骤2 ...”对应；实际存储仍从 0 开始 -->
-              {{ index + 1 }}
+              <!-- 显示全局排序：结合分页的当前页与每页条数计算 -->
+              {{
+                (tablePagination.current - 1) * tablePagination.pageSize +
+                index +
+                1
+              }}
             </template>
             <template v-else>
               <p truncate :title="record[column.key!.toString()]">

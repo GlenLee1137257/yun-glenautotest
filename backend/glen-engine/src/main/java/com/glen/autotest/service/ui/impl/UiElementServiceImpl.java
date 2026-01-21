@@ -32,6 +32,12 @@ public class UiElementServiceImpl implements UiElementService {
         LambdaQueryWrapper<UiElementDO> queryWrapper = new LambdaQueryWrapper<>(UiElementDO.class);
         queryWrapper.eq(UiElementDO::getProjectId, projectId).eq(UiElementDO::getId, id);
         UiElementDO uiElementDO = uiElementMapper.selectOne(queryWrapper);
+        
+        // 如果查询结果为空，返回 null
+        if (uiElementDO == null) {
+            return null;
+        }
+        
         return SpringBeanUtil.copyProperties(uiElementDO, UiElementDTO.class);
     }
 

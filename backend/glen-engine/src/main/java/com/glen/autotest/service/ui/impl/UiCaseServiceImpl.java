@@ -55,6 +55,11 @@ public class UiCaseServiceImpl implements UiCaseService {
         queryWrapper.eq(UiCaseDO::getProjectId, projectId).eq(UiCaseDO::getId, caseId);
         UiCaseDO uiCaseDO = uiCaseMapper.selectOne(queryWrapper);
 
+        // 如果查询结果为空，返回 null
+        if (uiCaseDO == null) {
+            return null;
+        }
+
         UiCaseDTO uiCaseDTO = SpringBeanUtil.copyProperties(uiCaseDO, UiCaseDTO.class);
 
         List<UiCaseStepDO> stepList = getStepList(caseId);
@@ -137,7 +142,7 @@ public class UiCaseServiceImpl implements UiCaseService {
                 caseInfoDTO.setName(uiCaseDO.getName());
 
                 UiExecuteEngine uiExecuteEngine = new UiExecuteEngine(reportDTO);
-                UiCaseResultDTO uiCaseResultDTO = uiExecuteEngine.execute(caseInfoDTO,uiCaseDO.getBrowser(),stepList);
+                UiCaseResultDTO uiCaseResultDTO = uiExecuteEngine.execute(caseInfoDTO,uiCaseDO.getBrowser(),stepList,uiCaseDO.getHeadlessMode());
 
                 return JsonData.buildSuccess(uiCaseResultDTO);
             }else {

@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-import { Cascader, Form, Input, Select, Switch } from 'ant-design-vue'
+import { computed, nextTick, ref, watch } from 'vue'
+import { Cascader, Form, Input, Radio, Select, Switch } from 'ant-design-vue'
+import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons-vue'
 import { objectOmit } from '@vueuse/core'
 import {
   defaultWithIUICaseStep,
@@ -14,6 +16,7 @@ import type {
 import type { IBasic } from '~/types/apis/basic'
 import type { ColumnsType } from 'ant-design-vue/es/table'
 import type { IOperation } from '~/types/apis/ui'
+import type { IUICaseStep } from '~/types/apis/ui-case'
 import type { AfterFetchContext } from '@vueuse/core/index.cjs'
 
 const columns: ColumnsType<any> = [
@@ -175,6 +178,7 @@ const { data } = useCustomFetch<ResponseType>(
 )
 
 const currentSelectedOptions = ref<string[]>([])
+const isInitializingCascader = ref(false) // 标记 Cascader 是否正在初始化，防止初始化时意外触发 change 事件
 
 const filter: ShowSearchType['filter'] = (inputValue, path) => {
   return path.some((option) =>
@@ -203,30 +207,76 @@ const cascaderOptions = computed(() => {
 const currentSelectedValue = computed(() => {
   const category =
     data.value?.[currentSelectedOptions.value?.[0] as keyof ResponseType]
-  if (!category) {
+  if (!category || !currentSelectedOptions.value?.[1]) {
     return []
   }
   const selected = category.find(
     (item) => item.value === currentSelectedOptions.value?.[1],
   )
-  return selected
-    ? objectDeserializer<{ name: string; field: string }>(selected.extend, true)
-    : []
+  if (!selected || !selected.extend) {
+    return []
+  }
+  try {
+    const result = objectDeserializer<{ name: string; field: string }>(selected.extend, true)
+    return Array.isArray(result) ? result : []
+  } catch (e) {
+    return []
+  }
 })
 
 function initOperationType(type: string | undefined) {
-  if (!type) return
+  isInitializingCascader.value = true // 标记开始初始化
+  
+  if (!type) {
+    currentSelectedOptions.value = []
+    // 延迟重置标志，确保 Cascader 的内部更新完成
+    nextTick(() => {
+      isInitializingCascader.value = false
+    })
+    return
+  }
 
   const found = cascaderOptions.value?.find(
     (item) => item.children?.find((child) => child.value === type) != null,
   )
 
-  if (!found) return
+  if (!found) {
+    currentSelectedOptions.value = []
+    nextTick(() => {
+      isInitializingCascader.value = false
+    })
+    return
+  }
 
   currentSelectedOptions.value = [
     found.value as string,
     found.children!.find((child) => child.value === type)!.value as string,
   ]
+  
+  // 延迟重置标志，确保 Cascader 的内部更新完成
+  nextTick(() => {
+    isInitializingCascader.value = false
+  })
+}
+
+// 处理步骤类型切换的函数
+const handleStepTypeChange = (selectedStep: IUICaseStep, newType: string) => {
+  if (!selectedStep) return
+  
+  if (newType === 'LOCAL') {
+    // 切换到本地步骤时，如果步骤有操作类型，重新初始化
+    if (selectedStep.operationType) {
+      nextTick(() => {
+        initOperationType(selectedStep.operationType)
+      })
+    } else {
+      // 如果没有操作类型，清空选择
+      currentSelectedOptions.value = []
+    }
+  } else if (newType === 'REFER') {
+    // 切换到引用步骤时，清空操作类型相关配置
+    currentSelectedOptions.value = []
+  }
 }
 </script>
 
@@ -262,6 +312,27 @@ function initOperationType(type: string | undefined) {
           </Select>
         </Form.Item>
 
+        <Form.Item label="显示浏览器窗口">
+          <div class="flex items-center gap-2">
+            <Switch 
+              :checked="formModel.headlessMode === 0"
+              @change="(checked: boolean) => formModel.headlessMode = checked ? 0 : 1"
+              checked-children="显示"
+              un-checked-children="隐藏"
+            >
+              <template #checkedChildren>
+                <EyeOutlined />
+              </template>
+              <template #unCheckedChildren>
+                <EyeInvisibleOutlined />
+              </template>
+            </Switch>
+            <span class="text-sm text-gray-500">
+              {{ formModel.headlessMode === 0 ? '执行时将显示浏览器窗口，可观察自动化过程' : '执行时浏览器在后台运行，速度更快' }}
+            </span>
+          </div>
+        </Form.Item>
+
         <FormItemModules v-model:module-id="formModel.moduleId" />
 
         <FormItemLevel v-model:level="formModel.level" />
@@ -275,13 +346,51 @@ function initOperationType(type: string | undefined) {
       </Form>
     </template>
 
-    <template #model-content="{ selectedStep }">
-      <Form :model="selectedStep" layout="vertical">
+    <template #model-content="{ selectedStep, formModel }">
+      <Form 
+        :model="selectedStep" 
+        layout="vertical"
+      >
         <Form.Item label="名称">
           <Input v-model:value="selectedStep.name" />
         </Form.Item>
 
-        <Form.Item label="操作类型">
+        <Form.Item label="步骤类型">
+          <Radio.Group 
+            v-model:value="selectedStep.stepType"
+            @change="(e: any) => {
+              handleStepTypeChange(selectedStep, e.target.value)
+            }"
+          >
+            <Radio value="LOCAL">本地步骤</Radio>
+            <Radio value="REFER">引用步骤</Radio>
+          </Radio.Group>
+        </Form.Item>
+
+        <Form.Item v-if="selectedStep.stepType === 'REFER'" label="引用步骤">
+          <Select
+            v-model:value="selectedStep.referStepId"
+            placeholder="选择要引用的步骤"
+            show-search
+            :filter-option="(input: string, option: any) => 
+              option?.label?.toLowerCase().includes(input.toLowerCase())
+            "
+          >
+            <Select.Option
+              v-for="step in (formModel?.stepList || []).filter((s: IUICaseStep) => 
+                s.id !== selectedStep.id && 
+                (!s.stepType || s.stepType === 'LOCAL')
+              )"
+              :key="step.id"
+              :value="step.id"
+              :label="`步骤${step.num} - ${step.name}`"
+            >
+              步骤{{ step.num }} - {{ step.name }}
+            </Select.Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item v-if="selectedStep.stepType !== 'REFER'" label="操作类型">
           <Cascader
             v-model:value="currentSelectedOptions"
             :options="cascaderOptions"
@@ -291,18 +400,26 @@ function initOperationType(type: string | undefined) {
             @vue:mounted="() => initOperationType(selectedStep.operationType)"
             @change="
               (value) => {
-                value[value.length - 1] &&
-                  (selectedStep.operationType = value[
-                    value.length - 1
-                  ] as string)
+                // 防止初始化时意外修改 operationType
+                if (isInitializingCascader) {
+                  return
+                }
+                
+                // 修复：当 value 是空数组时，清空 operationType；否则设置为选中的值
+                if (!value || value.length === 0) {
+                  selectedStep.operationType = ''
+                } else {
+                  selectedStep.operationType = value[value.length - 1] as string
+                }
               }
             "
           />
         </Form.Item>
 
+        <template v-if="selectedStep.stepType !== 'REFER'">
         <Form.Item
           v-for="(item, index) in currentSelectedValue"
-          :key="index"
+            :key="`field-${item?.field || index}`"
           :label="item.name"
         >
           <div v-if="item.field.toLowerCase().includes('locationtype')">
@@ -323,8 +440,9 @@ function initOperationType(type: string | undefined) {
             :placeholder="`请输入${item.name}`"
           />
         </Form.Item>
+        </template>
 
-        <div flex="~ justify-around">
+        <div v-if="selectedStep.stepType !== 'REFER'" flex="~ justify-around">
           <Form.Item label="是否截图">
             <Switch v-model:checked="selectedStep.isScreenshot" />
           </Form.Item>
@@ -332,6 +450,12 @@ function initOperationType(type: string | undefined) {
           <Form.Item label="失败是否继续">
             <Switch v-model:checked="selectedStep.isContinue" />
           </Form.Item>
+        </div>
+        
+        <div v-if="selectedStep.stepType === 'REFER'" class="mt-4 p-4 bg-blue-50 rounded">
+          <p class="text-sm text-gray-600">
+            <strong>提示：</strong>引用步骤将使用被引用步骤的所有配置（操作类型、定位方式、值等），但可以自定义步骤名称。
+          </p>
         </div>
       </Form>
     </template>

@@ -101,20 +101,13 @@ public class UiCaseModuleServiceImpl implements UiCaseModuleService {
 
     @Override
     public Integer delete(Long projectId, Long id) {
-
-        //删除模块
-        LambdaQueryWrapper<UiCaseModuleDO> queryWrapper = new LambdaQueryWrapper<>(UiCaseModuleDO.class);
-        queryWrapper.eq(UiCaseModuleDO::getProjectId, projectId).eq(UiCaseModuleDO::getId, id);
-        int delete = uiCaseModuleMapper.delete(queryWrapper);
-        //删除模块下的用例
+        //先查询模块下的用例ID列表
         LambdaQueryWrapper<UiCaseDO> caseQueryWapper = new LambdaQueryWrapper<>(UiCaseDO.class);
         caseQueryWapper.select(UiCaseDO::getId).eq(UiCaseDO::getModuleId, id);
         List<Long> caseIdList = uiCaseMapper.selectList(caseQueryWapper).stream().map(UiCaseDO::getId).toList();
+        
         if(!caseIdList.isEmpty()){
-            uiCaseMapper.deleteBatchIds(caseIdList);
-        }
-
-        //删除用例下的步骤
+            //删除用例下的步骤（必须在删除用例之前删除步骤，避免外键约束问题）
         LambdaQueryWrapper<UiCaseStepDO> stepQueryWapper = new LambdaQueryWrapper<>(UiCaseStepDO.class);
         stepQueryWapper.select(UiCaseStepDO::getId).in(UiCaseStepDO::getCaseId, caseIdList);
         List<Long> stepIdList = uiCaseStepMapper.selectList(stepQueryWapper).stream().map(UiCaseStepDO::getId).toList();
@@ -122,7 +115,14 @@ public class UiCaseModuleServiceImpl implements UiCaseModuleService {
             uiCaseStepMapper.deleteBatchIds(stepIdList);
         }
 
+            //删除用例
+            uiCaseMapper.deleteBatchIds(caseIdList);
+        }
 
+        //最后删除模块
+        LambdaQueryWrapper<UiCaseModuleDO> queryWrapper = new LambdaQueryWrapper<>(UiCaseModuleDO.class);
+        queryWrapper.eq(UiCaseModuleDO::getProjectId, projectId).eq(UiCaseModuleDO::getId, id);
+        int delete = uiCaseModuleMapper.delete(queryWrapper);
 
         return delete;
     }

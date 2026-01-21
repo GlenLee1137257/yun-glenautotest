@@ -34,6 +34,8 @@ public class UiCaseDTO implements Serializable {
 
     private String level;
 
+    private Integer headlessMode;
+
     private Date gmtCreate;
 
     private Date gmtModified;

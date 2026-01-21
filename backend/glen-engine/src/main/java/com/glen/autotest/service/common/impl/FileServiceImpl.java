@@ -66,18 +66,50 @@ public class FileServiceImpl implements FileService {
     @Override
     public String getTempAccessFileUrl(String remoteFilePath) {
         try {
-            String filename = remoteFilePath.substring(remoteFilePath.lastIndexOf("/") + 1);
-            GetPresignedObjectUrlArgs objectUrlArgs = GetPresignedObjectUrlArgs.builder().bucket(minIoConfig.getBucketName())
+            if (remoteFilePath == null || remoteFilePath.isEmpty()) {
+                log.error("获取临时文件访问链接失败：文件路径为空");
+                throw new RuntimeException("文件路径为空");
+            }
+            
+            // 从完整URL中提取文件名
+            String filename;
+            if (remoteFilePath.contains("/")) {
+                filename = remoteFilePath.substring(remoteFilePath.lastIndexOf("/") + 1);
+            } else {
+                filename = remoteFilePath;
+            }
+            
+            if (filename == null || filename.isEmpty()) {
+                log.error("获取临时文件访问链接失败：无法从路径中提取文件名，路径：{}", remoteFilePath);
+                throw new RuntimeException("无法从路径中提取文件名");
+            }
+            
+            log.info("获取临时文件访问链接：bucket={}, filename={}", minIoConfig.getBucketName(), filename);
+            
+            GetPresignedObjectUrlArgs objectUrlArgs = GetPresignedObjectUrlArgs.builder()
+                    .bucket(minIoConfig.getBucketName())
                     .object(filename)
                     .expiry(60, TimeUnit.MINUTES)
                     .method(Method.GET)
                     .build();
+            
             String presignedObjectUrl = minioClient.getPresignedObjectUrl(objectUrlArgs);
+            log.info("成功生成临时访问链接：{}", presignedObjectUrl);
 
             return presignedObjectUrl;
-        }catch (Exception e){
-            log.error("获取临时文件访问链接失败",e);
-            throw new RuntimeException("获取临时文件访问链接失败");
+        } catch (Exception e) {
+            log.error("获取临时文件访问链接失败，文件路径：{}，错误信息：{}", remoteFilePath, e.getMessage(), e);
+            // 检查是否是 MinIO 连接问题
+            if (e.getMessage() != null && (e.getMessage().contains("Connection") || 
+                e.getMessage().contains("Access Key") || e.getMessage().contains("provided does not exist"))) {
+                throw new RuntimeException("无法连接到 MinIO 服务或认证失败，请检查 MinIO 服务地址和访问密钥配置（当前配置：endpoint=" + minIoConfig.getEndpoint() + ", accessKey=" + minIoConfig.getAccessKey() + "）");
+            }
+            // 检查是否是文件不存在
+            if (e.getMessage() != null && (e.getMessage().contains("does not exist") || 
+                e.getMessage().contains("NoSuchKey") || e.getMessage().contains("Not Found"))) {
+                throw new RuntimeException("文件不存在：" + remoteFilePath);
+            }
+            throw new RuntimeException("获取临时文件访问链接失败：" + e.getMessage());
         }
     }
 

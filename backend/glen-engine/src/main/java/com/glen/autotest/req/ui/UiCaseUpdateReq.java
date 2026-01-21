@@ -29,5 +29,6 @@ public class UiCaseUpdateReq  {
 
     private String level;
 
+    private Integer headlessMode;
 
 }

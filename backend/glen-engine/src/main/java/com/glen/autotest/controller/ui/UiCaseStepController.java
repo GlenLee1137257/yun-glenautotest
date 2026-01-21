@@ -6,6 +6,7 @@ import com.glen.autotest.req.ui.UiCaseStepSaveReq;
 import com.glen.autotest.req.ui.UiCaseStepUpdateReq;
 import com.glen.autotest.service.ui.UiCaseStepService;
 import com.glen.autotest.util.JsonData;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,19 +26,19 @@ public class UiCaseStepController {
     @Resource
     private UiCaseStepService uiCaseStepService;
 
-    @RequestMapping("/save")
+    @PostMapping("/save")
     public JsonData save(@RequestBody UiCaseStepSaveReq req)
     {
         return JsonData.buildSuccess(uiCaseStepService.save(req));
     }
 
-    @RequestMapping("/update")
+    @PostMapping("/update")
     public JsonData update(@RequestBody UiCaseStepUpdateReq req)
     {
         return JsonData.buildSuccess(uiCaseStepService.update(req));
     }
 
-    @RequestMapping("/del")
+    @PostMapping("/delete")
     public JsonData delete(@RequestBody UiCaseStepDelReq req)
     {
         return JsonData.buildSuccess(uiCaseStepService.delete(req));
