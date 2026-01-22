@@ -12,6 +12,7 @@ import com.glen.autotest.model.StressCaseDO;
 import com.glen.autotest.service.common.FileService;
 import com.glen.autotest.service.common.impl.KafkaSenderServiceImpl;
 import com.glen.autotest.util.JsonUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.assertions.ResponseAssertion;
 import org.apache.jmeter.config.Arguments;
@@ -48,6 +49,7 @@ import java.util.List;
  * @Remark Glen AutoTest Platform
  * @Version 1.0
  **/
+@Slf4j
 public class StressSimpleEngine extends BaseStressEngine{
 
     private EnvironmentDO environmentDO;
@@ -168,21 +170,44 @@ public class StressSimpleEngine extends BaseStressEngine{
             responseAssertion.setAssumeSuccess(false);
             //获取断言规则
             String action = stressAssertionDTO.getAction();
-            StressAssertActionEnum stressAssertActionEnum = StressAssertActionEnum.valueOf(action);
+            StressAssertActionEnum stressAssertActionEnum;
+            try {
+                stressAssertActionEnum = StressAssertActionEnum.valueOf(action);
+            } catch (IllegalArgumentException e) {
+                // 兼容历史或未实现的断言动作，降级为 EQUAL，避免压测直接失败
+                log.warn("不支持的压测断言动作: {}，已自动降级为 EQUAL", action);
+                stressAssertActionEnum = StressAssertActionEnum.EQUAL;
+            }
 
             //匹配规则 包括，匹配
             switch (stressAssertActionEnum){
                 case CONTAIN -> responseAssertion.setToContainsType();
                 case EQUAL -> responseAssertion.setToEqualsType();
-                default -> throw new RuntimeException("不支持的断言规则");
+                default -> {
+                    // 理论上不会走到这里，保底处理
+                    log.warn("未处理的压测断言规则: {}，使用 EQUAL 作为默认规则", stressAssertActionEnum);
+                    responseAssertion.setToEqualsType();
+                }
             }
             //断言字段类型来源，响应头，响应体
-            StressAssertFieldFromEnum fieldFromEnum = StressAssertFieldFromEnum.valueOf(stressAssertionDTO.getFrom());
+            StressAssertFieldFromEnum fieldFromEnum;
+            try {
+                fieldFromEnum = StressAssertFieldFromEnum.valueOf(stressAssertionDTO.getFrom());
+            } catch (IllegalArgumentException e) {
+                // 兼容不支持的断言来源（如 RESPONSE_TIME），跳过该断言
+                log.warn("不支持的压测断言来源: {}，已跳过该断言。支持的来源: RESPONSE_CODE, RESPONSE_HEADER, RESPONSE_DATA", 
+                        stressAssertionDTO.getFrom());
+                continue; // 跳过当前断言，继续处理下一个
+            }
+            
             switch (fieldFromEnum){
                 case RESPONSE_CODE -> responseAssertion.setTestFieldResponseCode();
                 case RESPONSE_HEADER -> responseAssertion.setTestFieldResponseHeaders();
                 case RESPONSE_DATA -> responseAssertion.setTestFieldResponseData();
-                default -> throw new RuntimeException("不支持的断言字段来源");
+                default -> {
+                    log.warn("未处理的断言字段来源: {}，已跳过该断言", fieldFromEnum);
+                    continue; // 跳过当前断言
+                }
             }
 
             //增加用户期望的值
@@ -204,25 +229,37 @@ public class StressSimpleEngine extends BaseStressEngine{
         httpSampler.setProtocol(environmentDO.getProtocol());
         httpSampler.setDomain(environmentDO.getDomain());
         httpSampler.setPort(environmentDO.getPort());
-        //httpSampler.setPath("/api/v1/test/query"); 等同下面
-        httpSampler.setProperty("HTTPSampler.path",stressCaseDO.getPath());
+        // httpSampler.setPath("/api/v1/test/query"); 等同下面
+        httpSampler.setProperty("HTTPSampler.path", stressCaseDO.getPath());
         httpSampler.setMethod(stressCaseDO.getMethod());
 
         httpSampler.setAutoRedirects(false);
         httpSampler.setUseKeepAlive(true);
         httpSampler.setFollowRedirects(true);
-        httpSampler.setPostBodyRaw(true);
 
-        //处理请求参数
-        if(HttpMethod.GET.name().equals(stressCaseDO.getMethod()) && StringUtils.isNotBlank(stressCaseDO.getQuery())){
-            List<KeyValueDTO> keyValueList = JsonUtil.json2List(stressCaseDO.getQuery(), KeyValueDTO.class);
-            for(KeyValueDTO keyValueDTO : keyValueList){
-                httpSampler.addArgument(keyValueDTO.getKey(),keyValueDTO.getValue());
+        // 只有非 GET 请求才允许使用 Body
+        boolean isGetMethod = HttpMethod.GET.name().equalsIgnoreCase(stressCaseDO.getMethod());
+        if (isGetMethod) {
+            httpSampler.setPostBodyRaw(false);
+        } else {
+            httpSampler.setPostBodyRaw(true);
+        }
+
+        // 处理请求参数
+        if (isGetMethod) {
+            // GET 请求：仅使用 query 参数，不发送 Body
+            if (StringUtils.isNotBlank(stressCaseDO.getQuery())) {
+                List<KeyValueDTO> keyValueList = JsonUtil.json2List(stressCaseDO.getQuery(), KeyValueDTO.class);
+                for (KeyValueDTO keyValueDTO : keyValueList) {
+                    httpSampler.addArgument(keyValueDTO.getKey(), keyValueDTO.getValue());
+                }
             }
-        }else {
+        } else {
+            // 非 GET 请求：通过 Body 发送数据
             Arguments arguments = createArguments();
             httpSampler.setArguments(arguments);
         }
+
         return httpSampler;
     }
 

@@ -8,6 +8,7 @@ import {
   Tooltip,
   message,
 } from 'ant-design-vue'
+import { QuestionCircleOutlined } from '@ant-design/icons-vue'
 import { type AfterFetchContext, objectOmit } from '@vueuse/core'
 import {
   type IStressCase,
@@ -318,19 +319,43 @@ async function deserialize() {
                     "
                   />
                 </Form.Item>
-                <Form.Item label="并发数量：">
+                <Form.Item>
+                  <template #label>
+                    <span>
+                      并发数量：
+                      <Tooltip title="并发数量 = 线程数，每个线程代表一个并发虚拟用户">
+                        <QuestionCircleOutlined style="color: #999; margin-left: 4px" />
+                      </Tooltip>
+                    </span>
+                  </template>
                   <Input
                     v-model:value="formModelExpand.threadGroupConfig.numThreads"
                     type="number"
                   />
                 </Form.Item>
-                <Form.Item label="启动时间（秒）：">
+                <Form.Item>
+                  <template #label>
+                    <span>
+                      启动时间（秒）：
+                      <Tooltip title="线程组启动时间，从 0 个线程逐渐增加到目标线程数所需的时间">
+                        <QuestionCircleOutlined style="color: #999; margin-left: 4px" />
+                      </Tooltip>
+                    </span>
+                  </template>
                   <Input
                     v-model:value="formModelExpand.threadGroupConfig.rampUp"
                     type="number"
                   />
                 </Form.Item>
-                <Form.Item label="循环次数：">
+                <Form.Item>
+                  <template #label>
+                    <span>
+                      循环次数：
+                      <Tooltip title="每个线程执行测试计划的次数，-1 = 永久循环（需配合调度器）；0 = 由持续时间控制；>0 = 固定次数">
+                        <QuestionCircleOutlined style="color: #999; margin-left: 4px" />
+                      </Tooltip>
+                    </span>
+                  </template>
                   <Input
                     v-model:value="formModelExpand.threadGroupConfig.loopCount"
                     type="number"
@@ -343,7 +368,15 @@ async function deserialize() {
                     "
                   />
                 </Form.Item>
-                <Form.Item label="持续时间（秒）：">
+                <Form.Item>
+                  <template #label>
+                    <span>
+                      持续时间（秒）：
+                      <Tooltip title="调度器启用后，压测持续的总时间">
+                        <QuestionCircleOutlined style="color: #999; margin-left: 4px" />
+                      </Tooltip>
+                    </span>
+                  </template>
                   <Input
                     v-model:value="formModelExpand.threadGroupConfig.duration"
                     :disabled="
@@ -352,7 +385,15 @@ async function deserialize() {
                     type="number"
                   />
                 </Form.Item>
-                <Form.Item label="启动延迟（秒）：">
+                <Form.Item>
+                  <template #label>
+                    <span>
+                      启动延迟（秒）：
+                      <Tooltip title="调度器启用后，延迟多久才开始执行压测">
+                        <QuestionCircleOutlined style="color: #999; margin-left: 4px" />
+                      </Tooltip>
+                    </span>
+                  </template>
                   <Input
                     v-model:value="formModelExpand.threadGroupConfig.delay"
                     :disabled="

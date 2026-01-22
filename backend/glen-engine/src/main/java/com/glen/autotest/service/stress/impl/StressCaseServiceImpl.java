@@ -15,6 +15,7 @@ import com.glen.autotest.mapper.StressCaseMapper;
 import com.glen.autotest.model.EnvironmentDO;
 import com.glen.autotest.model.StressCaseDO;
 import com.glen.autotest.req.ReportSaveReq;
+import com.glen.autotest.req.ReportUpdateReq;
 import com.glen.autotest.req.stress.StressCaseSaveReq;
 import com.glen.autotest.req.stress.StressCaseUpdateReq;
 import com.glen.autotest.service.stress.StressCaseService;
@@ -23,6 +24,7 @@ import com.glen.autotest.service.stress.core.StressJmxEngine;
 import com.glen.autotest.service.stress.core.StressSimpleEngine;
 import com.glen.autotest.util.JsonData;
 import com.glen.autotest.util.SpringBeanUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,7 @@ import org.springframework.stereotype.Service;
  * @Remark Glen AutoTest Platform
  * @Version 1.0
  **/
+@Slf4j
 @Service
 public class StressCaseServiceImpl implements StressCaseService {
 
@@ -104,7 +107,13 @@ public class StressCaseServiceImpl implements StressCaseService {
                 .eq(StressCaseDO::getId, caseId);
         StressCaseDO stressCaseDO = stressCaseMapper.selectOne(queryWrapper);
 
-        if (stressCaseDO != null) {
+        if (stressCaseDO == null) {
+            log.error("压测用例不存在：projectId={}, caseId={}", projectId, caseId);
+            return;
+        }
+
+        ReportDTO reportDTO = null;
+        try {
             //初始化测试报告
             ReportSaveReq reportSaveReq = ReportSaveReq.builder().projectId(stressCaseDO.getProjectId())
                     .caseId(stressCaseDO.getId())
@@ -114,22 +123,53 @@ public class StressCaseServiceImpl implements StressCaseService {
                     .type(TestTypeEnum.STRESS.name())
                     .build();
             JsonData jsonData = reportFeignService.save(reportSaveReq);
-            if (jsonData.isSuccess()) {
-                ReportDTO reportDTO = jsonData.getData(ReportDTO.class);
+            
+            if (!jsonData.isSuccess()) {
+                log.error("创建压测报告失败：projectId={}, caseId={}, error={}", projectId, caseId, jsonData.getMsg());
+                return;
+            }
+            
+            reportDTO = jsonData.getData(ReportDTO.class);
+            if (reportDTO == null || reportDTO.getId() == null) {
+                log.error("压测报告创建失败，返回数据为空：projectId={}, caseId={}", projectId, caseId);
+                return;
+            }
 
-                //判断压测类型 JMX、SIMPLE
-                if (StressSourceTypeEnum.JMX.name().equalsIgnoreCase(stressCaseDO.getStressSourceType())) {
-                    runJmxStressCase(stressCaseDO, reportDTO);
-                } else if (StressSourceTypeEnum.SIMPLE.name().equalsIgnoreCase(stressCaseDO.getStressSourceType())) {
+            log.info("开始执行压测：projectId={}, caseId={}, reportId={}, type={}", 
+                    projectId, caseId, reportDTO.getId(), stressCaseDO.getStressSourceType());
 
-                    runSimpleStressCase(stressCaseDO, reportDTO);
-
-                } else {
-                    throw new BizException(BizCodeEnum.STRESS_UNSUPPORTED);
+            //判断压测类型 JMX、SIMPLE
+            if (StressSourceTypeEnum.JMX.name().equalsIgnoreCase(stressCaseDO.getStressSourceType())) {
+                runJmxStressCase(stressCaseDO, reportDTO);
+            } else if (StressSourceTypeEnum.SIMPLE.name().equalsIgnoreCase(stressCaseDO.getStressSourceType())) {
+                runSimpleStressCase(stressCaseDO, reportDTO);
+            } else {
+                throw new BizException(BizCodeEnum.STRESS_UNSUPPORTED);
+            }
+            
+            log.info("压测执行完成：projectId={}, caseId={}, reportId={}", projectId, caseId, reportDTO.getId());
+            
+        } catch (Exception e) {
+            //捕获异常，更新报告状态为失败
+            log.error("压测执行失败：projectId={}, caseId={}, reportId={}, error={}", 
+                    projectId, caseId, reportDTO != null ? reportDTO.getId() : null, e.getMessage(), e);
+            
+            // 如果报告已创建，则更新状态为失败
+            if (reportDTO != null && reportDTO.getId() != null) {
+                try {
+                    ReportUpdateReq reportUpdateReq = ReportUpdateReq.builder()
+                            .id(reportDTO.getId())
+                            .executeState(ReportStateEnum.EXECUTE_FAIL.name())
+                            .endTime(System.currentTimeMillis())
+                            .build();
+                    reportFeignService.update(reportUpdateReq);
+                    log.info("已更新压测报告状态为失败：reportId={}", reportDTO.getId());
+                } catch (Exception updateException) {
+                    log.error("更新压测报告状态失败：reportId={}, error={}", 
+                            reportDTO.getId(), updateException.getMessage(), updateException);
                 }
             }
         }
-
     }
 
     private void runJmxStressCase(StressCaseDO stressCaseDO, ReportDTO reportDTO) {
@@ -144,6 +184,15 @@ public class StressCaseServiceImpl implements StressCaseService {
     private void runSimpleStressCase(StressCaseDO stressCaseDO, ReportDTO reportDTO) {
 
         EnvironmentDO environmentDO = environmentMapper.selectById(stressCaseDO.getEnvironmentId());
+        
+        // 校验环境是否存在
+        if (environmentDO == null) {
+            log.error("压测环境不存在：projectId={}, caseId={}, environmentId={}", 
+                    stressCaseDO.getProjectId(), stressCaseDO.getId(), stressCaseDO.getEnvironmentId());
+            throw new BizException(BizCodeEnum.STRESS_CASE_ID_NOT_EXIST.getCode(), 
+                    "压测环境不存在，environmentId=" + stressCaseDO.getEnvironmentId() + "，请先配置正确的测试环境");
+        }
+        
         //创建引擎
         BaseStressEngine stressEngine = new StressSimpleEngine(environmentDO,stressCaseDO,reportDTO,applicationContext);
 
