@@ -60,12 +60,12 @@ const quickActions = [
     description: '管理和执行UI测试用例',
   },
   {
-    title: '压测引擎',
+    title: '性能测试',
     icon: ApartmentOutlined,
     color: '#faad14',
     bgColor: '#fffbe6',
     path: '/stress-test/manager',
-    description: '执行压力测试用例',
+    description: '执行性能测试用例',
   },
   {
     title: '测试报告',
@@ -146,8 +146,8 @@ const { execute: fetchRecentExecutions } = useCustomFetch('/engine-service/api/v
           },
           {
             id: 3,
-            caseName: '订单接口压力测试',
-            type: '压测引擎',
+            caseName: '订单接口性能测试',
+            type: '性能测试',
             status: 'running',
             statusText: '执行中',
             executeTime: '20分钟前',
@@ -370,7 +370,7 @@ onUnmounted(() => {
         <Col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
           <Card :bordered="false" class="stat-card stat-card-warning">
             <Statistic
-              title="压测用例"
+              title="性能测试用例"
               :value="statistics.stressCaseCount"
               :value-style="{ color: '#faad14', fontWeight: 600 }"
             >
@@ -583,8 +583,8 @@ onUnmounted(() => {
                 <ApartmentOutlined />
               </div>
               <div class="feature-content">
-                <h4>压测引擎</h4>
-                <p>基于JMeter引擎，支持高并发压力测试</p>
+                <h4>性能测试</h4>
+                <p>基于JMeter引擎，支持高并发性能测试</p>
               </div>
             </div>
             <div class="feature-item">

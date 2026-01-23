@@ -260,7 +260,7 @@ async function deserialize() {
       @deserialize="deserialize"
     >
       <Form :modal="formModel" layout="vertical" mx-40>
-        <Form.Item label="选择压测类型：">
+        <Form.Item label="选择性能测试类型：">
           <Select v-model:value="formModel.stressSourceType">
             <Select.Option
               v-for="item in fetchDictListData?.stress_source_type"
@@ -372,7 +372,7 @@ async function deserialize() {
                   <template #label>
                     <span>
                       持续时间（秒）：
-                      <Tooltip title="调度器启用后，压测持续的总时间">
+                      <Tooltip title="调度器启用后，性能测试持续的总时间">
                         <QuestionCircleOutlined style="color: #999; margin-left: 4px" />
                       </Tooltip>
                     </span>
@@ -389,7 +389,7 @@ async function deserialize() {
                   <template #label>
                     <span>
                       启动延迟（秒）：
-                      <Tooltip title="调度器启用后，延迟多久才开始执行压测">
+                      <Tooltip title="调度器启用后，延迟多久才开始执行性能测试">
                         <QuestionCircleOutlined style="color: #999; margin-left: 4px" />
                       </Tooltip>
                     </span>

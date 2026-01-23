@@ -88,7 +88,7 @@ export const routerMetas: Record<string, RouteMeta> = {
         },
       },
       'stress-test': {
-        title: '压测引擎',
+        title: '性能测试',
         children: {
           manager: {
             title: '用例管理',
@@ -109,16 +109,16 @@ export const routerMetas: Record<string, RouteMeta> = {
             title: '报告详情',
             path: '/report/details',
           },
-          ui: {
-            title: 'UI测试',
-            path: '/report/ui',
-          },
           interface: {
             title: '接口测试',
             path: '/report/interface',
           },
+          ui: {
+            title: 'UI测试',
+            path: '/report/ui',
+          },
           stress: {
-            title: '压力测试',
+            title: '性能测试',
             path: '/report/stress',
           },
         },
@@ -129,6 +129,23 @@ export const routerMetas: Record<string, RouteMeta> = {
           manager: {
             title: '定时计划',
             path: '/test-plan/time-plan',
+          },
+        },
+      },
+      'help-docs': {
+        title: '帮助文档',
+        children: {
+          'interface-automation': {
+            title: '接口自动化',
+            path: '/help-docs/interface-automation',
+          },
+          'ui-automation': {
+            title: 'UI自动化',
+            path: '/help-docs/ui-automation',
+          },
+          'stress-test': {
+            title: '性能测试',
+            path: '/help-docs/stress-test',
           },
         },
       },

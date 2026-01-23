@@ -357,7 +357,7 @@ onMounted(async () => {
           :pagination="tablePagination"
           @change="handleTableChange"
         >
-          <template #bodyCell="{ column, record, index }">
+          <template #bodyCell="{ column, record, index, text }">
             <template v-if="column.key!.toString() === 'operation'">
               <Button type="link" @click="handleEdit(record)">编辑</Button>
               <Popconfirm
@@ -387,6 +387,9 @@ onMounted(async () => {
               "
             >
               <span> - </span>
+            </template>
+            <template v-else-if="column.customRender">
+              <span>{{ column.customRender({ text, record, index, column }) }}</span>
             </template>
             <template
               v-else-if="

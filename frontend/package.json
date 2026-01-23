@@ -17,6 +17,7 @@
     "axios": "^1.6.8",
     "dayjs": "^1.11.10",
     "json-editor-vue": "^0.11.2",
+    "marked": "^17.0.1",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
     "unplugin-vue-router": "^0.7.0",

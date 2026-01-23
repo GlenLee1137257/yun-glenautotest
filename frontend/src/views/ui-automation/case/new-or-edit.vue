@@ -19,6 +19,59 @@ import type { IOperation } from '~/types/apis/ui'
 import type { IUICaseStep } from '~/types/apis/ui-case'
 import type { AfterFetchContext } from '@vueuse/core/index.cjs'
 
+type ResponseType = Record<
+  | 'ui_location_type'
+  | 'browser'
+  | 'mouse'
+  | 'keyboard'
+  | 'wait'
+  | 'assertion'
+  | 'browser_type'
+  | 'img',
+  IOperation[]
+>
+
+const { data } = useCustomFetch<ResponseType>(
+  '/engine-service/api/v1/dict/list?category=ui_location_type,browser,mouse,keyboard,wait,assertion,img,browser_type',
+  {
+    initialData: {},
+    afterFetch(ctx: AfterFetchContext<IBasic<ResponseType>>) {
+      if (ctx.data && ctx.data.code === 0) {
+        return {
+          data: ctx.data.data,
+          response: ctx.response,
+        }
+      }
+      return {
+        data: [],
+        response: ctx.response,
+      }
+    },
+  },
+)
+
+const currentSelectedOptions = ref<string[]>([])
+const isInitializingCascader = ref(false) // 标记 Cascader 是否正在初始化，防止初始化时意外触发 change 事件
+
+// 创建操作类型的中英文映射表
+const operationTypeMap = computed(() => {
+  const map: Record<string, string> = {}
+  if (data.value) {
+    // 遍历所有分类（browser, mouse, keyboard, wait, assertion, img等）
+    Object.values(data.value).forEach((categoryItems) => {
+      if (Array.isArray(categoryItems)) {
+        categoryItems.forEach((item: IOperation) => {
+          if (item.value && item.name) {
+            map[item.value] = item.name
+          }
+        })
+      }
+    })
+  }
+  return map
+})
+
+// 列定义
 const columns: ColumnsType<any> = [
   {
     title: 'ID',
@@ -50,6 +103,9 @@ const columns: ColumnsType<any> = [
     key: 'operationType',
     align: 'center',
     width: 150,
+    customRender: ({ text }: { text: string }) => {
+      return operationTypeMap.value[text] || text
+    },
   },
   {
     title: '定位类型',
@@ -145,40 +201,6 @@ const columns: ColumnsType<any> = [
     align: 'center',
   },
 ]
-
-type ResponseType = Record<
-  | 'ui_location_type'
-  | 'browser'
-  | 'mouse'
-  | 'keyboard'
-  | 'wait'
-  | 'assertion'
-  | 'browser_type'
-  | 'img',
-  IOperation[]
->
-
-const { data } = useCustomFetch<ResponseType>(
-  '/engine-service/api/v1/dict/list?category=ui_location_type,browser,mouse,keyboard,wait,assertion,img,browser_type',
-  {
-    initialData: {},
-    afterFetch(ctx: AfterFetchContext<IBasic<ResponseType>>) {
-      if (ctx.data && ctx.data.code === 0) {
-        return {
-          data: ctx.data.data,
-          response: ctx.response,
-        }
-      }
-      return {
-        data: [],
-        response: ctx.response,
-      }
-    },
-  },
-)
-
-const currentSelectedOptions = ref<string[]>([])
-const isInitializingCascader = ref(false) // 标记 Cascader 是否正在初始化，防止初始化时意外触发 change 事件
 
 const filter: ShowSearchType['filter'] = (inputValue, path) => {
   return path.some((option) =>
@@ -392,6 +414,7 @@ const handleStepTypeChange = (selectedStep: IUICaseStep, newType: string) => {
 
         <Form.Item v-if="selectedStep.stepType !== 'REFER'" label="操作类型">
           <Cascader
+            :key="`cascader-${selectedStep.id || selectedStep.num || 'new'}-${selectedStep.operationType || 'empty'}`"
             v-model:value="currentSelectedOptions"
             :options="cascaderOptions"
             placeholder="请选择操作类型"

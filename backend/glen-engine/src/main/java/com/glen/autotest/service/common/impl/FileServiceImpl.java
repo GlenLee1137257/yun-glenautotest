@@ -4,6 +4,8 @@ import cn.hutool.core.util.IdUtil;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.StatObjectArgs;
+import io.minio.StatObjectResponse;
 import io.minio.http.Method;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -79,12 +81,51 @@ public class FileServiceImpl implements FileService {
                 filename = remoteFilePath;
             }
             
+            // 如果文件名包含查询参数，需要移除
+            if (filename.contains("?")) {
+                filename = filename.substring(0, filename.indexOf("?"));
+            }
+            
             if (filename == null || filename.isEmpty()) {
                 log.error("获取临时文件访问链接失败：无法从路径中提取文件名，路径：{}", remoteFilePath);
                 throw new RuntimeException("无法从路径中提取文件名");
             }
             
-            log.info("获取临时文件访问链接：bucket={}, filename={}", minIoConfig.getBucketName(), filename);
+            log.info("获取临时文件访问链接：bucket={}, filename={}, endpoint={}", 
+                    minIoConfig.getBucketName(), filename, minIoConfig.getEndpoint());
+            
+            // 先检查文件是否存在
+            try {
+                StatObjectResponse stat = minioClient.statObject(
+                    StatObjectArgs.builder()
+                        .bucket(minIoConfig.getBucketName())
+                        .object(filename)
+                        .build()
+                );
+                log.info("文件存在，大小：{} bytes, 最后修改时间：{}", stat.size(), stat.lastModified());
+            } catch (Exception e) {
+                // 先检查是否是认证错误（优先级最高）
+                String errorMsg = e.getMessage();
+                if (errorMsg != null) {
+                    if (errorMsg.contains("Access Key") || errorMsg.contains("InvalidAccessKeyId") || 
+                        errorMsg.contains("SignatureDoesNotMatch") || 
+                        errorMsg.contains("provided does not exist") ||
+                        errorMsg.contains("does not exist in our records")) {
+                        log.error("MinIO 认证失败：bucket={}, filename={}, 错误：{}", minIoConfig.getBucketName(), filename, errorMsg);
+                        throw new RuntimeException("MinIO 认证失败，请检查访问密钥配置（当前配置：endpoint=" + minIoConfig.getEndpoint() + ", accessKey=" + minIoConfig.getAccessKey() + "）。错误详情：" + errorMsg);
+                    }
+                    // 再检查是否是文件不存在的错误
+                    if (errorMsg.contains("NoSuchKey") || 
+                        errorMsg.contains("Not Found") ||
+                        errorMsg.contains("404") ||
+                        (errorMsg.contains("does not exist") && !errorMsg.contains("Access Key") && !errorMsg.contains("records"))) {
+                        log.error("文件不存在：bucket={}, filename={}, 错误：{}", minIoConfig.getBucketName(), filename, errorMsg);
+                        throw new RuntimeException("文件不存在：bucket=" + minIoConfig.getBucketName() + ", filename=" + filename + "，请检查文件是否已成功上传到MinIO");
+                    }
+                }
+                // 其他错误继续抛出
+                throw e;
+            }
             
             GetPresignedObjectUrlArgs objectUrlArgs = GetPresignedObjectUrlArgs.builder()
                     .bucket(minIoConfig.getBucketName())
@@ -97,19 +138,28 @@ public class FileServiceImpl implements FileService {
             log.info("成功生成临时访问链接：{}", presignedObjectUrl);
 
             return presignedObjectUrl;
+        } catch (RuntimeException e) {
+            // 重新抛出RuntimeException，保持原始错误信息
+            throw e;
         } catch (Exception e) {
             log.error("获取临时文件访问链接失败，文件路径：{}，错误信息：{}", remoteFilePath, e.getMessage(), e);
             // 检查是否是 MinIO 连接问题
-            if (e.getMessage() != null && (e.getMessage().contains("Connection") || 
-                e.getMessage().contains("Access Key") || e.getMessage().contains("provided does not exist"))) {
-                throw new RuntimeException("无法连接到 MinIO 服务或认证失败，请检查 MinIO 服务地址和访问密钥配置（当前配置：endpoint=" + minIoConfig.getEndpoint() + ", accessKey=" + minIoConfig.getAccessKey() + "）");
+            String errorMsg = e.getMessage();
+            if (errorMsg != null) {
+                if (errorMsg.contains("Connection") || errorMsg.contains("ConnectException") || 
+                    errorMsg.contains("Connection refused") || errorMsg.contains("Connection timed out")) {
+                    throw new RuntimeException("无法连接到 MinIO 服务，请检查 MinIO 服务是否正常运行（当前配置：endpoint=" + minIoConfig.getEndpoint() + "）");
+                }
+                if (errorMsg.contains("Access Key") || errorMsg.contains("InvalidAccessKeyId") || 
+                    errorMsg.contains("SignatureDoesNotMatch") || errorMsg.contains("provided does not exist")) {
+                    throw new RuntimeException("MinIO 认证失败，请检查访问密钥配置（当前配置：endpoint=" + minIoConfig.getEndpoint() + ", accessKey=" + minIoConfig.getAccessKey() + "）");
+                }
+                if (errorMsg.contains("does not exist") || errorMsg.contains("NoSuchKey") || 
+                    errorMsg.contains("Not Found") || errorMsg.contains("NoSuchBucket")) {
+                    throw new RuntimeException("文件或存储桶不存在：bucket=" + minIoConfig.getBucketName() + ", filename=" + (remoteFilePath.contains("/") ? remoteFilePath.substring(remoteFilePath.lastIndexOf("/") + 1) : remoteFilePath));
+                }
             }
-            // 检查是否是文件不存在
-            if (e.getMessage() != null && (e.getMessage().contains("does not exist") || 
-                e.getMessage().contains("NoSuchKey") || e.getMessage().contains("Not Found"))) {
-                throw new RuntimeException("文件不存在：" + remoteFilePath);
-            }
-            throw new RuntimeException("获取临时文件访问链接失败：" + e.getMessage());
+            throw new RuntimeException("获取临时文件访问链接失败：" + (errorMsg != null ? errorMsg : e.getClass().getSimpleName()));
         }
     }
 
