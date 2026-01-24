@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Form, Input, Select, TabPane, Tooltip } from 'ant-design-vue'
+import { Form, Input, InputNumber, Select, TabPane, Tooltip } from 'ant-design-vue'
 import { QuestionCircleOutlined } from '@ant-design/icons-vue'
 import {
   type IApiCaseStep,
@@ -95,6 +95,17 @@ defineExpose({ serialize })
     <Form :model="selectedStep">
       <Form.Item label="用例阶段名称：">
         <Input v-model:value="selectedStep.name" placeholder="请输入名称" />
+      </Form.Item>
+      <Form.Item label="排序：">
+        <InputNumber 
+          v-model:value="selectedStep.num" 
+          :min="1" 
+          placeholder="请输入排序号（从1开始）"
+          style="width: 100%"
+        />
+        <div class="text-xs text-gray-500 mt-1">
+          排序号可以相同，相同时按修改时间排序（修改时间越新的越先执行）
+        </div>
       </Form.Item>
       <Form.Item label="用例阶段描述：">
         <Input.TextArea

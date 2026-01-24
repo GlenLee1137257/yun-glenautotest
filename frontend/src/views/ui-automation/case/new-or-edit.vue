@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, nextTick, ref, watch } from 'vue'
-import { Cascader, Form, Input, Radio, Select, Switch } from 'ant-design-vue'
+import { Cascader, Form, Input, InputNumber, Radio, Select, Switch } from 'ant-design-vue'
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons-vue'
 import { objectOmit } from '@vueuse/core'
 import {
@@ -71,16 +71,45 @@ const operationTypeMap = computed(() => {
   return map
 })
 
+// 元素定位类型的排序顺序
+const locationTypeOrder = [
+  'ID',              // id定位
+  'NAME',            // 名称定位
+  'CSS_SELECTOR',    // CSS选择器定位
+  'XPATH',           // xpath定位
+  'CLASS_NAME',      // 类名定位
+  'TAG_NAME',        // 标签名称定位
+  'LINK_TEXT',       // 链接文本内容定位
+  'PARTIAL_LINK_TEXT', // 全部链接文本内容定位
+]
+
+// 排序后的元素定位类型选项
+const sortedLocationTypeOptions = computed(() => {
+  if (!data.value?.ui_location_type) {
+    return []
+  }
+  
+  const locationTypes = data.value.ui_location_type.map((item) => ({
+    label: item.value, // 使用英文值作为显示文本
+    value: item.value,
+  }))
+  
+  // 按照指定顺序排序
+  return locationTypes.sort((a, b) => {
+    const indexA = locationTypeOrder.indexOf(a.value)
+    const indexB = locationTypeOrder.indexOf(b.value)
+    
+    // 如果找不到，放到最后
+    if (indexA === -1 && indexB === -1) return 0
+    if (indexA === -1) return 1
+    if (indexB === -1) return -1
+    
+    return indexA - indexB
+  })
+})
+
 // 列定义
 const columns: ColumnsType<any> = [
-  {
-    title: 'ID',
-    dataIndex: 'id',
-    key: 'id',
-    fixed: 'left',
-    align: 'center',
-    width: 60,
-  },
   {
     title: '排序',
     dataIndex: 'num',
@@ -377,6 +406,18 @@ const handleStepTypeChange = (selectedStep: IUICaseStep, newType: string) => {
           <Input v-model:value="selectedStep.name" />
         </Form.Item>
 
+        <Form.Item label="排序">
+          <InputNumber 
+            v-model:value="selectedStep.num" 
+            :min="1" 
+            placeholder="请输入排序号（从1开始）"
+            style="width: 100%"
+          />
+          <div class="text-xs text-gray-500 mt-1">
+            排序号可以相同，相同时按修改时间排序（修改时间越新的越先执行）
+          </div>
+        </Form.Item>
+
         <Form.Item label="步骤类型">
           <Radio.Group 
             v-model:value="selectedStep.stepType"
@@ -449,12 +490,7 @@ const handleStepTypeChange = (selectedStep: IUICaseStep, newType: string) => {
             <!-- @vue-expect-error -->
             <Select
               v-model:value="/* @ts-ignore */ selectedStep[item.field]"
-              :options="
-                data?.ui_location_type.map((item) => ({
-                  label: item.name,
-                  value: item.value,
-                }))
-              "
+              :options="sortedLocationTypeOptions"
             />
           </div>
           <Input

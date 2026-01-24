@@ -917,8 +917,8 @@ curl http://localhost:5173
   # 添加商品到购物车
   步骤6:
     操作类型: 鼠标左键点击
-    定位方式: CSS选择器
-    定位表达式: button[id='add-to-cart-sauce-labs-backpack']
+    定位方式: ID
+    定位表达式: add-to-cart-sauce-labs-backpack
     描述: 添加第一个商品
   
   步骤7:

@@ -205,7 +205,7 @@ function handleAdd() {
     ...defaultWithStepItem.value,
     projectId: globalConfigStore.config.projectId,
     caseId: formModel.value.id,
-    num: formModel.value.stepList.length,
+    num: formModel.value.stepList.length + 1, // 从1开始
   })
   selectedStepNum.value = formModel.value.stepList.length - 1
   toggleCreateModalVisible()
@@ -251,8 +251,8 @@ async function handleDelete(step: StepItem<T>) {
   formModel.value.stepList = formModel.value.stepList.filter(
     (item) => item.num !== step.num,
   )
-  // 重新整理本地步骤的 num 序号
-  formModel.value.stepList?.forEach((item, index) => (item.num = index))
+  // 重新整理本地步骤的 num 序号（从1开始）
+  formModel.value.stepList?.forEach((item, index) => (item.num = index + 1))
   
   // 删除后，检查当前页是否有效，如果当前页超出范围，自动调整到最后一页
   const totalPages = Math.ceil((formModel.value.stepList?.length || 0) / tablePagination.pageSize)
@@ -403,12 +403,8 @@ onMounted(async () => {
               }}
             </template>
             <template v-else-if="column.key!.toString() === 'num'">
-              <!-- 显示全局排序：结合分页的当前页与每页条数计算 -->
-              {{
-                (tablePagination.current - 1) * tablePagination.pageSize +
-                index +
-                1
-              }}
+              <!-- 直接显示 num 字段（数据库已从1开始） -->
+              {{ record.num }}
             </template>
             <template v-else>
               <p truncate :title="record[column.key!.toString()]">

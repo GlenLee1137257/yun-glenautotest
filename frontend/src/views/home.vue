@@ -208,6 +208,11 @@ function handleQuickAction(path: string) {
   router.push(path)
 }
 
+// 打开帮助文档
+function openHelpDoc(url: string) {
+  window.open(url, '_blank')
+}
+
 // 获取状态图标
 function getStatusIcon(status: string) {
   switch (status) {
@@ -558,42 +563,33 @@ onUnmounted(() => {
         </Card>
       </Col>
       <Col :xs="24" :lg="10">
-        <Card title="💡 平台特性" :bordered="false" class="features-card">
+        <Card title="📚 帮助文档" :bordered="false" class="features-card">
           <div class="features-list">
-            <div class="feature-item">
+            <div class="feature-item" @click="openHelpDoc('https://gitee.com/li-guanbiao/yun-glenautotest/wikis/%E4%BA%91%E6%B5%8B%E5%B8%AE%E5%8A%A9%E6%96%87%E6%A1%A3/%E6%8E%A5%E5%8F%A3%E8%87%AA%E5%8A%A8%E5%8C%96%E5%B8%AE%E5%8A%A9%E6%96%87%E6%A1%A3')">
               <div class="feature-icon" style="background: #e6f7ff; color: #1890ff">
                 <UsbOutlined />
               </div>
               <div class="feature-content">
                 <h4>接口自动化</h4>
-                <p>支持HTTP/HTTPS协议，丰富的断言和变量提取功能</p>
+                <p>查看接口自动化测试帮助文档</p>
               </div>
             </div>
-            <div class="feature-item">
+            <div class="feature-item" @click="openHelpDoc('https://gitee.com/li-guanbiao/yun-glenautotest/wikis/%E4%BA%91%E6%B5%8B%E5%B8%AE%E5%8A%A9%E6%96%87%E6%A1%A3/UI%E8%87%AA%E5%8A%A8%E5%8C%96%E5%B8%AE%E5%8A%A9%E6%96%87%E6%A1%A3')">
               <div class="feature-icon" style="background: #f6ffed; color: #52c41a">
                 <AppstoreOutlined />
               </div>
               <div class="feature-content">
                 <h4>UI自动化</h4>
-                <p>基于Selenium，支持Chrome等主流浏览器</p>
+                <p>查看UI自动化测试帮助文档</p>
               </div>
             </div>
-            <div class="feature-item">
+            <div class="feature-item" @click="openHelpDoc('https://gitee.com/li-guanbiao/yun-glenautotest/wikis/%E4%BA%91%E6%B5%8B%E5%B8%AE%E5%8A%A9%E6%96%87%E6%A1%A3/%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E5%B8%AE%E5%8A%A9%E6%96%87%E6%A1%A3')">
               <div class="feature-icon" style="background: #fffbe6; color: #faad14">
                 <ApartmentOutlined />
               </div>
               <div class="feature-content">
                 <h4>性能测试</h4>
-                <p>基于JMeter引擎，支持高并发性能测试</p>
-              </div>
-            </div>
-            <div class="feature-item">
-              <div class="feature-icon" style="background: #f9f0ff; color: #722ed1">
-                <CodeSandboxOutlined />
-              </div>
-              <div class="feature-content">
-                <h4>测试报告</h4>
-                <p>详细的测试报告，支持多维度数据分析</p>
+                <p>查看性能测试帮助文档</p>
               </div>
             </div>
           </div>
@@ -883,8 +879,7 @@ onUnmounted(() => {
 }
 
 .recent-list {
-  max-height: 480px;
-  overflow-y: auto;
+  /* 移除高度限制和滚动条，让内容自然展开 */
 }
 
 .recent-list-item {
@@ -961,11 +956,13 @@ onUnmounted(() => {
   border-radius: 12px;
   background: #fafafa;
   transition: all 0.3s;
+  cursor: pointer;
 }
 
 .feature-item:hover {
-  background: #f0f0f0;
+  background: #e6f7ff;
   transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.15);
 }
 
 .feature-icon {
@@ -1025,22 +1022,4 @@ onUnmounted(() => {
   }
 }
 
-/* 滚动条样式 */
-.recent-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.recent-list::-webkit-scrollbar-track {
-  background: #f0f0f0;
-  border-radius: 3px;
-}
-
-.recent-list::-webkit-scrollbar-thumb {
-  background: #bfbfbf;
-  border-radius: 3px;
-}
-
-.recent-list::-webkit-scrollbar-thumb:hover {
-  background: #8c8c8c;
-}
 </style>

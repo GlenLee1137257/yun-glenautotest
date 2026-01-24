@@ -132,23 +132,6 @@ export const routerMetas: Record<string, RouteMeta> = {
           },
         },
       },
-      'help-docs': {
-        title: '帮助文档',
-        children: {
-          'interface-automation': {
-            title: '接口自动化',
-            path: '/help-docs/interface-automation',
-          },
-          'ui-automation': {
-            title: 'UI自动化',
-            path: '/help-docs/ui-automation',
-          },
-          'stress-test': {
-            title: '性能测试',
-            path: '/help-docs/stress-test',
-          },
-        },
-      },
     },
   },
 }

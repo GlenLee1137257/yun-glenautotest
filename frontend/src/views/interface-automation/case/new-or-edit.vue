@@ -12,7 +12,7 @@ import type { ComponentExposed } from 'vue-component-type-helpers'
 
 const columns: ColumnsType<any> = [
   {
-    title: '序号',
+    title: '排序',
     dataIndex: 'num',
     key: 'num',
     fixed: 'left',

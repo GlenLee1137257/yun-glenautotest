@@ -166,7 +166,9 @@ public class UiCaseServiceImpl implements UiCaseService {
 
     private List<UiCaseStepDO> getStepList(Long uiCaseId){
         LambdaQueryWrapper<UiCaseStepDO> queryWrapper = new LambdaQueryWrapper<>(UiCaseStepDO.class);
-        queryWrapper.eq(UiCaseStepDO::getCaseId, uiCaseId).orderByAsc(UiCaseStepDO::getNum);
+        queryWrapper.eq(UiCaseStepDO::getCaseId, uiCaseId)
+                .orderByAsc(UiCaseStepDO::getNum)
+                .orderByDesc(UiCaseStepDO::getGmtModified); // num相同时，按修改时间降序排序（修改时间越新的越先执行）
         return uiCaseStepMapper.selectList(queryWrapper);
 
     }

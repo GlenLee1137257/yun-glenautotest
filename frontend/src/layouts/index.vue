@@ -16,7 +16,6 @@ import {
 import {
   ApartmentOutlined,
   AppstoreOutlined,
-  BookOutlined,
   CodeSandboxOutlined,
   CodeOutlined,
   HomeOutlined,
@@ -160,29 +159,6 @@ const items = reactive<ItemType[]>([
         key: '/test-plan/time-plan',
         title: '定时计划',
         label: '定时计划',
-      },
-    ],
-  },
-  {
-    key: 'help-docs',
-    title: '帮助文档',
-    label: '帮助文档',
-    icon: () => h(BookOutlined),
-    children: [
-      {
-        key: '/help-docs/interface-automation',
-        title: '接口自动化',
-        label: '接口自动化',
-      },
-      {
-        key: '/help-docs/ui-automation',
-        title: 'UI自动化',
-        label: 'UI自动化',
-      },
-      {
-        key: '/help-docs/stress-test',
-        title: '性能测试',
-        label: '性能测试',
       },
     ],
   },

@@ -11,7 +11,7 @@
  Target Server Version : 80044 (8.0.44)
  File Encoding         : 65001
 
- Date: 20/01/2026 23:58:18
+ Date: 24/01/2026 13:09:22
 */
 
 SET NAMES utf8mb4;
@@ -32,7 +32,7 @@ CREATE TABLE `sys_dict`  (
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 182 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 224 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_dict
@@ -106,5 +106,13 @@ INSERT INTO `sys_dict` VALUES (178, 'api_assertion_action', '断言动作', '包
 INSERT INTO `sys_dict` VALUES (179, 'api_assertion_action', '断言动作', '不包含', 'NOT_CONTAIN', NULL, '断言实际值不包含预期值', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
 INSERT INTO `sys_dict` VALUES (180, 'api_assertion_action', '断言动作', '大于', 'GREAT_THEN', NULL, '断言实际值大于预期值（数值比较）', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
 INSERT INTO `sys_dict` VALUES (181, 'api_assertion_action', '断言动作', '小于', 'LESS_THEN', NULL, '断言实际值小于预期值（数值比较）', '2026-01-19 01:13:42', '2026-01-19 01:13:42');
+INSERT INTO `sys_dict` VALUES (200, 'stress_source_type', '压测来源类型', '简单压测', 'SIMPLE', NULL, 'HTTP接口简单压测，支持GET/POST等常见请求方式', '2026-01-21 19:16:19', '2026-01-21 19:16:19');
+INSERT INTO `sys_dict` VALUES (201, 'stress_source_type', '压测来源类型', 'JMX脚本压测', 'JMX', NULL, '使用JMeter JMX脚本进行压测，支持复杂场景', '2026-01-21 19:16:19', '2026-01-21 19:16:19');
+INSERT INTO `sys_dict` VALUES (210, 'stress_assert_action', '压测断言动作', '等于', 'EQUAL', NULL, '断言实际值等于预期值', '2026-01-21 19:16:19', '2026-01-21 19:16:19');
+INSERT INTO `sys_dict` VALUES (212, 'stress_assert_action', '压测断言动作', '包含', 'CONTAIN', NULL, '断言实际值包含预期值', '2026-01-21 19:16:19', '2026-01-21 19:16:19');
+INSERT INTO `sys_dict` VALUES (220, 'stress_assert_from', '压测断言来源', '响应状态码', 'RESPONSE_CODE', NULL, '对响应状态码进行断言', '2026-01-21 19:16:19', '2026-01-21 19:16:19');
+INSERT INTO `sys_dict` VALUES (221, 'stress_assert_from', '压测断言来源', '响应头', 'RESPONSE_HEADER', NULL, '对响应头进行断言', '2026-01-21 19:16:19', '2026-01-21 19:16:19');
+INSERT INTO `sys_dict` VALUES (222, 'stress_assert_from', '压测断言来源', '响应体', 'RESPONSE_DATA', NULL, '对响应体进行断言', '2026-01-21 19:16:19', '2026-01-21 19:16:19');
+INSERT INTO `sys_dict` VALUES (223, 'stress_assert_from', '压测断言来源', '响应时间', 'RESPONSE_TIME', NULL, '对响应时间进行断言（毫秒）', '2026-01-21 19:16:19', '2026-01-21 19:16:19');
 
 SET FOREIGN_KEY_CHECKS = 1;

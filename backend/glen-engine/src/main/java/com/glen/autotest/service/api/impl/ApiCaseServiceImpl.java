@@ -64,7 +64,9 @@ public class ApiCaseServiceImpl implements ApiCaseService {
 
         //查找关联的步骤
         LambdaQueryWrapper<ApiCaseStepDO> caseStepQueryWrapper = new LambdaQueryWrapper<ApiCaseStepDO>();
-        caseStepQueryWrapper.eq(ApiCaseStepDO::getCaseId, apiCaseDO.getId()).orderByAsc(ApiCaseStepDO::getNum);
+        caseStepQueryWrapper.eq(ApiCaseStepDO::getCaseId, apiCaseDO.getId())
+                .orderByAsc(ApiCaseStepDO::getNum)
+                .orderByDesc(ApiCaseStepDO::getGmtModified); // num相同时，按修改时间降序排序（修改时间越新的越先执行）
         List<ApiCaseStepDO> apiCaseStepDOS = apiCaseStepMapper.selectList(caseStepQueryWrapper);
         List<ApiCaseStepDTO> apiCaseStepDTOS = SpringBeanUtil.copyProperties(apiCaseStepDOS, ApiCaseStepDTO.class);
 
@@ -128,7 +130,9 @@ public class ApiCaseServiceImpl implements ApiCaseService {
         if (apiCaseDO != null) {
             //查找用例关联的步骤
             LambdaQueryWrapper<ApiCaseStepDO> stepQueryWrapper = new LambdaQueryWrapper<ApiCaseStepDO>();
-            stepQueryWrapper.eq(ApiCaseStepDO::getCaseId, apiCaseDO.getId()).orderByAsc(ApiCaseStepDO::getNum);
+            stepQueryWrapper.eq(ApiCaseStepDO::getCaseId, apiCaseDO.getId())
+                    .orderByAsc(ApiCaseStepDO::getNum)
+                    .orderByDesc(ApiCaseStepDO::getGmtModified); // num相同时，按修改时间降序排序（修改时间越新的越先执行）
             List<ApiCaseStepDO> apiCaseStepDOS = apiCaseStepMapper.selectList(stepQueryWrapper);
             if(apiCaseStepDOS == null || apiCaseStepDOS.isEmpty()){
                 throw new BizException(BizCodeEnum.API_CASE_STEP_IS_EMPTY);

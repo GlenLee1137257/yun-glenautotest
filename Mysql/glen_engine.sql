@@ -11,7 +11,7 @@
  Target Server Version : 80044 (8.0.44)
  File Encoding         : 65001
 
- Date: 20/01/2026 23:58:25
+ Date: 24/01/2026 13:09:31
 */
 
 SET NAMES utf8mb4;
@@ -32,7 +32,7 @@ CREATE TABLE `environment`  (
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of environment
@@ -46,6 +46,49 @@ INSERT INTO `environment` VALUES (6, 6, '贝壳公益测试环境(善贝GO小程
 INSERT INTO `environment` VALUES (7, 6, '贝壳公益生产环境(H5移动端)', 'HTTPS', 'gongyi-mobile.ke.com', 443, '贝壳公益生产环境 - H5移动端接口，仅用于生产环境验证测试', '2026-01-18 14:38:48', '2026-01-18 14:38:48');
 INSERT INTO `environment` VALUES (10, 17, '花桥学堂测试环境', 'HTTP', 'localhost', 3000, '在线教育平台的完整测试场景，包含课程、考试、证书等核心业务模块', '2026-01-18 19:30:30', '2026-01-18 19:30:30');
 INSERT INTO `environment` VALUES (11, 17, '花桥学堂生产测试', 'HTTP', 'localhost', 3001, '用于生产环境验证测试', '2026-01-18 19:30:55', '2026-01-18 19:31:07');
+INSERT INTO `environment` VALUES (12, 18, 'Swag Labs', 'HTTPS', 'www.saucedemo.com', 443, '0000', '2026-01-21 22:56:46', '2026-01-21 23:15:55');
+
+-- ----------------------------
+-- Table structure for plan_job
+-- ----------------------------
+DROP TABLE IF EXISTS `plan_job`;
+CREATE TABLE `plan_job`  (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+  `project_id` bigint NULL DEFAULT NULL COMMENT '项目id',
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '所属计划ID',
+  `case_id` bigint UNSIGNED NULL DEFAULT NULL COMMENT '用例ID',
+  `test_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用例类型 [ui api stress]',
+  `is_disabled` int NULL DEFAULT 0 COMMENT '是否启用',
+  `execute_time` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '定时任务表达式，支持到分钟基本',
+  `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of plan_job
+-- ----------------------------
+INSERT INTO `plan_job` VALUES (1, 17, '花桥自动化', 38, 'API', 0, '2026-01-21 18:56:00', '2026-01-21 18:54:38', '2026-01-21 18:54:52');
+
+-- ----------------------------
+-- Table structure for plan_job_log
+-- ----------------------------
+DROP TABLE IF EXISTS `plan_job_log`;
+CREATE TABLE `plan_job_log`  (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `plan_job_id` bigint NULL DEFAULT NULL COMMENT '任务id',
+  `plan_job_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '任务名称',
+  `execute_time` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '执行时间',
+  `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP,
+  `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uni_job_id_time`(`plan_job_id` ASC, `execute_time` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 2013928558744965123 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of plan_job_log
+-- ----------------------------
+INSERT INTO `plan_job_log` VALUES (2013928558744965122, 1, '花桥自动化', '2026-01-21 18:56:00', '2026-01-21 18:56:00', '2026-01-21 18:56:00');
 
 -- ----------------------------
 -- Table structure for project
@@ -59,7 +102,7 @@ CREATE TABLE `project`  (
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 18 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 19 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of project
@@ -67,6 +110,7 @@ CREATE TABLE `project`  (
 INSERT INTO `project` VALUES (5, 3, '贝好学培训', '在线教育培训平台，包含课程学习、考试系统、证书管理等核心功能。', '2026-01-18 03:19:12', '2026-01-18 12:15:31');
 INSERT INTO `project` VALUES (6, 3, '贝壳公益', '社区公益平台，包含公益活动管理、成长体系(公益分/公益币)、徽章系统、PK功能等。', '2026-01-18 12:15:43', '2026-01-18 12:16:19');
 INSERT INTO `project` VALUES (17, 3, '花桥学堂', '在线教育平台的完整测试场景，包含课程、考试、证书等核心业务模块', '2026-01-18 19:17:34', '2026-01-18 19:17:34');
+INSERT INTO `project` VALUES (18, 3, 'Swag Labs', '测试UI自动化-电商购物完整流程测试', '2026-01-21 15:27:46', '2026-01-21 15:27:46');
 
 -- ----------------------------
 -- Table structure for stress_case_module
@@ -79,10 +123,12 @@ CREATE TABLE `stress_case_module`  (
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of stress_case_module
 -- ----------------------------
+INSERT INTO `stress_case_module` VALUES (1, 17, '课程接口压测', '2026-01-21 19:18:41', '2026-01-21 19:37:50');
+INSERT INTO `stress_case_module` VALUES (3, 18, '商品列表页面压测', '2026-01-21 22:50:53', '2026-01-21 23:30:49');
 
 SET FOREIGN_KEY_CHECKS = 1;
