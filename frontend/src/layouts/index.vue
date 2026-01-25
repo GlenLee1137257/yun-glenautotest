@@ -234,7 +234,12 @@ const logout = async () => {
 
 <template>
   <Layout min-h="100vh 100dvh!">
-    <LayoutSider v-model:collapsed="collapsed" :trigger="null" collapsible>
+    <LayoutSider 
+      v-model:collapsed="collapsed" 
+      :trigger="null" 
+      collapsible
+      :style="{ position: 'fixed', top: 0, left: 0, height: '100vh', zIndex: 100 }"
+    >
       <div class="logo-container">
         <RouterLink to="/" class="logo-link">
           <div class="logo-icon-wrapper">
@@ -259,9 +264,17 @@ const logout = async () => {
         @click="handleMenuClick"
       />
     </LayoutSider>
-    <Layout>
+    <Layout :style="{ marginLeft: collapsed ? '80px' : '200px', transition: 'margin-left 0.2s' }">
       <LayoutHeader
-        style="background: #fff"
+        :style="{ 
+          background: '#fff', 
+          position: 'fixed', 
+          top: 0, 
+          right: 0, 
+          left: collapsed ? '80px' : '200px', 
+          zIndex: 99,
+          transition: 'left 0.2s' 
+        }"
         p="x!"
         flex
         items-center
@@ -312,7 +325,7 @@ const logout = async () => {
         </div>
       </LayoutHeader>
       <LayoutContent
-        :style="{ margin: '24px 16px', padding: '24px', background: '#fff' }"
+        :style="{ margin: '88px 16px 24px 16px', padding: '24px', background: '#fff' }"
       >
         <slot />
       </LayoutContent>
@@ -324,6 +337,26 @@ const logout = async () => {
 /* 统一侧边栏背景色为深蓝色 */
 :deep(.ant-layout-sider) {
   background: #0f172a !important;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* 侧边栏滚动条样式 */
+:deep(.ant-layout-sider)::-webkit-scrollbar {
+  width: 6px;
+}
+
+:deep(.ant-layout-sider)::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+:deep(.ant-layout-sider)::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+:deep(.ant-layout-sider)::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 :deep(.ant-menu-dark) {

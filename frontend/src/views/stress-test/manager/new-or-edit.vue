@@ -8,7 +8,7 @@ import {
   Tooltip,
   message,
 } from 'ant-design-vue'
-import { QuestionCircleOutlined } from '@ant-design/icons-vue'
+import { QuestionCircleOutlined, DownloadOutlined } from '@ant-design/icons-vue'
 import { type AfterFetchContext, objectOmit } from '@vueuse/core'
 import {
   type IStressCase,
@@ -182,6 +182,24 @@ function handleAddRelation() {
 
 function handleAddAssertion() {
   formModelExpand.assertionData.push({ ...defaultWithIStressCaseAssertion })
+}
+
+function downloadCsvTemplate() {
+  const csvContent = `变量名1,变量名2,变量名3
+值1,值2,值3
+值4,值5,值6
+值7,值8,值9`
+  const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' })
+  const link = document.createElement('a')
+  const url = URL.createObjectURL(blob)
+  link.setAttribute('href', url)
+  link.setAttribute('download', '参数化示例模板.csv')
+  link.style.visibility = 'hidden'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+  message.success('CSV 示例文件下载成功')
 }
 
 function handleSave() {
@@ -475,7 +493,20 @@ async function deserialize() {
           </EditableTable>
         </template>
 
-        <Form.Item label="开启参数化：">
+        <Form.Item>
+          <template #label>
+            <div flex="~ items-center gap-2">
+              <span>开启参数化：</span>
+              <Button 
+                type="link" 
+                size="small"
+                @click="downloadCsvTemplate"
+              >
+                <DownloadOutlined />
+                下载 CSV 示例文件
+              </Button>
+            </div>
+          </template>
           <Switch v-model:checked="formModelExpand.relation" />
         </Form.Item>
 
