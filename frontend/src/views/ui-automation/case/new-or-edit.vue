@@ -83,6 +83,19 @@ const locationTypeOrder = [
   'PARTIAL_LINK_TEXT', // 全部链接文本内容定位
 ]
 
+// 浏览器操作类型的排序顺序
+const browserOperationOrder = [
+  'BROWSER_OPEN',              // 打开窗口
+  'BROWSER_CLOSE',             // 关闭窗口
+  'BROWSER_MAXIMIZE',          // 最大化窗口
+  'BROWSER_RESIZE',            // 设置窗口大小
+  'BROWSER_FORWARD',           // 浏览器前进
+  'BROWSER_BACK',              // 浏览器后退
+  'BROWSER_REFRESH',           // 浏览器刷新
+  'BROWSER_SWITCH_BY_HANDLER', // 通过句柄切换窗口
+  'BROWSER_SWITCH_BY_INDEX',   // 通过索引切换窗口
+]
+
 // 排序后的元素定位类型选项
 const sortedLocationTypeOptions = computed(() => {
   if (!data.value?.ui_location_type) {
@@ -245,14 +258,33 @@ const cascaderOptions = computed(() => {
     objectOmit(data.value, ['ui_location_type', 'browser_type']),
   )
     .filter(([, value]) => value.length > 0)
-    .map(([key, value]) => ({
-      value: key,
-      label: value?.[0]?.categoryName ?? '',
-      children: value.map((item) => ({
+    .map(([key, value]) => {
+      let children = value.map((item) => ({
         value: item.value,
         label: item.name,
-      })),
-    })) as CascaderProps['options']
+      }))
+      
+      // 如果是浏览器操作类型，按照指定顺序排序
+      if (key === 'browser') {
+        children = children.sort((a, b) => {
+          const indexA = browserOperationOrder.indexOf(a.value)
+          const indexB = browserOperationOrder.indexOf(b.value)
+          
+          // 如果找不到，放到最后
+          if (indexA === -1 && indexB === -1) return 0
+          if (indexA === -1) return 1
+          if (indexB === -1) return -1
+          
+          return indexA - indexB
+        })
+      }
+      
+      return {
+        value: key,
+        label: value?.[0]?.categoryName ?? '',
+        children,
+      }
+    }) as CascaderProps['options']
 })
 
 const currentSelectedValue = computed(() => {

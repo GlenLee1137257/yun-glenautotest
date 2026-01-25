@@ -164,7 +164,7 @@ public class UiExecuteEngine {
             //配置当前步骤结束信息
             resultItem.setAssertionState(uiOperationResultDTO.getOperationState());
             if(!uiOperationResultDTO.getOperationState()){
-                resultItem.setExceptionMsg("动作:"+uiOperationResultDTO.getOperationType()+",实际内容："+uiOperationResultDTO.getActualValue()+",期望内容："+uiOperationResultDTO.getActualValue());
+                resultItem.setExceptionMsg("动作:"+uiOperationResultDTO.getOperationType()+",实际内容："+uiOperationResultDTO.getActualValue()+",期望内容："+uiOperationResultDTO.getExpectValue());
             }
 
             resultItem.setExpendTime(endTime-startTime);

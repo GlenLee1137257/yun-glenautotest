@@ -217,12 +217,32 @@ function handleEdit(step: StepItem<T>) {
   }
 
   // 根据 id 或 num 从完整 stepList 中找到真正的索引，避免分页导致 index 错乱
-  const index = formModel.value.stepList.findIndex((item: any) => {
-    // 已保存到后端的步骤优先使用 id 匹配
-    if (step.id && step.id !== -1 && item.id === step.id) return true
-    // 新建但未保存到后端的步骤使用 num 匹配
-    return item.num === step.num
-  })
+  // 优先使用 id 匹配（id 是唯一标识，不会因为排序改变而重复）
+  let index = -1
+  
+  if (step.id && step.id !== -1) {
+    // 如果步骤有 id，优先使用 id 查找（这是最可靠的方式）
+    index = formModel.value.stepList.findIndex((item: any) => item.id === step.id)
+  }
+  
+  // 如果通过 id 没找到，且步骤没有 id 或 id 无效，才使用 num 匹配
+  // 注意：num 可能重复（允许相同排序号），所以需要结合其他条件
+  if (index === -1) {
+    // 对于新建但未保存的步骤，使用 num 匹配
+    // 但需要确保匹配的是同一个步骤（通过其他唯一字段，如 name 或其他标识）
+    index = formModel.value.stepList.findIndex((item: any) => {
+      // 如果两个步骤都没有 id，或者 id 都是 -1，则使用 num 匹配
+      const bothNoId = (!item.id || item.id === -1) && (!step.id || step.id === -1)
+      if (bothNoId && item.num === step.num) {
+        // 进一步验证：如果步骤有 name，也匹配 name（增加准确性）
+        if (step.name && item.name) {
+          return item.name === step.name
+        }
+        return true
+      }
+      return false
+    })
+  }
 
   selectedStepNum.value = index > -1 ? index : 0
   toggleCreateModalVisible()
@@ -274,17 +294,9 @@ async function handleOk() {
       await fetchGetApiCase()
     } else {
       await fetchUpdateApiCaseStep(selectedStep.value).execute()
-      // 更新后同步更新本地 formModel 中的对应步骤数据
-      const stepIndex = formModel.value.stepList.findIndex(
-        (step) => step.id === selectedStep.value.id
-      )
-      if (stepIndex !== -1) {
-        // 更新本地数据，确保序列化后的数据（包括断言和关联变量）被保存
-        formModel.value.stepList[stepIndex] = {
-          ...formModel.value.stepList[stepIndex],
-          ...selectedStep.value,
-        }
-      }
+      // 更新后重新获取数据，确保排序和其他步骤的数据同步
+      // 这样可以避免因为排序改变导致的数据不一致问题
+      await fetchGetApiCase()
     }
     // 恢复默认的 StepState
     controlStepState.value = 'default'
@@ -419,6 +431,7 @@ onMounted(async () => {
             name="model-content"
             :set-step-slot-ref="setStepSlotRef"
             :selected-step="selectedStep"
+            :form-model="formModel"
             :constant-select-options="constantSelectOptions"
           />
         </Modal>
