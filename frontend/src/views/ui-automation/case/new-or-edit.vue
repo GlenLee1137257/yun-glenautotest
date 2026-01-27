@@ -856,10 +856,19 @@ const handleStepTypeChange = (selectedStep: IUICaseStep, newType: string) => {
             </div>
             
             <div class="flex gap-2">
+              <!-- 开关关闭：使用手动输入的定位信息，可编辑 -->
               <Input
+                v-if="item.field === 'locationExpress' ? !selectedStep.useElementLibrary : !selectedStep.useTargetElementLibrary"
                 v-model:value="/* @ts-ignore */ selectedStep[item.field]"
                 :placeholder="`请输入${item.name}`"
-                :disabled="item.field === 'locationExpress' ? selectedStep.useElementLibrary : selectedStep.useTargetElementLibrary"
+                class="flex-1"
+              />
+              <!-- 开关打开：展示元素库最新定位信息（只读），与列表和执行时保持一致 -->
+              <Input
+                v-else
+                :value="item.field === 'locationExpress' ? getElementLocation(selectedStep, 'element').express : getElementLocation(selectedStep, 'targetElement').express"
+                placeholder="将自动同步元素库的最新定位信息"
+                disabled
                 class="flex-1"
               />
               <Button 
