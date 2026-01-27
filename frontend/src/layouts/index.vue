@@ -101,11 +101,11 @@ const items = reactive<ItemType[]>([
     title: 'UI自动化',
     label: 'UI自动化',
     children: [
-      // {
-      //   key: '/ui-automation/elements',
-      //   title: '元素库管理',
-      //   label: '元素库管理',
-      // },
+      {
+        key: '/ui-automation/elements',
+        title: '元素库管理',
+        label: '元素库管理',
+      },
       {
         key: '/ui-automation/case',
         title: '用例管理',

@@ -40,9 +40,13 @@ export const defaultWithIUICaseStep: IUICaseStep = {
   operationType: '',
   locationType: '',
   locationExpress: '',
+  elementId: null,
+  useElementLibrary: false,
   elementWait: 0,
   targetLocationType: '',
   targetLocationExpress: '',
+  targetElementId: null,
+  useTargetElementLibrary: false,
   targetElementWait: 0,
   value: '',
   expectKey: '',
@@ -66,9 +70,13 @@ export interface IUICaseStep {
   operationType: string
   locationType: string
   locationExpress: string
+  elementId: number | null
+  useElementLibrary: boolean
   elementWait: number
   targetLocationType: string
   targetLocationExpress: string
+  targetElementId: number | null
+  useTargetElementLibrary: boolean
   targetElementWait: number
   value: string
   expectKey: string

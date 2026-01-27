@@ -65,6 +65,9 @@ export const useGlobalConfigStore = defineStore(
     }
   },
   {
-    persist: true,
+    // 只持久化必要的可序列化字段，避免对只读的 ref（如 loadingWithGetProjectDatas）做 $patch
+    persist: {
+      paths: ['loginToken', 'config'],
+    },
   },
 )

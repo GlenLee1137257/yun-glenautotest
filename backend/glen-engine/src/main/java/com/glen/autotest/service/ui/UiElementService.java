@@ -5,6 +5,9 @@ import com.glen.autotest.req.ui.UiElementSaveReq;
 import com.glen.autotest.req.ui.UiElementUpdateReq;
 import com.glen.autotest.req.ui.UiElementDelReq;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Glen AutoTest Platform
  *
@@ -20,4 +23,12 @@ public interface UiElementService {
     Integer update(UiElementUpdateReq req);
 
     Integer delete(UiElementDelReq req);
+
+    /**
+     * 批量查询UI元素（用于前端显示元素库最新定位信息）
+     * @param projectId 项目ID
+     * @param elementIds 元素ID列表
+     * @return Map<元素ID, 元素DTO>
+     */
+    Map<Long, UiElementDTO> findByIds(Long projectId, List<Long> elementIds);
 }

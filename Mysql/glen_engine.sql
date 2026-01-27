@@ -11,7 +11,7 @@
  Target Server Version : 80044 (8.0.44)
  File Encoding         : 65001
 
- Date: 24/01/2026 13:09:31
+ Date: 27/01/2026 21:16:38
 */
 
 SET NAMES utf8mb4;
@@ -31,7 +31,9 @@ CREATE TABLE `environment`  (
   `description` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '描述',
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_project_id`(`project_id` ASC) USING BTREE COMMENT '项目ID索引，优化按项目查询环境',
+  INDEX `idx_project_domain`(`project_id` ASC, `domain` ASC) USING BTREE COMMENT '项目-域名组合索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -62,7 +64,11 @@ CREATE TABLE `plan_job`  (
   `execute_time` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '定时任务表达式，支持到分钟基本',
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_project_id`(`project_id` ASC) USING BTREE COMMENT '项目ID索引',
+  INDEX `idx_case_id`(`case_id` ASC) USING BTREE COMMENT '用例ID索引',
+  INDEX `idx_project_type`(`project_id` ASC, `test_type` ASC) USING BTREE COMMENT '项目-测试类型组合索引',
+  INDEX `idx_is_disabled`(`is_disabled` ASC) USING BTREE COMMENT '启用状态索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
@@ -82,7 +88,8 @@ CREATE TABLE `plan_job_log`  (
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `uni_job_id_time`(`plan_job_id` ASC, `execute_time` ASC) USING BTREE
+  UNIQUE INDEX `uni_job_id_time`(`plan_job_id` ASC, `execute_time` ASC) USING BTREE,
+  INDEX `idx_gmt_create`(`gmt_create` DESC) USING BTREE COMMENT '创建时间索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 2013928558744965123 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
@@ -101,7 +108,9 @@ CREATE TABLE `project`  (
   `description` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '描述',
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_project_admin`(`project_admin` ASC) USING BTREE COMMENT '项目管理员索引',
+  INDEX `idx_gmt_create`(`gmt_create` DESC) USING BTREE COMMENT '创建时间索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 19 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -122,7 +131,8 @@ CREATE TABLE `stress_case_module`  (
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '压测用例模块名称',
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_project_id`(`project_id` ASC) USING BTREE COMMENT '项目ID索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------

@@ -347,6 +347,11 @@ onMounted(async () => {
     console.error('初始化字典数据失败:', error)
   }
 })
+
+// 对外暴露表单模型，便于父组件通过 ref 访问 stepList 等数据
+defineExpose({
+  formModel,
+})
 </script>
 
 <template>

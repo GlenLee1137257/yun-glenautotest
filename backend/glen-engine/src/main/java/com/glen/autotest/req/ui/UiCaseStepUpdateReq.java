@@ -34,11 +34,19 @@ public class UiCaseStepUpdateReq implements Serializable {
 
     private String locationExpress;
 
+    private Long elementId;
+
+    private Boolean useElementLibrary;
+
     private Long elementWait;
 
     private String targetLocationType;
 
     private String targetLocationExpress;
+
+    private Long targetElementId;
+
+    private Boolean useTargetElementLibrary;
 
     private Long targetElementWait;
 

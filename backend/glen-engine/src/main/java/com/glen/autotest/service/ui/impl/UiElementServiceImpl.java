@@ -13,6 +13,11 @@ import com.glen.autotest.service.ui.UiElementService;
 import com.glen.autotest.util.SpringBeanUtil;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 /**
  * Glen AutoTest Platform
  *
@@ -62,5 +67,23 @@ public class UiElementServiceImpl implements UiElementService {
         queryWrapper.eq(UiElementDO::getProjectId, req.getProjectId())
                     .eq(UiElementDO::getId, req.getId());
         return uiElementMapper.delete(queryWrapper);
+    }
+
+    @Override
+    public Map<Long, UiElementDTO> findByIds(Long projectId, List<Long> elementIds) {
+        if (elementIds == null || elementIds.isEmpty()) {
+            return new HashMap<>();
+        }
+        
+        // 查询元素列表
+        LambdaQueryWrapper<UiElementDO> queryWrapper = new LambdaQueryWrapper<>(UiElementDO.class);
+        queryWrapper.eq(UiElementDO::getProjectId, projectId)
+                    .in(UiElementDO::getId, elementIds);
+        List<UiElementDO> elements = uiElementMapper.selectList(queryWrapper);
+        
+        // 转换为 Map<元素ID, 元素DTO>
+        return elements.stream()
+                .map(element -> SpringBeanUtil.copyProperties(element, UiElementDTO.class))
+                .collect(Collectors.toMap(UiElementDTO::getId, element -> element));
     }
 }

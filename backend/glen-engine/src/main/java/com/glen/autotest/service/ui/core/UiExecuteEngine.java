@@ -6,7 +6,9 @@ import com.glen.autotest.dto.*;
 import com.glen.autotest.dto.common.CaseInfoDTO;
 import com.glen.autotest.enums.TestTypeEnum;
 import com.glen.autotest.mapper.UiCaseStepMapper;
+import com.glen.autotest.mapper.UiElementMapper;
 import com.glen.autotest.model.UiCaseStepDO;
+import com.glen.autotest.model.UiElementDO;
 import com.glen.autotest.service.common.FileService;
 import com.glen.autotest.service.common.ResultSenderService;
 import com.glen.autotest.service.ui.SeleniumDispatcherService;
@@ -139,6 +141,10 @@ public class UiExecuteEngine {
                 uiCaseStepDO.setName(originalName);
             }
         }
+        
+        // 元素库关联功能：如果步骤关联了元素库，则从元素库读取最新定位信息
+        // 优先使用元素库，如果元素不存在或被删除，则降级使用步骤中保存的定位信息（备用方案）
+        resolveElementLibrary(uiCaseStepDO);
 
         //用例步骤初始化
         UiCaseResultItemDTO resultItem = new UiCaseResultItemDTO();
@@ -236,6 +242,73 @@ public class UiExecuteEngine {
         }
         
         return step;
+    }
+
+    /**
+     * 从元素库获取最新定位信息（关联模式）
+     * 优先使用元素库，如果元素不存在或被删除，则使用步骤中保存的定位信息作为降级方案
+     * @param uiCaseStepDO 用例步骤
+     */
+    private void resolveElementLibrary(UiCaseStepDO uiCaseStepDO){
+        UiElementMapper uiElementMapper = SpringContextHolder.getBean(UiElementMapper.class);
+        
+        // 处理主元素定位
+        // 只有当 useElementLibrary 为 true 时，才从元素库读取定位信息
+        if(Boolean.TRUE.equals(uiCaseStepDO.getUseElementLibrary()) && uiCaseStepDO.getElementId() != null){
+            try {
+                UiElementDO element = uiElementMapper.selectById(uiCaseStepDO.getElementId());
+                if(element != null){
+                    // 从元素库读取最新定位信息（一处更新，全局生效）
+                    uiCaseStepDO.setLocationType(element.getLocationType());
+                    uiCaseStepDO.setLocationExpress(element.getLocationExpress());
+                    if(element.getElementWait() != null){
+                        uiCaseStepDO.setElementWait(element.getElementWait());
+                    }
+                    log.info("从元素库加载主元素定位信息：elementId={}, locationType={}, locationExpress={}", 
+                            element.getId(), element.getLocationType(), element.getLocationExpress());
+                } else {
+                    // 降级处理：元素已被删除，使用步骤中保存的定位信息
+                    log.warn("元素库中元素不存在（可能已删除），使用步骤中保存的备用定位信息：elementId={}, locationType={}, locationExpress={}", 
+                            uiCaseStepDO.getElementId(), uiCaseStepDO.getLocationType(), uiCaseStepDO.getLocationExpress());
+                }
+            } catch (Exception e){
+                // 异常处理：查询失败，使用步骤中保存的定位信息
+                log.error("从元素库加载元素失败，使用步骤中保存的备用定位信息：elementId={}", uiCaseStepDO.getElementId(), e);
+            }
+        } else if(uiCaseStepDO.getElementId() != null){
+            // 有 elementId 但 useElementLibrary 为 false，使用手动输入的定位信息
+            log.info("步骤未启用元素库模式，使用手动输入的定位信息：locationType={}, locationExpress={}", 
+                    uiCaseStepDO.getLocationType(), uiCaseStepDO.getLocationExpress());
+        }
+        
+        // 处理目标元素定位（拖拽等操作需要）
+        // 只有当 useTargetElementLibrary 为 true 时，才从元素库读取定位信息
+        if(Boolean.TRUE.equals(uiCaseStepDO.getUseTargetElementLibrary()) && uiCaseStepDO.getTargetElementId() != null){
+            try {
+                UiElementDO targetElement = uiElementMapper.selectById(uiCaseStepDO.getTargetElementId());
+                if(targetElement != null){
+                    // 从元素库读取最新定位信息
+                    uiCaseStepDO.setTargetLocationType(targetElement.getLocationType());
+                    uiCaseStepDO.setTargetLocationExpress(targetElement.getLocationExpress());
+                    if(targetElement.getElementWait() != null){
+                        uiCaseStepDO.setTargetElementWait(targetElement.getElementWait());
+                    }
+                    log.info("从元素库加载目标元素定位信息：elementId={}, locationType={}, locationExpress={}", 
+                            targetElement.getId(), targetElement.getLocationType(), targetElement.getLocationExpress());
+                } else {
+                    // 降级处理：元素已被删除，使用步骤中保存的定位信息
+                    log.warn("元素库中目标元素不存在（可能已删除），使用步骤中保存的备用定位信息：targetElementId={}, targetLocationType={}, targetLocationExpress={}", 
+                            uiCaseStepDO.getTargetElementId(), uiCaseStepDO.getTargetLocationType(), uiCaseStepDO.getTargetLocationExpress());
+                }
+            } catch (Exception e){
+                // 异常处理：查询失败，使用步骤中保存的定位信息
+                log.error("从元素库加载目标元素失败，使用步骤中保存的备用定位信息：targetElementId={}", uiCaseStepDO.getTargetElementId(), e);
+            }
+        } else if(uiCaseStepDO.getTargetElementId() != null){
+            // 有 targetElementId 但 useTargetElementLibrary 为 false，使用手动输入的定位信息
+            log.info("步骤未启用目标元素库模式，使用手动输入的定位信息：targetLocationType={}, targetLocationExpress={}", 
+                    uiCaseStepDO.getTargetLocationType(), uiCaseStepDO.getTargetLocationExpress());
+        }
     }
 
 }

@@ -11,7 +11,7 @@
  Target Server Version : 80044 (8.0.44)
  File Encoding         : 65001
 
- Date: 24/01/2026 13:09:22
+ Date: 27/01/2026 21:16:28
 */
 
 SET NAMES utf8mb4;
@@ -113,6 +113,5 @@ INSERT INTO `sys_dict` VALUES (212, 'stress_assert_action', '压测断言动作'
 INSERT INTO `sys_dict` VALUES (220, 'stress_assert_from', '压测断言来源', '响应状态码', 'RESPONSE_CODE', NULL, '对响应状态码进行断言', '2026-01-21 19:16:19', '2026-01-21 19:16:19');
 INSERT INTO `sys_dict` VALUES (221, 'stress_assert_from', '压测断言来源', '响应头', 'RESPONSE_HEADER', NULL, '对响应头进行断言', '2026-01-21 19:16:19', '2026-01-21 19:16:19');
 INSERT INTO `sys_dict` VALUES (222, 'stress_assert_from', '压测断言来源', '响应体', 'RESPONSE_DATA', NULL, '对响应体进行断言', '2026-01-21 19:16:19', '2026-01-21 19:16:19');
-INSERT INTO `sys_dict` VALUES (223, 'stress_assert_from', '压测断言来源', '响应时间', 'RESPONSE_TIME', NULL, '对响应时间进行断言（毫秒）', '2026-01-21 19:16:19', '2026-01-21 19:16:19');
 
 SET FOREIGN_KEY_CHECKS = 1;

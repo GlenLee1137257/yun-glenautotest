@@ -11,7 +11,7 @@
  Target Server Version : 80044 (8.0.44)
  File Encoding         : 65001
 
- Date: 24/01/2026 13:09:11
+ Date: 27/01/2026 21:16:12
 */
 
 SET NAMES utf8mb4;
@@ -37,7 +37,12 @@ CREATE TABLE `api`  (
   `body_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '请求体格式 [form-data x-www-form-urlencoded json raw file]',
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_project_id`(`project_id` ASC) USING BTREE COMMENT '项目ID索引',
+  INDEX `idx_module_id`(`module_id` ASC) USING BTREE COMMENT '模块ID索引',
+  INDEX `idx_environment_id`(`environment_id` ASC) USING BTREE COMMENT '环境ID索引',
+  INDEX `idx_project_module`(`project_id` ASC, `module_id` ASC) USING BTREE COMMENT '项目-模块组合索引',
+  INDEX `idx_level`(`level` ASC) USING BTREE COMMENT '执行等级索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 73 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = 'API接口表：存储接口定义信息' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -92,7 +97,11 @@ CREATE TABLE `api_case`  (
   `level` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT 'p0' COMMENT '执行等级 [p0 p1 p2 p3]',
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_project_id`(`project_id` ASC) USING BTREE COMMENT '项目ID索引',
+  INDEX `idx_module_id`(`module_id` ASC) USING BTREE COMMENT '模块ID索引',
+  INDEX `idx_project_module`(`project_id` ASC, `module_id` ASC) USING BTREE COMMENT '项目-模块组合索引',
+  INDEX `idx_level`(`level` ASC) USING BTREE COMMENT '执行等级索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 39 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = 'API用例表：存储接口测试用例' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -115,7 +124,8 @@ CREATE TABLE `api_case_module`  (
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'API用例模块名称',
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_project_id`(`project_id` ASC) USING BTREE COMMENT '项目ID索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 32 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = 'API用例模块表：用于组织和管理测试用例' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -152,7 +162,11 @@ CREATE TABLE `api_case_step`  (
   `body_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '请求体格式 [form-data x-www-form-urlencoded json  file]',
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_project_id`(`project_id` ASC) USING BTREE COMMENT '项目ID索引',
+  INDEX `idx_case_id`(`case_id` ASC) USING BTREE COMMENT '用例ID索引',
+  INDEX `idx_environment_id`(`environment_id` ASC) USING BTREE COMMENT '环境ID索引',
+  INDEX `idx_case_num`(`case_id` ASC, `num` ASC) USING BTREE COMMENT '用例-序号组合索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 77 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = 'API用例步骤表：存储用例的执行步骤' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -171,9 +185,9 @@ INSERT INTO `api_case_step` VALUES (66, 6, 4, 35, 2, '步骤2-查询公益币流
 INSERT INTO `api_case_step` VALUES (67, 6, 6, 36, 1, '步骤1-发起PK挑战', '用户发起PK挑战', '{\"responseCode\":200,\"jsonPath\":[{\"path\":\"$.code\",\"operator\":\"equals\",\"value\":0},{\"path\":\"$.data.pkId\",\"operator\":\"notNull\"}]}', '[{\"from\":\"response_body\",\"type\":\"jsonPath\",\"express\":\"$.data.pkId\",\"name\":\"pk_id\"}]', '/pk/v1/startPK', 'POST', NULL, '[{\"key\":\"Content-Type\",\"value\":\"application/json\"},{\"key\":\"Authorization\",\"value\":\"Bearer token_value\"}]', '{\"userCode\":\"USER_A\",\"targetUserCode\":\"USER_B\",\"pkType\":1,\"duration\":7}', 'JSON', '2026-01-19 00:31:17', '2026-01-19 00:31:17');
 INSERT INTO `api_case_step` VALUES (68, 6, 6, 36, 2, '步骤2-查询PK实时结果', '使用提取的PK ID查询PK结果和排名', '{\"responseCode\":200,\"jsonPath\":[{\"path\":\"$.code\",\"operator\":\"equals\",\"value\":0},{\"path\":\"$.data.pkStatus\",\"operator\":\"notNull\"},{\"path\":\"$.data.myRank\",\"operator\":\"notNull\"}]}', NULL, '/pk/v1/getPKResult', 'GET', '[{\"key\":\"pkId\",\"value\":\"{{pk_id}}\"}]', '[{\"key\":\"Content-Type\",\"value\":\"application/json\"},{\"key\":\"Authorization\",\"value\":\"Bearer token_value\"}]', '[]', 'JSON', '2026-01-19 00:31:17', '2026-01-19 00:31:17');
 INSERT INTO `api_case_step` VALUES (69, 6, 6, 36, 3, '步骤3-查询我的所有PK记录', '查询用户所有PK记录，验证新创建的PK是否在列表中', '{\"responseCode\":200,\"jsonPath\":[{\"path\":\"$.code\",\"operator\":\"equals\",\"value\":0},{\"path\":\"$.data.list\",\"operator\":\"notNull\"}]}', NULL, '/pk/v1/getMyPKList', 'POST', NULL, '[{\"key\":\"Content-Type\",\"value\":\"application/json\"},{\"key\":\"Authorization\",\"value\":\"Bearer token_value\"}]', '{\"userCode\":\"USER_A\",\"current\":1,\"size\":10,\"status\":\"\"}', 'JSON', '2026-01-19 00:31:17', '2026-01-19 00:31:17');
-INSERT INTO `api_case_step` VALUES (71, 17, 10, 38, 1, '步骤1：查询商品分类列表', '查询所有可用的商品分类，提取分类ID用于后续查询', '[{\"from\":\"RESPONSE_CODE\",\"type\":\"REGEXP\",\"action\":\"EQUAL\",\"express\":\"200\",\"value\":\"200\"},{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"action\":\"CONTAIN\",\"express\":\"$[0].name\",\"value\":\"测试技术\"},{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"action\":\"EQUAL\",\"express\":\"$[0].isShow\",\"value\":\"1\"}]', '[{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"express\":\"$[0].id\",\"name\":\"category_id\"}]', '/categories', 'GET', '[{\"key\":\"isShow\",\"value\":\"1\"}]', '[{\"key\":\"Content-Type\",\"value\":\"application/json; charset=utf-8\"}]', '[]', 'JSON', '2026-01-19 01:39:46', '2026-01-23 22:48:08');
+INSERT INTO `api_case_step` VALUES (71, 17, 10, 38, 1, '步骤1：查询商品分类列表', '查询所有可用的商品分类，提取分类ID用于后续查询', '[{\"from\":\"RESPONSE_CODE\",\"type\":\"REGEXP\",\"action\":\"EQUAL\",\"express\":\"200\",\"value\":\"200\"},{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"action\":\"CONTAIN\",\"express\":\"$[0].name\",\"value\":\"123\"},{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"action\":\"EQUAL\",\"express\":\"$[0].isShow\",\"value\":\"1\"}]', '[{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"express\":\"$[0].id\",\"name\":\"category_id\"}]', '/categories', 'GET', '[{\"key\":\"isShow\",\"value\":\"1\"}]', '[{\"key\":\"Content-Type\",\"value\":\"application/json; charset=utf-8\"}]', '[]', 'JSON', '2026-01-19 01:39:46', '2026-01-26 15:26:29');
 INSERT INTO `api_case_step` VALUES (72, 17, 10, 38, 2, '步骤2：分页查询商品列表', '使用上一步提取的分类ID查询商品列表，提取商品ID', '[{\"from\":\"RESPONSE_CODE\",\"type\":\"REGEXP\",\"action\":\"EQUAL\",\"express\":\"200\",\"value\":\"200\"},{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"action\":\"EQUAL\",\"express\":\"$[0].categoryId\",\"value\":\"{{category_id}}\",\"remark\":\"验证步骤1中分类ID一致\"},{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"action\":\"GREAT_THEN\",\"express\":\"$.length()\",\"value\":\"0\",\"remark\":\"验证返回的课程列表数量大于 0\"}]', '[{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"express\":\"$[0].id\",\"name\":\"course_id\"},{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"express\":\"$[0].name\",\"name\":\"course_name\"}]', '/courses', 'GET', '[{\"key\":\"page\",\"value\":\"1\"},{\"key\":\"limit\",\"value\":\"10\"},{\"key\":\"categoryId\",\"value\":\"{{category_id}}\"}]', '[{\"key\":\"Content-Type\",\"value\":\"application/json; charset=utf-8\"}]', '[]', 'JSON', '2026-01-20 15:12:37', '2026-01-23 22:48:12');
-INSERT INTO `api_case_step` VALUES (73, 17, 10, 38, 3, '步骤3：查询商品详情', '使用提取的商品ID查询课程详细信息', '[{\"from\":\"RESPONSE_CODE\",\"type\":\"REGEXP\",\"action\":\"EQUAL\",\"express\":\"200\",\"value\":\"200\",\"remark\":\"\"},{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"action\":\"EQUAL\",\"express\":\"$.id\",\"value\":\"{{course_id}}\",\"remark\":\"验证课程ID一致\"},{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"action\":\"EQUAL\",\"express\":\"$.name\",\"value\":\"{{course_name}}\",\"remark\":\"验证课程名称一致\"},{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"action\":\"EQUAL\",\"express\":\"$.categoryId\",\"value\":\"{{category_id}}\",\"remark\":\"验证分类ID一致\"}]', '[]', '/courses/{{course_id}}', 'GET', '', '[{\"key\":\"Content-Type\",\"value\":\"application/json; charset=utf-8\"}]', '[]', 'JSON', '2026-01-20 17:06:59', '2026-01-23 22:48:15');
+INSERT INTO `api_case_step` VALUES (73, 17, 10, 38, 3, '步骤3：查询商品详情', '使用提取的商品ID查询课程详细信息', '[{\"from\":\"RESPONSE_CODE\",\"type\":\"REGEXP\",\"action\":\"EQUAL\",\"express\":\"200\",\"value\":\"200\",\"remark\":\"\"},{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"action\":\"EQUAL\",\"express\":\"$.id\",\"value\":\"{{course_id}}\",\"remark\":\"验证课程ID一致\"},{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"action\":\"EQUAL\",\"express\":\"$.name\",\"value\":\"{{course_name}}\",\"remark\":\"验证课程名称一致\"},{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"action\":\"EQUAL\",\"express\":\"$.categoryId\",\"value\":\"{{category_id}}\",\"remark\":\"验证分类ID一致\"}]', '[]', '/courses/{{course_id}}', 'GET', '', '[{\"key\":\"Content-Type\",\"value\":\"application/json; charset=utf-8\"}]', '[]', 'JSON', '2026-01-20 17:06:59', '2026-01-24 13:19:00');
 INSERT INTO `api_case_step` VALUES (74, 17, 10, 38, 3, '步骤4：创建新商品', '创建一个新的测试商品', '[{\"from\":\"RESPONSE_CODE\",\"type\":\"REGEXP\",\"action\":\"EQUAL\",\"express\":\"201\",\"value\":\"201\",\"remark\":\"验证步骤4创建课程请求成功（状态码为201）\"},{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"action\":\"CONTAIN\",\"express\":\"$.name\",\"value\":\"自动化测试新课程\",\"remark\":\"验证步骤4返回的新课程名称包含“自动化测试新课程”关键字\"}]', '[{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"express\":\"$.id\",\"name\":\"new_course_id\"}]', '/courses', 'POST', '', '[{\"key\":\"Content-Type\",\"value\":\"application/json; charset=utf-8\"}]', '{\"name\":\"自动化测试新课程-{{$timestamp}}\",\"description\":\"这是一个自动创建的测试课程\",\"price\":299,\"categoryId\":\"{{category_id}}\",\"categoryName\":\"测试技术\",\"teacherName\":\"自动化测试\",\"courseDuration\":3600,\"learnCount\":0,\"status\":1,\"isShow\":1,\"courseType\":1,\"courseSource\":1,\"canDrag\":1,\"canSpeed\":1}', 'JSON', '2026-01-20 17:26:43', '2026-01-22 02:37:44');
 INSERT INTO `api_case_step` VALUES (75, 17, 10, 38, 4, '步骤5：更新商品信息', '更新刚创建的商品的价格和描述', '[{\"from\":\"RESPONSE_CODE\",\"type\":\"REGEXP\",\"action\":\"EQUAL\",\"express\":\"200\",\"value\":\"200\",\"remark\":\"\"},{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"action\":\"EQUAL\",\"express\":\"$.id\",\"value\":\"{{new_course_id}}\",\"remark\":\"验证步骤5返回的课程ID与步骤4提取的新课程ID一致\"},{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"action\":\"EQUAL\",\"express\":\"$.price\",\"value\":\"199\",\"remark\":\"验证步骤5返回的课程价格已更新为199\"}]', '[]', '/courses/{{new_course_id}}', 'PUT', '', '[{\"key\":\"Content-Type\",\"value\":\"application/json; charset=utf-8\"}]', '{\"price\":199,\"description\":\"价格已更新：原价299，现价199\"}', 'JSON', '2026-01-20 23:31:58', '2026-01-22 02:37:54');
 INSERT INTO `api_case_step` VALUES (76, 17, 10, 38, 5, '步骤6：查询商品评论', '查询原始商品的评论列表', '[{\"from\":\"RESPONSE_CODE\",\"type\":\"REGEXP\",\"action\":\"EQUAL\",\"express\":\"200\",\"value\":\"200\",\"remark\":\"\"},{\"from\":\"RESPONSE_DATA\",\"type\":\"JSONPATH\",\"action\":\"EQUAL\",\"express\":\"$[0].courseId\",\"value\":\"{{course_id}}\",\"remark\":\"\"}]', '[]', '/comments', 'GET', '[{\"key\":\"courseId\",\"value\":\"{{course_id}}\"},{\"key\":\"_sort\",\"value\":\"createTime\"},{\"key\":\"order\",\"value\":\"desc\"}]', '[{\"key\":\"Content-Type\",\"value\":\"application/json; charset=utf-8\"}]', '[]', 'JSON', '2026-01-20 23:38:09', '2026-01-23 22:50:16');
@@ -188,7 +202,8 @@ CREATE TABLE `api_module`  (
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'API模块名称',
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_project_id`(`project_id` ASC) USING BTREE COMMENT '项目ID索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 41 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = 'API模块表：用于组织和管理接口' ROW_FORMAT = Dynamic;
 
 -- ----------------------------

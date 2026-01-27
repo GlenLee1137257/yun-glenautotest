@@ -57,6 +57,14 @@ public class UiCaseStepDO implements Serializable {
     @TableField("location_express")
     private String locationExpress;
 
+    @Schema(description = "关联的UI元素ID（从元素库选择时使用）")
+    @TableField("element_id")
+    private Long elementId;
+
+    @Schema(description = "是否使用元素库（false=手动输入，true=从元素库选择）")
+    @TableField("use_element_library")
+    private Boolean useElementLibrary;
+
     @Schema(description = "元素查找最长等待时间")
     @TableField("element_wait")
     private Long elementWait;
@@ -68,6 +76,14 @@ public class UiCaseStepDO implements Serializable {
     @Schema(description = "目标UI元素定位表达式")
     @TableField("target_location_express")
     private String targetLocationExpress;
+
+    @Schema(description = "关联的目标UI元素ID（从元素库选择时使用）")
+    @TableField("target_element_id")
+    private Long targetElementId;
+
+    @Schema(description = "目标元素是否使用元素库（false=手动输入，true=从元素库选择）")
+    @TableField("use_target_element_library")
+    private Boolean useTargetElementLibrary;
 
     @Schema(description = "目标元素查找最长等待时间")
     @TableField("target_element_wait")
