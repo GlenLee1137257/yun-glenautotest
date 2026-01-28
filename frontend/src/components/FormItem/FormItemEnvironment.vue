@@ -4,7 +4,7 @@ import type { AfterFetchContext } from '@vueuse/core'
 import type { IBasic } from '~/types/apis/basic'
 import type { IEnvironment } from '~/types/apis/environment'
 
-defineProps<{ labelName?: string }>()
+defineProps<{ labelName?: string; disabled?: boolean }>()
 
 const environmentId = defineModel<number>('environmentId', { required: true })
 
@@ -30,7 +30,11 @@ const { isFetching: loadingWithGetEnvironments, data: environments } =
 
 <template>
   <Form.Item :label="labelName ? labelName : '环境选择'">
-    <Select v-model:value="environmentId" :loading="loadingWithGetEnvironments">
+    <Select 
+      v-model:value="environmentId" 
+      :loading="loadingWithGetEnvironments"
+      :disabled="disabled"
+    >
       <Select.Option
         v-for="{ id, name, description } in environments"
         :key="id"

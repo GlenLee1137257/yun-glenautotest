@@ -7,6 +7,8 @@ import com.glen.autotest.req.api.ApiUpdateReq;
 import com.glen.autotest.service.api.ApiService;
 import com.glen.autotest.util.JsonData;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Glen AutoTest Platform
@@ -54,5 +56,33 @@ public class ApiController {
     @PostMapping("/del")
     public JsonData delete(@RequestBody ApiDelReq req) {
         return JsonData.buildSuccess(apiService.delete(req));
+    }
+
+    /**
+     * 批量查询接口（用于接口库同步）
+     * 参考 UiElementController 的 findByIds 实现
+     * 前端的 beforeFetch 钩子会自动将 projectId 添加到 body 中
+     */
+    @PostMapping("/findByIds")
+    public JsonData findByIds(@RequestBody Map<String, Object> requestBody) {
+        Long projectId = Long.valueOf(requestBody.get("projectId").toString());
+        
+        // 从 Object 转换为 List，处理 JSON 反序列化时可能出现的 Integer/Long 类型问题
+        @SuppressWarnings("unchecked")
+        List<Object> rawIds = (List<Object>) requestBody.get("apiIds");
+        List<Long> apiIds = new java.util.ArrayList<>();
+        if (rawIds != null) {
+            for (Object id : rawIds) {
+                if (id instanceof Integer) {
+                    apiIds.add(((Integer) id).longValue());
+                } else if (id instanceof Long) {
+                    apiIds.add((Long) id);
+                } else {
+                    apiIds.add(Long.valueOf(id.toString()));
+                }
+            }
+        }
+        
+        return JsonData.buildSuccess(apiService.findByIds(projectId, apiIds));
     }
 }

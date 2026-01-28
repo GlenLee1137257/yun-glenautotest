@@ -38,6 +38,8 @@ export const defaultWithIApiCaseStep: IApiCaseStep = {
   num: 0,
   assertion: '[]',
   relation: '[]',
+  apiId: null,
+  useApiLibrary: false,
 }
 
 export type IApiCaseStep = Omit<IApi, 'moduleId'> & {
@@ -45,6 +47,8 @@ export type IApiCaseStep = Omit<IApi, 'moduleId'> & {
   num: number
   assertion: string
   relation: string
+  apiId: number | null
+  useApiLibrary: boolean
 }
 
 export const defaultWithIApiCaseStepAssertion: IApiCaseStepAssertion = {

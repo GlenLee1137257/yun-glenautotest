@@ -3,6 +3,7 @@ package com.glen.autotest.controller.ui;
 import io.swagger.v3.core.util.Json;
 import jakarta.annotation.Resource;
 import com.glen.autotest.dto.dto.UiCaseDTO;
+import com.glen.autotest.req.ui.UiCaseBatchExecuteReq;
 import com.glen.autotest.req.ui.UiCaseDelReq;
 import com.glen.autotest.req.ui.UiCaseSaveReq;
 import com.glen.autotest.req.ui.UiCaseUpdateReq;
@@ -55,14 +56,31 @@ public class UiCaseController {
         return JsonData.buildSuccess(uiCaseService.save(req));
     }
 
-
-
+    /**
+     * 执行单个用例
+     */
     @GetMapping("/execute")
     public JsonData execute(@RequestParam("projectId") Long projectId, @RequestParam("id") Long caseId){
 
         JsonData jsonData = uiCaseService.execute(projectId, caseId);
 
         return  jsonData;
+    }
+
+    /**
+     * 批量执行用例
+     */
+    @PostMapping("/batch_execute")
+    public JsonData batchExecute(@RequestBody UiCaseBatchExecuteReq req) {
+        return uiCaseService.batchExecute(req);
+    }
+
+    /**
+     * 按模块执行用例
+     */
+    @PostMapping("/execute_by_module")
+    public JsonData executeByModule(@RequestParam("projectId") Long projectId, @RequestParam("moduleId") Long moduleId) {
+        return uiCaseService.executeByModule(projectId, moduleId);
     }
 
 }

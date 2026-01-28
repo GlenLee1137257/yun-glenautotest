@@ -1,6 +1,7 @@
 package com.glen.autotest.service.ui;
 
 import com.glen.autotest.dto.dto.UiCaseDTO;
+import com.glen.autotest.req.ui.UiCaseBatchExecuteReq;
 import com.glen.autotest.req.ui.UiCaseDelReq;
 import com.glen.autotest.req.ui.UiCaseSaveReq;
 import com.glen.autotest.req.ui.UiCaseUpdateReq;
@@ -16,4 +17,14 @@ public interface UiCaseService {
     Integer save(UiCaseSaveReq req);
 
     JsonData execute(Long projectId, Long caseId);
+
+    /**
+     * 批量执行用例
+     */
+    JsonData batchExecute(UiCaseBatchExecuteReq req);
+
+    /**
+     * 按模块执行用例
+     */
+    JsonData executeByModule(Long projectId, Long moduleId);
 }

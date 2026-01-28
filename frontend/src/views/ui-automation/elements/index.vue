@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { Button } from 'ant-design-vue'
 import type { ColumnsType } from 'ant-design-vue/es/table/Table'
 
 const columns = reactive<ColumnsType<any>>([
@@ -16,9 +15,5 @@ const columns = reactive<ColumnsType<any>>([
 </script>
 
 <template>
-  <TableModal base-name="ui_element" localized-name="UI元素" :columns="columns">
-    <template #operation>
-      <Button type="link">生成用例</Button>
-    </template>
-  </TableModal>
+  <TableModal base-name="ui_element" localized-name="UI元素" :columns="columns" />
 </template>

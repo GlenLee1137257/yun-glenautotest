@@ -11,6 +11,9 @@ import com.glen.autotest.req.api.ApiUpdateReq;
 import com.glen.autotest.service.api.ApiService;
 import com.glen.autotest.util.SpringBeanUtil;
 import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Glen AutoTest Platform
@@ -59,5 +62,23 @@ public class ApiServiceImpl implements ApiService {
         LambdaQueryWrapper<ApiDO> queryWrapper = new LambdaQueryWrapper<ApiDO>();
         queryWrapper.eq(ApiDO::getProjectId, req.getProjectId()).eq(ApiDO::getId, req.getId());
         return apiMapper.delete(queryWrapper);
+    }
+
+    @Override
+    public Map<Long, ApiDTO> findByIds(Long projectId, List<Long> apiIds) {
+        if (apiIds == null || apiIds.isEmpty()) {
+            return Map.of();
+        }
+
+        LambdaQueryWrapper<ApiDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ApiDO::getProjectId, projectId)
+                   .in(ApiDO::getId, apiIds);
+        
+        List<ApiDO> apiDOList = apiMapper.selectList(queryWrapper);
+        
+        // 转换为 Map<Long, ApiDTO>
+        return apiDOList.stream()
+                .map(apiDO -> SpringBeanUtil.copyProperties(apiDO, ApiDTO.class))
+                .collect(Collectors.toMap(ApiDTO::getId, api -> api));
     }
 }

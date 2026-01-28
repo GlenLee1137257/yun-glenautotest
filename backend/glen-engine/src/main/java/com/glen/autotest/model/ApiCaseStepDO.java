@@ -40,6 +40,14 @@ public class ApiCaseStepDO implements Serializable {
     @TableField("case_id")
     private Long caseId;
 
+    @Schema(description = "关联的接口ID（来自接口管理）")
+    @TableField("api_id")
+    private Long apiId;
+
+    @Schema(description = "是否使用接口库（0=手动配置，1=从接口库选择）")
+    @TableField("use_api_library")
+    private Boolean useApiLibrary;
+
     @Schema(description = "序号")
     @TableField("num")
     private Long num;

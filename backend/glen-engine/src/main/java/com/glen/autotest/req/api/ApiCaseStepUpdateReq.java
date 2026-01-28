@@ -21,6 +21,10 @@ public class ApiCaseStepUpdateReq {
 
     private Long caseId;
 
+    private Long apiId;
+
+    private Boolean useApiLibrary;
+
     private Long num;
 
     private String name;

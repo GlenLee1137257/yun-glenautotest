@@ -1,6 +1,7 @@
 package com.glen.autotest.controller.api;
 
 import jakarta.annotation.Resource;
+import com.glen.autotest.req.api.ApiCaseBatchExecuteReq;
 import com.glen.autotest.req.api.ApiCaseDelReq;
 import com.glen.autotest.req.api.ApiCaseSaveReq;
 import com.glen.autotest.req.api.ApiCaseUpdateReq;
@@ -55,11 +56,28 @@ public class ApiCaseController {
         return JsonData.buildSuccess(apiCaseService.del(req.getProjectId(), req.getId()));
     }
 
-
+    /**
+     * 执行单个用例
+     */
     @GetMapping("execute")
     public JsonData execute(@RequestParam("projectId") Long projectId, @RequestParam("id") Long caseId){
         return apiCaseService.execute(projectId,caseId);
     }
 
+    /**
+     * 批量执行用例
+     */
+    @PostMapping("/batch_execute")
+    public JsonData batchExecute(@RequestBody ApiCaseBatchExecuteReq req) {
+        return apiCaseService.batchExecute(req);
+    }
+
+    /**
+     * 按模块执行用例
+     */
+    @PostMapping("/execute_by_module")
+    public JsonData executeByModule(@RequestParam("projectId") Long projectId, @RequestParam("moduleId") Long moduleId) {
+        return apiCaseService.executeByModule(projectId, moduleId);
+    }
 
 }

@@ -3,6 +3,7 @@ package com.glen.autotest.service.api.core;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import com.glen.autotest.dto.ApiCaseResultDTO;
 import com.glen.autotest.dto.ReportDTO;
 import com.glen.autotest.dto.ApiCaseResultItemDTO;
@@ -12,11 +13,14 @@ import com.glen.autotest.enums.ApiBodyTypeEnum;
 import com.glen.autotest.enums.TestTypeEnum;
 import com.glen.autotest.exception.BizException;
 import com.glen.autotest.mapper.EnvironmentMapper;
+import com.glen.autotest.mapper.ApiMapper;
 import com.glen.autotest.model.ApiCaseStepDO;
+import com.glen.autotest.model.ApiDO;
 import com.glen.autotest.model.EnvironmentDO;
 import com.glen.autotest.service.common.ResultSenderService;
 import com.glen.autotest.util.*;
 import org.apache.commons.lang3.StringUtils;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -35,17 +39,21 @@ import java.util.Objects;
  * @Version 1.0
  **/
 @Data
+@Slf4j
 public class ApiExecuteEngine {
 
     private ReportDTO reportDTO;
 
     private EnvironmentMapper environmentMapper;
 
+    private ApiMapper apiMapper;
+
     private ResultSenderService resultSenderService;
 
     public ApiExecuteEngine(ReportDTO reportDTO){
         this.reportDTO = reportDTO;
         environmentMapper = SpringContextHolder.getBean(EnvironmentMapper.class);
+        apiMapper = SpringContextHolder.getBean(ApiMapper.class);
         resultSenderService = SpringContextHolder.getBean(ResultSenderService.class);
     }
 
@@ -113,6 +121,10 @@ public class ApiExecuteEngine {
         }
         //用例步骤执行结果处理
         ApiCaseStepDO step = stepList.get(0);
+        
+        // 从接口库同步信息（如果启用）
+        resolveApiLibrary(step);
+        
         ApiCaseResultItemDTO resultItem = new ApiCaseResultItemDTO();
         resultItem.setApiCaseStep(SpringBeanUtil.copyProperties(step, ApiCaseStepDTO.class));
         resultItem.setExecuteState(true);
@@ -182,6 +194,59 @@ public class ApiExecuteEngine {
 
     private static String getBaseUrl(EnvironmentDO environmentDO){
         return environmentDO.getProtocol() + "://" + environmentDO.getDomain() + ":" + environmentDO.getPort();
+    }
+
+    /**
+     * 从接口库同步信息
+     * 参考 UI 自动化的 resolveElementLibrary 方法
+     * @param step 用例步骤
+     */
+    private void resolveApiLibrary(ApiCaseStepDO step) {
+        // 如果未启用接口库或没有关联接口ID，则不处理
+        if (step.getApiId() == null || step.getUseApiLibrary() == null || !step.getUseApiLibrary()) {
+            return;
+        }
+
+        try {
+            // 查询接口库中的接口信息
+            LambdaQueryWrapper<ApiDO> queryWrapper = new LambdaQueryWrapper<>(ApiDO.class);
+            queryWrapper.eq(ApiDO::getId, step.getApiId())
+                       .eq(ApiDO::getProjectId, step.getProjectId());
+            ApiDO apiDO = apiMapper.selectOne(queryWrapper);
+
+            if (apiDO != null) {
+                // 接口存在，同步最新的接口信息
+                log.info("从接口库同步信息 - 步骤ID: {}, 接口ID: {}, 接口名称: {}", 
+                        step.getId(), apiDO.getId(), apiDO.getName());
+                
+                // 同步接口基本信息
+                step.setMethod(apiDO.getMethod());
+                step.setPath(apiDO.getPath());
+                step.setEnvironmentId(apiDO.getEnvironmentId());
+                
+                // 同步请求参数（如果接口库中有配置）
+                if (StringUtils.isNotBlank(apiDO.getQuery())) {
+                    step.setQuery(apiDO.getQuery());
+                }
+                if (StringUtils.isNotBlank(apiDO.getHeader())) {
+                    step.setHeader(apiDO.getHeader());
+                }
+                if (StringUtils.isNotBlank(apiDO.getBody())) {
+                    step.setBody(apiDO.getBody());
+                }
+                if (StringUtils.isNotBlank(apiDO.getBodyType())) {
+                    step.setBodyType(apiDO.getBodyType());
+                }
+            } else {
+                // 接口不存在（已从接口库中删除），使用步骤中的备用信息
+                log.warn("接口库中的接口不存在 - 步骤ID: {}, 接口ID: {}, 将使用备用接口信息", 
+                        step.getId(), step.getApiId());
+            }
+        } catch (Exception e) {
+            // 查询失败，使用步骤中的备用信息，不中断执行
+            log.error("从接口库同步信息失败 - 步骤ID: {}, 接口ID: {}, 错误: {}", 
+                     step.getId(), step.getApiId(), e.getMessage());
+        }
     }
 
 

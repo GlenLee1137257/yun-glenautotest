@@ -1,6 +1,7 @@
 package com.glen.autotest.controller.stress;
 
 import jakarta.annotation.Resource;
+import com.glen.autotest.req.stress.StressCaseBatchExecuteReq;
 import com.glen.autotest.req.stress.StressCaseDelReq;
 import com.glen.autotest.req.stress.StressCaseSaveReq;
 import com.glen.autotest.req.stress.StressCaseUpdateReq;
@@ -45,10 +46,29 @@ public class StressCaseController {
         return JsonData.buildSuccess(stressCaseService.update(req));
     }
 
+    /**
+     * 执行单个用例
+     */
     @GetMapping("/execute")
     public JsonData execute(@RequestParam("projectId") Long projectId,@RequestParam("id") Long caseId){
         stressCaseService.execute(projectId,caseId);
         return JsonData.buildSuccess();
+    }
+
+    /**
+     * 批量执行用例
+     */
+    @PostMapping("/batch_execute")
+    public JsonData batchExecute(@RequestBody StressCaseBatchExecuteReq req) {
+        return stressCaseService.batchExecute(req);
+    }
+
+    /**
+     * 按模块执行用例
+     */
+    @PostMapping("/execute_by_module")
+    public JsonData executeByModule(@RequestParam("projectId") Long projectId, @RequestParam("moduleId") Long moduleId) {
+        return stressCaseService.executeByModule(projectId, moduleId);
     }
 
 }
