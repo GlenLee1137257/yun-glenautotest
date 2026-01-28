@@ -69,7 +69,12 @@ function handleExecute(id: number) {
     base-name="ui"
   />
 
-  <TableModal base-name="ui_case" localized-name="UI 用例" :columns="columns">
+  <TableModal 
+    base-name="ui_case" 
+    localized-name="UI 用例" 
+    :columns="columns"
+    :enable-batch-execution="true"
+  >
     <template #operation="{ record }">
       <Button type="link" @click="handleExecute(record.id)"> 执行 </Button>
     </template>

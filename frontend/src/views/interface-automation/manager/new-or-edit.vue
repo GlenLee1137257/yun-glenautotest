@@ -9,6 +9,7 @@ import type RequestConfigVue from '~/components/NewOrEdit/RequestConfig.vue'
 
 const requestConfigRef = ref<ComponentExposed<typeof RequestConfigVue>>()
 const formModel = ref<IApi>({ ...defaultWithIApi })
+const isSaving = ref(false)  // 添加保存状态，防止重复提交
 
 const router = useRouter()
 const bodyRef = ref<ComponentExposed<typeof NewOrEditBodyVue>>()
@@ -42,6 +43,12 @@ const { post: fetchCreate } = useCustomFetch(
 )
 
 function handleSave() {
+  // 防止重复提交
+  if (isSaving.value) {
+    message.warning('正在保存中，请勿重复提交...')
+    return
+  }
+
   // 处理数据结构
   if (!requestConfigRef.value) {
     message.error('出现内部错误，请重试！')
@@ -55,7 +62,10 @@ function handleSave() {
   formModel.value.header = header
 
   if (bodyRef.value?.isEditState) {
-    fetchUpdate(formModel.value).execute()
+    isSaving.value = true
+    fetchUpdate(formModel.value).execute().finally(() => {
+      isSaving.value = false
+    })
   } else if (
     !formModel.value.name ||
     !formModel.value.path ||
@@ -67,7 +77,10 @@ function handleSave() {
     message.warn('请填写完整信息!')
     return
   } else {
-    fetchCreate(formModel.value).execute()
+    isSaving.value = true
+    fetchCreate(formModel.value).execute().finally(() => {
+      isSaving.value = false
+    })
   }
 }
 
@@ -121,6 +134,6 @@ function deserialize() {
       />
     </NewOrEditBody>
 
-    <NewOrEditFooter name="接口" @save="handleSave" />
+    <NewOrEditFooter name="接口" :loading="isSaving" @save="handleSave" />
   </div>
 </template>

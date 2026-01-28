@@ -128,6 +128,11 @@ public class ApiCaseServiceImpl implements ApiCaseService {
      */
     @Override
     public JsonData execute(Long projectId, Long caseId) {
+        return execute(projectId, caseId, false);
+    }
+
+    @Override
+    public JsonData execute(Long projectId, Long caseId, boolean isBatchMode) {
         LambdaQueryWrapper<ApiCaseDO> queryWrapper = new LambdaQueryWrapper<ApiCaseDO>();
         queryWrapper.eq(ApiCaseDO::getProjectId, projectId).eq(ApiCaseDO::getId, caseId);
         ApiCaseDO apiCaseDO = apiCaseMapper.selectOne(queryWrapper);
@@ -143,11 +148,14 @@ public class ApiCaseServiceImpl implements ApiCaseService {
             }
             //初始化测试报告
             try {
+                // 批量执行模式下，报告名称添加前缀
+                String reportName = isBatchMode ? "[批量执行] " + apiCaseDO.getName() : apiCaseDO.getName();
+                
                 ReportSaveReq reportSaveReq = ReportSaveReq.builder().projectId(apiCaseDO.getProjectId())
                         .caseId(apiCaseDO.getId())
                         .startTime(System.currentTimeMillis())
                         .executeState(ReportStateEnum.EXECUTING.name())
-                        .name(apiCaseDO.getName())
+                        .name(reportName)
                         .type(TestTypeEnum.API.name()).build();
                 JsonData jsonData = reportFeignService.save(reportSaveReq);
                 if(jsonData != null && jsonData.isSuccess()){
@@ -216,8 +224,8 @@ public class ApiCaseServiceImpl implements ApiCaseService {
                 } else {
                     result.put("caseName", apiCaseDO.getName());
                     
-                    // 执行单个用例
-                    JsonData executeResult = execute(req.getProjectId(), caseId);
+                    // 执行单个用例（标记为批量执行模式）
+                    JsonData executeResult = execute(req.getProjectId(), caseId, true);
                     
                     if (executeResult.isSuccess()) {
                         result.put("success", true);

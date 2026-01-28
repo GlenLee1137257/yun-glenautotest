@@ -125,6 +125,7 @@ watch(selectedModuleId, () => {
     base-name="stress_case"
     localized-name="用例"
     :columns="columns"
+    :enable-batch-execution="true"
     not-fetch-default-data
     :another-table-data-source="data!"
     :loading-with-another-table-data-source="isFetching"

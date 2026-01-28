@@ -3,9 +3,16 @@ export function handleParams(url: string, params: object): string {
   if (params && Object.keys(params).length > 0) {
     const hasQuery = url.includes('?')
 
+    // 过滤掉 null、undefined、NaN 等无效值
     const queryString = Object.entries(params)
+      .filter(([_, value]) => value != null && value !== '' && !Number.isNaN(value))
       .map(([key, value]) => `${key}=${value}`)
       .join('&')
+
+    // 如果过滤后没有参数，直接返回原 URL
+    if (!queryString) {
+      return url
+    }
 
     return `${url}${hasQuery ? '&' : '?'}${queryString}`
   } else {
@@ -14,7 +21,9 @@ export function handleParams(url: string, params: object): string {
 }
 
 export function handleParamsWithoutUrl(params: object): string {
+  // 过滤掉 null、undefined、NaN 等无效值
   return Object.entries(params)
+    .filter(([_, value]) => value != null && value !== '' && !Number.isNaN(value))
     .map(([key, value]) => `${key}=${value}`)
     .join('&')
 }

@@ -20,6 +20,15 @@ public interface ApiCaseService {
     JsonData execute(Long projectId, Long caseId);
 
     /**
+     * 执行用例（支持批量执行标识）
+     * @param projectId 项目ID
+     * @param caseId 用例ID
+     * @param isBatchMode 是否批量执行模式
+     * @return 执行结果
+     */
+    JsonData execute(Long projectId, Long caseId, boolean isBatchMode);
+
+    /**
      * 批量执行用例
      */
     JsonData batchExecute(ApiCaseBatchExecuteReq req);

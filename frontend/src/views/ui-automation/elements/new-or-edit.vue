@@ -9,6 +9,7 @@ import type NewOrEditBodyVue from '~/components/NewOrEdit/NewOrEditBody.vue'
 import type { ComponentExposed } from 'vue-component-type-helpers'
 
 const formModel = ref<IUIElement>({ ...defaultWithIUIElement })
+const isSaving = ref(false)  // 添加保存状态，防止重复提交
 const bodyRef = ref<ComponentExposed<typeof NewOrEditBodyVue>>()
 
 const router = useRouter()
@@ -61,8 +62,17 @@ const { data: locationTypeData } = useCustomFetch<IDict[]>(
 )
 
 function handleSave() {
+  // 防止重复提交
+  if (isSaving.value) {
+    message.warning('正在保存中，请勿重复提交...')
+    return
+  }
+
   if (bodyRef.value?.isEditState) {
-    fetchUpdateUIElement(formModel.value).execute()
+    isSaving.value = true
+    fetchUpdateUIElement(formModel.value).execute().finally(() => {
+      isSaving.value = false
+    })
   } else if (
     !formModel.value.name ||
     !formModel.value.description ||
@@ -72,7 +82,10 @@ function handleSave() {
   ) {
     message.error('请填写完整信息')
   } else {
-    fetchCreateUIElement(formModel.value).execute()
+    isSaving.value = true
+    fetchCreateUIElement(formModel.value).execute().finally(() => {
+      isSaving.value = false
+    })
   }
 }
 </script>
@@ -110,6 +123,6 @@ function handleSave() {
         </Form.Item>
       </Form>
     </NewOrEditBody>
-    <NewOrEditFooter name="UI 元素" @save="handleSave" />
+    <NewOrEditFooter name="UI 元素" :loading="isSaving" @save="handleSave" />
   </div>
 </template>

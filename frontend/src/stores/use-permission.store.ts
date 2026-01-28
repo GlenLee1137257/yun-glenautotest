@@ -5,16 +5,26 @@ import type { IRole } from '~/types/apis/role'
 
 export const usePermissionStore = defineStore('permission', () => {
   const roles = ref<{ roleList: IRole[] }>({ roleList: [] })
+  const userInfo = ref<{ username: string; phone: string; mail: string }>({
+    username: '',
+    phone: '',
+    mail: '',
+  })
 
   // 请求用户角色信息
-  const { execute: fetchUserRole } = useCustomFetch<{ roleList: IRole[] }>(
+  const { execute: fetchUserRole } = useCustomFetch<{ roleList: IRole[]; username: string; phone: string; mail: string }>(
     '/account-service/api/v1/account/findLoginAccountRole',
     {
-      initialData: { roleList: [] },
+      initialData: { roleList: [], username: '', phone: '', mail: '' },
       immediate: false,
       afterFetch(ctx) {
         if (ctx.data && ctx.data.code === 0) {
-          roles.value = ctx.data.data
+          roles.value = { roleList: ctx.data.data.roleList || [] }
+          userInfo.value = {
+            username: ctx.data.data.username || '',
+            phone: ctx.data.data.phone || '',
+            mail: ctx.data.data.mail || '',
+          }
         }
         return ctx
       },
@@ -42,8 +52,14 @@ export const usePermissionStore = defineStore('permission', () => {
 
   return {
     roles,
+    userInfo,
     fetchUserRole,
     // hasPermissionToAccessPage,
     // hasPermissionToDoAction,
   }
+},
+{
+  persist: {
+    paths: ['roles', 'userInfo'],
+  },
 })

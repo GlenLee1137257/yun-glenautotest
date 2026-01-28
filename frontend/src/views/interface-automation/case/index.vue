@@ -169,7 +169,12 @@ function handleClickForOpenResponseModal(
     </template>
   </ExecuteModal>
 
-  <TableModal base-name="api_case" localized-name="接口用例" :columns="columns">
+  <TableModal 
+    base-name="api_case" 
+    localized-name="接口用例" 
+    :columns="columns"
+    :enable-batch-execution="true"
+  >
     <template #bodyCell="{ column, record }">
       <span
         v-if="

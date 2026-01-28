@@ -4,12 +4,15 @@ import {
   Badge,
   Breadcrumb,
   Button,
+  Dropdown,
+  Divider,
   type ItemType,
   Layout,
   LayoutContent,
   LayoutHeader,
   LayoutSider,
   Menu,
+  Tag,
   Tooltip,
   message,
 } from 'ant-design-vue'
@@ -19,9 +22,11 @@ import {
   CodeSandboxOutlined,
   CodeOutlined,
   HomeOutlined,
+  LogoutOutlined,
   MenuFoldOutlined,
   MenuOutlined,
   MenuUnfoldOutlined,
+  SettingOutlined,
   ToolOutlined,
   UsbOutlined,
   UserOutlined,
@@ -41,6 +46,37 @@ const openKeys = ref<string[]>([])
 const selectedKeys = ref<string[]>([])
 const breadcrumb = ref<[string, string][]>([])
 const [collapsed, toggleCollapsed] = useToggle()
+
+// 获取用户信息
+const userDisplayName = computed(() => {
+  const { userInfo } = permissionStore
+  return userInfo.username || userInfo.phone || userInfo.mail || '用户'
+})
+
+// 获取用户名首字母（用于头像）
+const userAvatar = computed(() => {
+  const name = userDisplayName.value
+  if (name === '用户') return 'U'
+  // 如果是中文，取第一个字
+  if (/[\u4e00-\u9fa5]/.test(name[0])) {
+    return name[0]
+  }
+  // 如果是英文或数字，取第一个字母并大写
+  return name[0].toUpperCase()
+})
+
+// 获取用户角色列表
+const userRoles = computed(() => {
+  return permissionStore.roles.roleList || []
+})
+
+// 获取主要角色（显示第一个角色）
+const primaryRole = computed(() => {
+  if (userRoles.value.length > 0) {
+    return userRoles.value[0].name
+  }
+  return '普通用户'
+})
 
 const items = reactive<ItemType[]>([
   {
@@ -197,9 +233,13 @@ const { get } = useCustomFetch(`/account-service/api/v1/account/logout`, {
       message.success('退出成功')
       // 清除 Pinia 中的数据
       globalConfigStore.setLoginToken('')
-      globalConfigStore.config.projectId = null as any
-      globalConfigStore.config.projectDatas = null as any
-      globalConfigStore.config.projectListDataProxy = null as any
+      // 重置为默认值而不是 null，避免接口请求时出现 projectId=null 的情况
+      globalConfigStore.config.projectId = 1  // 使用默认值 1 而不是 null
+      globalConfigStore.config.projectDatas = []
+      globalConfigStore.config.projectListDataProxy = []
+      // 清空用户信息和角色信息
+      permissionStore.userInfo = { username: '', phone: '', mail: '' }
+      permissionStore.roles = { roleList: [] }
       // 清除 localStorage 中的数据
       localStorage.clear()
       // 清除权限数据
@@ -310,18 +350,90 @@ const logout = async () => {
 
         <div flex items-center space-x-4>
           <LayoutHeaderConfig />
-          <Tooltip color="white">
-            <template #title>
-              <Button type="link" @click="logout">退出登录</Button>
-            </template>
-            <Badge :count="1">
-              <Avatar shape="circle">
-                <template #icon>
-                  <UserOutlined />
-                </template>
+          
+          <!-- 用户头像下拉菜单 -->
+          <Dropdown placement="bottomRight">
+            <div class="user-avatar-wrapper">
+              <Avatar 
+                class="user-avatar" 
+                :style="{ 
+                  backgroundColor: '#1890ff', 
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: 'bold'
+                }"
+              >
+                {{ userAvatar }}
               </Avatar>
-            </Badge>
-          </Tooltip>
+              <div class="user-info">
+                <div class="user-name">{{ userDisplayName }}</div>
+                <Tag 
+                  :color="primaryRole === '超级管理员' ? 'red' : primaryRole === '项目管理员' ? 'blue' : 'green'" 
+                  class="user-role-tag"
+                  size="small"
+                >
+                  {{ primaryRole }}
+                </Tag>
+              </div>
+            </div>
+            
+            <template #overlay>
+              <Menu class="user-dropdown-menu">
+                <!-- 用户信息展示 -->
+                <div class="dropdown-user-info">
+                  <Avatar 
+                    :size="48"
+                    :style="{ 
+                      backgroundColor: '#1890ff',
+                      fontSize: '20px',
+                      fontWeight: 'bold'
+                    }"
+                  >
+                    {{ userAvatar }}
+                  </Avatar>
+                  <div class="dropdown-user-details">
+                    <div class="dropdown-user-name">{{ userDisplayName }}</div>
+                    <div class="dropdown-user-account">
+                      {{ permissionStore.userInfo.phone || permissionStore.userInfo.mail || '暂无账号信息' }}
+                    </div>
+                  </div>
+                </div>
+                
+                <Divider style="margin: 8px 0" />
+                
+                <!-- 角色列表 -->
+                <Menu.ItemGroup title="我的角色">
+                  <Menu.Item v-for="role in userRoles" :key="role.id" disabled>
+                    <Tag 
+                      :color="role.name === '超级管理员' ? 'red' : role.name === '项目管理员' ? 'blue' : 'green'"
+                      style="margin: 0"
+                    >
+                      {{ role.name }}
+                    </Tag>
+                  </Menu.Item>
+                  <Menu.Item v-if="userRoles.length === 0" disabled>
+                    <span style="color: #999">暂无角色</span>
+                  </Menu.Item>
+                </Menu.ItemGroup>
+                
+                <Divider style="margin: 8px 0" />
+                
+                <!-- 操作菜单 -->
+                <Menu.Item key="profile">
+                  <UserOutlined />
+                  <span style="margin-left: 8px">个人信息</span>
+                </Menu.Item>
+                <Menu.Item key="settings">
+                  <SettingOutlined />
+                  <span style="margin-left: 8px">账号设置</span>
+                </Menu.Item>
+                <Menu.Item key="logout" @click="logout" danger>
+                  <LogoutOutlined />
+                  <span style="margin-left: 8px">退出登录</span>
+                </Menu.Item>
+              </Menu>
+                </template>
+          </Dropdown>
         </div>
       </LayoutHeader>
       <LayoutContent
@@ -516,5 +628,128 @@ const logout = async () => {
   .logo-subtitle {
     font-size: 11px;
   }
+}
+
+/* ========== 用户头像区域样式 ========== */
+.user-avatar-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f5f5f5;
+}
+
+.user-avatar-wrapper:hover {
+  background: #e8e8e8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.user-avatar {
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.user-avatar-wrapper:hover .user-avatar {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0; /* 允许flex收缩 */
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role-tag {
+  font-size: 11px !important;
+  line-height: 16px !important;
+  padding: 0 6px !important;
+  border-radius: 4px !important;
+  white-space: nowrap;
+}
+
+/* ========== 下拉菜单样式 ========== */
+.user-dropdown-menu {
+  min-width: 260px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  padding: 8px 0;
+}
+
+.dropdown-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 16px 8px;
+}
+
+.dropdown-user-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.dropdown-user-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-user-account {
+  font-size: 12px;
+  color: #999;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 下拉菜单项样式优化 */
+:deep(.user-dropdown-menu .ant-menu-item-group-title) {
+  padding: 8px 16px;
+  font-size: 12px;
+  color: #999;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+:deep(.user-dropdown-menu .ant-menu-item) {
+  margin: 2px 8px;
+  border-radius: 6px;
+  padding: 8px 12px;
+  height: auto;
+  line-height: 1.5;
+}
+
+:deep(.user-dropdown-menu .ant-menu-item:hover) {
+  background-color: #f5f5f5;
+}
+
+:deep(.user-dropdown-menu .ant-menu-item-danger:hover) {
+  background-color: #fff1f0;
+  color: #ff4d4f;
+}
+
+:deep(.user-dropdown-menu .ant-menu-item-danger .anticon) {
+  color: #ff4d4f;
 }
 </style>

@@ -44,6 +44,7 @@ const [createModalVisible, toggleCreateModalVisible] = useToggle(false)
 
 const controlStepState = ref<'new' | 'edit' | 'default'>('default')
 const isEditState = computed(() => route.fullPath.includes('is-edit=true'))
+const isSaving = ref(false)  // 添加保存状态，防止重复提交
 
 const stepSlotRef = ref<{ serialize: () => void }>()
 function setStepSlotRef(ref: { serialize: () => void }) {
@@ -307,7 +308,15 @@ async function handleOk() {
 }
 
 async function handleSave() {
+  // 防止重复提交
+  if (isSaving.value) {
+    message.warning('正在保存中，请勿重复提交...')
+    return
+  }
+  
   try {
+    isSaving.value = true  // 开始保存，设置状态
+    
     if (bodyRef.value?.isEditState) {
       // 编辑模式：只更新用例基本信息，步骤已通过 handleOk 单独保存
       const updateData = {
@@ -332,6 +341,8 @@ async function handleSave() {
   } catch (error) {
     console.error('保存失败:', error)
     // 错误信息已在 afterFetch 中处理
+  } finally {
+    isSaving.value = false  // 保存完成（成功或失败），恢复状态
   }
 }
 
@@ -442,6 +453,6 @@ defineExpose({
         </Modal>
       </div>
     </NewOrEditBody>
-    <NewOrEditFooter :name="localizedName" @save="handleSave" />
+    <NewOrEditFooter :name="localizedName" :loading="isSaving" @save="handleSave" />
   </div>
 </template>

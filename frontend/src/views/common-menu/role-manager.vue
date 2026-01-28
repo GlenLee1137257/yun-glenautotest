@@ -293,43 +293,32 @@ async function handleAddRole(roleId: number, permissionId: number) {
       </div>
     </div>
   </Modal>
-  <Modal v-model:open="open" @ok="handleOk">
-    <div style="display: flex; justify-content: space-around">
-      <div>
-        <div style="margin-bottom: 10px">角色</div>
-        <div>
-          {{ roleValue.name }}
+  <Modal v-model:open="open" @ok="handleOk" width="900px" :footer="null">
+    <div style="padding: 20px">
+      <!-- 角色信息 -->
+      <div style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e8e8e8">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <span style="font-size: 16px; font-weight: bold; color: #1890ff">{{ roleValue.name }}</span>
+          <span style="color: #8c8c8c; font-size: 14px">（{{ roleValue.permissionList.length }} 个权限）</span>
+        </div>
+        <div v-if="roleValue.description" style="margin-top: 8px; color: #666; font-size: 13px">
+          {{ roleValue.description }}
         </div>
       </div>
-      <div style="margin-bottom: 10px">
-        <div style="margin-bottom: 10px">权限列表</div>
-        <div>
-          <div
-            v-for="permission in roleValue.permissionList"
-            :key="permission.id"
-            style="height: 35px"
-          >
-            <span>{{ permission.name }}&nbsp;&nbsp;</span>
-            <Button
-              type="primary"
-              size="small"
-              @click="handleDeleteRole(roleValue.id, permission.id)"
-              >移除</Button
-            >
-          </div>
-        </div>
-      </div>
-    </div>
-    <div style="display: flex; justify-content: center">
+
+      <!-- 权限列表标题 -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px">
+        <div style="font-weight: bold; font-size: 15px">权限列表</div>
       <Dropdown>
-        <Button type="primary">新增权限</Button>
+          <Button type="primary" size="small">+ 新增权限</Button>
         <template #overlay>
-          <Menu>
+            <Menu style="max-height: 400px; overflow-y: auto">
             <Menu.Item v-for="item in rolePower" :key="item.id">
               <Button
                 type="text"
                 size="small"
                 @click="handleAddRole(roleValue.id, item.id)"
+                  style="width: 100%; text-align: left"
               >
                 {{ item.name }}
               </Button>
@@ -337,6 +326,62 @@ async function handleAddRole(roleId: number, permissionId: number) {
           </Menu>
         </template>
       </Dropdown>
+      </div>
+
+      <!-- 权限标签列表 - 采用卡片式布局 -->
+      <div 
+        style="
+          display: flex; 
+          flex-wrap: wrap; 
+          gap: 12px; 
+          max-height: 500px; 
+          overflow-y: auto; 
+          padding: 16px; 
+          background-color: #fafafa; 
+          border-radius: 8px;
+          border: 1px solid #e8e8e8;
+        "
+      >
+        <div
+          v-for="permission in roleValue.permissionList"
+          :key="permission.id"
+          style="
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            padding: 8px 16px; 
+            background-color: #ffffff; 
+            border: 1px solid #d9d9d9; 
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+          "
+          class="permission-tag"
+        >
+          <span style="font-size: 13px; color: #333">{{ permission.name }}</span>
+          <Button
+            type="text"
+            size="small"
+            danger
+            @click="handleDeleteRole(roleValue.id, permission.id)"
+            style="padding: 0 4px; height: 24px; font-size: 12px"
+          >
+            移除
+          </Button>
+        </div>
+        <div 
+          v-if="roleValue.permissionList.length === 0"
+          style="
+            width: 100%; 
+            text-align: center; 
+            padding: 40px; 
+            color: #999; 
+            font-size: 14px;
+          "
+        >
+          暂无权限，请点击上方"新增权限"按钮添加
+        </div>
+      </div>
     </div>
   </Modal>
 </template>
@@ -349,5 +394,13 @@ async function handleAddRole(roleId: number, permissionId: number) {
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+}
+
+.permission-tag {
+  &:hover {
+    border-color: #1890ff !important;
+    box-shadow: 0 4px 8px rgba(24, 144, 255, 0.15) !important;
+    transform: translateY(-2px);
+  }
 }
 </style>

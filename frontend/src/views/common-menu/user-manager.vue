@@ -158,9 +158,9 @@ onMounted(() => {
   accountPowerFetch()
 })
 
-//删除某个账号的角色和权限
+// 删除某个账号的角色和权限（注意：后端接口实际为 delRoleByAccountId）
 const { post: executeDeleteRole } = useCustomFetch<IAccountPower>(
-  '/account-service/api/permit/v1/role/deleteRoleByAccountId',
+  '/account-service/api/permit/v1/role/delRoleByAccountId',
   {
     immediate: false,
     initialData: [],
@@ -353,37 +353,43 @@ const tableValue: ColumnsType = [
       </template>
     </template>
   </Table>
-  <Modal v-model:open="open" @ok="handleOk">
-    <div style="display: flex; justify-content: space-around">
-      <div>
-        <div style="margin-bottom: 10px">角色名称</div>
+  <Modal v-model:open="open" @ok="handleOk" width="800px">
+    <div style="margin-bottom: 20px">
+      <div style="font-weight: bold; margin-bottom: 10px; font-size: 16px">角色列表</div>
         <div
           v-for="role in AccountPower?.roleList"
           :key="role.id"
-          style="display: flex; justify-content: space-between; height: 30px"
+        style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background-color: #f5f5f5; border-radius: 4px; margin-bottom: 8px"
         >
-          <span style="margin-right: 10px">{{ role.name }}</span>
+        <span style="font-weight: 500">{{ role.name }}</span>
           <Button
             type="primary"
             size="small"
+          danger
             @click="deleteRole(AccountPower!.id, role.id)"
             >删除</Button
           >
         </div>
       </div>
-      <div style="display: flex; flex-direction: column">
-        <div style="margin-bottom: 10px">权限列表</div>
+    
+    <div style="margin-bottom: 20px">
+      <div style="font-weight: bold; margin-bottom: 10px; font-size: 16px">权限列表（按角色分组）</div>
         <div
           v-for="role in AccountPower?.roleList"
           :key="role.id"
-          style="display: flex; height: 30px"
-        >
-          <div v-for="item in role.permissionList" :key="item.id">
-            <span>{{ item.name }}&nbsp;</span>
-          </div>
+        style="margin-bottom: 16px; padding: 12px; border: 1px solid #e8e8e8; border-radius: 4px"
+      >
+        <div style="font-weight: 500; color: #1890ff; margin-bottom: 8px">{{ role.name }}</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <span
+            v-for="item in role.permissionList"
+            :key="item.id"
+            style="display: inline-block; padding: 4px 12px; background-color: #e6f7ff; border: 1px solid #91d5ff; border-radius: 4px; font-size: 12px"
+          >
+            {{ item.name }}
+          </span>
         </div>
       </div>
-      <!-- </Col> -->
     </div>
     <div style="display: flex; justify-content: center">
       <Dropdown>

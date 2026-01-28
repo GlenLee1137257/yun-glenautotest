@@ -29,18 +29,28 @@ export const useCustomFetch = createFetch({
           satoken: `${globalConfigStore.loginToken}`,
         }
 
+        // 获取 projectId，如果无效则不添加到请求中
+        const projectId = globalConfigStore.config.projectId
+        const isValidProjectId = projectId != null && projectId !== undefined && !isNaN(Number(projectId)) && projectId > 0
+
         if (
           ['POST', 'PUT'].includes(options.method.toUpperCase()) &&
           options.body
         ) {
-          options.body = JSON.stringify({
-            ...JSON.parse(options.body as string),
-            projectId: globalConfigStore.config.projectId,
-          })
+          const bodyData = JSON.parse(options.body as string)
+          // 只有当 projectId 有效时才添加
+          if (isValidProjectId) {
+            bodyData.projectId = projectId
+          }
+          options.body = JSON.stringify(bodyData)
         } else if (options.method === 'GET') {
+          // 只有当 projectId 有效且 URL 中不包含 projectId 参数时才添加
+          // 对于某些不需要 projectId 的接口（如登录、获取用户信息等），避免强制添加
+          if (isValidProjectId && !url.includes('projectId=') && !url.includes('/login') && !url.includes('findLoginAccountRole')) {
           url = handleParams(url, {
-            projectId: globalConfigStore.config.projectId,
+              projectId: projectId,
           })
+          }
         }
       }
 

@@ -9,11 +9,23 @@ const { loadingWithGetProjectDatas, config } = storeToRefs(
 
 const disabled = computed(() => route.fullPath.includes('new-or-edit'))
 
-fetchGetProjectDatas()
-
 //请求权限
 const permissionStore = usePermissionStore()
-permissionStore.fetchUserRole()
+
+// 优化初始化顺序：先获取项目列表，再获取用户角色信息
+async function initializeData() {
+  try {
+    // 1. 先获取项目列表（这会设置 projectId）
+    await fetchGetProjectDatas()
+    // 2. 再获取用户角色信息（此时 projectId 已经设置好了）
+    await permissionStore.fetchUserRole()
+  } catch (error) {
+    console.error('初始化数据失败:', error)
+  }
+}
+
+// 组件挂载时初始化
+initializeData()
 </script>
 
 <template>

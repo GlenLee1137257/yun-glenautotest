@@ -43,6 +43,7 @@ const formModelExpand = reactive<{
 
 const router = useRouter()
 const formModel = ref<IStressCase>({ ...defaultWithIStressCase })
+const isSaving = ref(false)  // 添加保存状态，防止重复提交
 const bodyRef = ref<ComponentExposed<typeof NewOrEditBodyVue>>()
 const requestConfigRef = ref<ComponentExposed<typeof RequestConfigVue>>()
 
@@ -203,6 +204,12 @@ function downloadCsvTemplate() {
 }
 
 function handleSave() {
+  // 防止重复提交
+  if (isSaving.value) {
+    message.warning('正在保存中，请勿重复提交...')
+    return
+  }
+
   if (formModel.value.stressSourceType.toUpperCase() === 'SIMPLE') {
     const { body, header, query } = requestConfigRef.value?.serialize() ?? {}
     formModel.value.body = body ?? ''
@@ -228,10 +235,15 @@ function handleSave() {
     }
   }
 
+  isSaving.value = true
   if (!bodyRef.value?.isEditState) {
-    fetchCreateStressCase(objectOmit(formModel.value, ['id'])).execute()
+    fetchCreateStressCase(objectOmit(formModel.value, ['id'])).execute().finally(() => {
+      isSaving.value = false
+    })
   } else {
-    fetchUpdateStressCase(formModel.value).execute()
+    fetchUpdateStressCase(formModel.value).execute().finally(() => {
+      isSaving.value = false
+    })
   }
 }
 
@@ -548,6 +560,6 @@ async function deserialize() {
         </template>
       </Form>
     </NewOrEditBody>
-    <NewOrEditFooter name="接口" @save="handleSave" />
+    <NewOrEditFooter name="接口" :loading="isSaving" @save="handleSave" />
   </div>
 </template>
