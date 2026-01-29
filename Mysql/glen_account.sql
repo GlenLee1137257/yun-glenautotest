@@ -11,7 +11,7 @@
  Target Server Version : 80044 (8.0.44)
  File Encoding         : 65001
 
- Date: 27/01/2026 21:16:01
+ Date: 28/01/2026 22:14:20
 */
 
 SET NAMES utf8mb4;
@@ -27,7 +27,9 @@ CREATE TABLE `account`  (
   `is_disabled` tinyint UNSIGNED NULL DEFAULT 0 COMMENT '是否禁用 0:否 1:是',
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `idx_username`(`username` ASC) USING BTREE COMMENT '账号唯一索引',
+  INDEX `idx_is_disabled`(`is_disabled` ASC) USING BTREE COMMENT '启用状态索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '账号表：存储用户账号基本信息' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -47,8 +49,11 @@ CREATE TABLE `account_role`  (
   `account_id` bigint UNSIGNED NOT NULL COMMENT '用户ID',
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '账号角色关联表：用户与角色的多对多关系' ROW_FORMAT = Dynamic;
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `idx_account_role`(`account_id` ASC, `role_id` ASC) USING BTREE COMMENT '账号-角色唯一索引',
+  INDEX `idx_role_id`(`role_id` ASC) USING BTREE COMMENT '角色ID索引',
+  INDEX `idx_account_id`(`account_id` ASC) USING BTREE COMMENT '账号ID索引'
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '账号角色关联表：用户与角色的多对多关系' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of account_role
@@ -68,7 +73,8 @@ CREATE TABLE `permission`  (
   `description` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '权限描述',
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `idx_code`(`code` ASC) USING BTREE COMMENT '权限编码唯一索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 103 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '权限表：系统权限定义' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -128,7 +134,8 @@ CREATE TABLE `role`  (
   `description` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '角色描述',
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `idx_code`(`code` ASC) USING BTREE COMMENT '角色编码唯一索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色表：系统角色定义' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -148,8 +155,10 @@ CREATE TABLE `role_permission`  (
   `permission_id` bigint UNSIGNED NOT NULL COMMENT '权限ID',
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 263 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色权限关联表：角色与权限的多对多关系' ROW_FORMAT = Dynamic;
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_role_id`(`role_id` ASC) USING BTREE COMMENT '角色ID索引',
+  INDEX `idx_permission_id`(`permission_id` ASC) USING BTREE COMMENT '权限ID索引'
+) ENGINE = InnoDB AUTO_INCREMENT = 311 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色权限关联表：角色与权限的多对多关系' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of role_permission
@@ -313,6 +322,54 @@ INSERT INTO `role_permission` VALUES (235, 1, 59, '2026-01-18 01:39:03', '2026-0
 INSERT INTO `role_permission` VALUES (260, 1, 100, '2026-01-18 01:39:17', '2026-01-18 01:39:17');
 INSERT INTO `role_permission` VALUES (261, 1, 101, '2026-01-18 01:39:17', '2026-01-18 01:39:17');
 INSERT INTO `role_permission` VALUES (262, 1, 102, '2026-01-18 01:39:17', '2026-01-18 01:39:17');
+INSERT INTO `role_permission` VALUES (263, 2, 1, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (264, 2, 2, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (265, 2, 3, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (266, 2, 4, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (267, 2, 5, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (268, 2, 10, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (269, 2, 11, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (270, 2, 12, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (271, 2, 13, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (272, 2, 14, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (273, 2, 15, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (274, 2, 20, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (275, 2, 21, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (276, 2, 22, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (277, 2, 23, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (278, 2, 24, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (279, 2, 25, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (280, 2, 30, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (281, 2, 31, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (282, 2, 32, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (283, 2, 33, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (284, 2, 34, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (285, 2, 35, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (286, 2, 40, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (287, 2, 41, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (288, 2, 42, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (289, 2, 43, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (290, 2, 44, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (291, 2, 45, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (292, 2, 50, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (293, 2, 51, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (294, 2, 52, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (295, 2, 53, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (296, 2, 101, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (297, 3, 1, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (298, 3, 2, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (299, 3, 10, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (300, 3, 11, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (301, 3, 15, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (302, 3, 20, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (303, 3, 21, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (304, 3, 25, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (305, 3, 30, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (306, 3, 31, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (307, 3, 35, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (308, 3, 40, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (309, 3, 41, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
+INSERT INTO `role_permission` VALUES (310, 3, 102, '2026-01-28 18:50:28', '2026-01-28 18:50:28');
 
 -- ----------------------------
 -- Table structure for social_account

@@ -11,7 +11,7 @@
  Target Server Version : 80044 (8.0.44)
  File Encoding         : 65001
 
- Date: 27/01/2026 21:16:28
+ Date: 28/01/2026 22:15:02
 */
 
 SET NAMES utf8mb4;
@@ -31,7 +31,10 @@ CREATE TABLE `sys_dict`  (
   `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
   `gmt_create` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_category`(`category` ASC) USING BTREE COMMENT '分类索引',
+  INDEX `idx_category_name`(`category` ASC, `name` ASC) USING BTREE COMMENT '分类-名称组合索引',
+  INDEX `idx_gmt_create`(`gmt_create` DESC) USING BTREE COMMENT '创建时间索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 224 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
